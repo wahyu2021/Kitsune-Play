@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "title": "God of War",
+    "description": "Kratos returns in this Nordic adventure.",
+    "genre": "Action Adventure",
+    "path_to_exe": "C:\\Games\\GodOfWar\\GoW.exe",
+    "cover_image": "god-cover.jpg",
+    "bg_image": "gof-banner.jpg"
+  },
+  {
+    "id": "2",
+    "title": "Spider-Man: Miles Morales",
+    "description": "Be greater. Be yourself.",
+    "genre": "Action",
+    "path_to_exe": "C:\\Games\\SpiderMan\\SpiderMan.exe",
+    "cover_image": "spiderman-miles-morales-cover.jpg",
+    "bg_image": "spiderman-miles-morales.jpg"
+  },
+  {
+    "id": "3",
+    "title": "Elden Ring",
+    "description": "The Golden Order has been broken.",
+    "genre": "RPG",
+    "path_to_exe": "C:\\Games\\EldenRing\\EldenRing.exe",
+    "cover_image": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2000/phvVT0qZfcGms5qDA.png",
+    "bg_image": ""
+  }
+]
