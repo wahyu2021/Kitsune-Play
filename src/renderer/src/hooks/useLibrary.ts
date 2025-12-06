@@ -28,11 +28,11 @@ interface UseLibraryReturn {
  * Handles persistence (loading/saving to disk) automatically.
  */
 export function useLibrary(): UseLibraryReturn {
-  const [games, setGames] = useState<Game[]>([])
+  const [games, setGames] = useState<Game[]>([]) 
   const [mediaApps, setMediaApps] = useState<Game[]>([])
   const [userName, setUserName] = useState('Player 1')
-  const [settings, setSettings] = useState<AppSettings>({ rawgApiKey: '' })
-
+  const [settings, setSettings] = useState<AppSettings>({ rawgApiKey: '', volume: 0.5, isMuted: false })
+  
   const isLoaded = useRef(false)
   const [hasLoadedInitial, setHasLoadedInitial] = useState(false)
 
@@ -60,7 +60,12 @@ export function useLibrary(): UseLibraryReturn {
           setGames(parsed.games || [])
           setMediaApps(parsed.mediaApps || [])
           setUserName(parsed.userName || 'Player 1')
-          setSettings(parsed.settings || { rawgApiKey: '' })
+          setSettings({ 
+            rawgApiKey: '', 
+            volume: 0.5, 
+            isMuted: false, 
+            ...parsed.settings 
+          })
         } catch (e) {
           logger.error('System', 'Failed to parse saved data, using defaults', e)
           setGames(initialDefaults)
@@ -138,6 +143,21 @@ export function useLibrary(): UseLibraryReturn {
     setUserName('Player 1')
   }
 
+  const updateGamePlaytime = (id: string, sessionMinutes: number): void => {
+    if (sessionMinutes <= 0) return
+
+    setGames(prev => prev.map(game => {
+        if (game.id === id) {
+            return {
+                ...game,
+                playtime: (game.playtime || 0) + sessionMinutes,
+                lastPlayed: new Date().toISOString()
+            }
+        }
+        return game
+    }))
+  }
+
   return {
     games,
     mediaApps,
@@ -147,6 +167,7 @@ export function useLibrary(): UseLibraryReturn {
     setSettings,
     addGame,
     deleteGame,
+    updateGamePlaytime,
     resetLibrary,
     isLoaded: hasLoadedInitial
   }

@@ -47,9 +47,9 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 **Objective:** Replace static background images with looping video trailers for a premium feel.
 
 **Implementation Plan:**
-- [ ] Update `Game` interface in `types.ts` to include optional `bg_video_path`.
-- [ ] Update `AddGameModal` to allow selecting `.mp4` or `.webm` files.
-- [ ] Modify `App.tsx`:
+- [x] Update `Game` interface in `types.ts` to include optional `bg_video_path`.
+- [x] Update `AddGameModal` to allow selecting `.mp4` or `.webm` files.
+- [x] Modify `App.tsx`:
   - Render a `<video>` tag behind the gradients.
   - Logic: If `bg_video_path` exists, play video (muted/low volume); otherwise, fallback to `bg_image`.
   - Add smooth crossfade transition when switching games.
@@ -60,5 +60,5 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 
 - [x] **Auto-Metadata Scraping:** Integrate IGDB API to automatically fetch game covers and descriptions based on the game title.
 - [ ] **Theming Engine:** Allow users to pick accent colors (Blue, Red, Purple) instead of the default Orange.
-- [ ] **Play Time Tracker:** Track how long each game has been played.
+- [x] **Play Time Tracker:** Track how long each game has been played.
 - [ ] **Favorites System:** "Pin" favorite games to the start of the list.

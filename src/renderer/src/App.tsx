@@ -34,16 +34,20 @@ function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true)
 
   /**
-   * Audio hooks for background music and sound effects.
-   */
-  const { isAudioBlocked, playHover, playSelect, playBack } = useAppSounds(showSplash)
-
-  /**
    * Core business logic hooks.
    */
-  const { games, mediaApps, userName, setUserName, settings, setSettings, addGame, deleteGame, resetLibrary, isLoaded } =
+  const { games, mediaApps, userName, setUserName, settings, setSettings, addGame, deleteGame, updateGamePlaytime, resetLibrary, isLoaded } =
     useLibrary()
   const isIdle = useIdleTimer(8000)
+
+  /**
+   * Audio hooks for background music and sound effects.
+   */
+  const { isAudioBlocked, playHover, playSelect, playBack } = useAppSounds(
+    showSplash, 
+    settings?.volume ?? 0.5, 
+    settings?.isMuted ?? false
+  )
 
   /**
    * Local UI state management.
@@ -91,16 +95,25 @@ function App(): React.JSX.Element {
   const handlePlay = useCallback((): void => {
     if (!selectedGame) return
     logger.info('Game', `Launching: ${selectedGame.title}`)
+    showToast(`Launching ${selectedGame.title}...`, 'success')
 
+    // launchGame now waits for the process to exit
     window.api
       .launchGame(selectedGame.path_to_exe)
-      .then(() => showToast(`Launching ${selectedGame.title}...`, 'success'))
+      .then((duration) => {
+        logger.info('Game', `Session ended. Duration: ${duration} mins`)
+        
+        if (duration > 0) {
+            updateGamePlaytime(selectedGame.id, duration)
+            showToast(`Played for ${duration} mins`, 'info')
+        }
+      })
       .catch((err) => {
         logger.error('Game', 'Failed to launch game', err)
         const msg = err instanceof Error ? err.message : String(err)
         showToast(`Failed: ${msg}`, 'error')
       })
-  }, [selectedGame])
+  }, [selectedGame, updateGamePlaytime])
 
   const handleSaveGame = useCallback(
     (gameData: Game): void => {
@@ -334,11 +347,15 @@ function App(): React.JSX.Element {
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
         onResetLibrary={handleResetLibraryAction}
-        apiKey={settings.rawgApiKey}
+        apiKey={settings?.rawgApiKey || ''}
         onSaveApiKey={(key) => {
             setSettings({ ...settings, rawgApiKey: key })
             showToast('API Key saved!', 'success')
         }}
+        volume={settings?.volume ?? 0.5}
+        isMuted={settings?.isMuted ?? false}
+        onVolumeChange={(vol) => setSettings({ ...settings, volume: vol })}
+        onMuteToggle={(muted) => setSettings({ ...settings, isMuted: muted })}
       />
 
       <Toast

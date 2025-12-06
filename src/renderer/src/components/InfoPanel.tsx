@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Game } from '../types'
-import { FaPlay, FaPen, FaTrash } from 'react-icons/fa'
+import { FaPlay, FaPen, FaTrash, FaClock, FaCalendarAlt } from 'react-icons/fa'
 
 interface InfoPanelProps {
   game: Game
@@ -15,6 +15,16 @@ export default function InfoPanel({
   onEdit,
   onDelete
 }: InfoPanelProps): React.JSX.Element {
+  // Format playtime
+  const hours = Math.floor((game.playtime || 0) / 60)
+  const mins = (game.playtime || 0) % 60
+  const timeString = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+
+  // Format last played
+  const lastPlayedStr = game.lastPlayed 
+    ? new Date(game.lastPlayed).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) 
+    : 'Never'
+
   return (
     <div className="flex max-w-xl flex-col items-start gap-4">
       {/* Logo Game or Title */}
@@ -33,12 +43,25 @@ export default function InfoPanel({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex gap-3 text-xs font-bold uppercase tracking-wider text-white"
+        className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-wider text-white"
       >
-        <span className="rounded bg-white/20 px-2 py-1 backdrop-blur-md">PS5</span>
-        <span className="rounded bg-white/20 px-2 py-1 backdrop-blur-md">
-          {game.genre || 'Game'}
-        </span>
+        <div className="flex gap-2">
+            <span className="rounded border border-white/10 bg-black/40 px-2 py-1 backdrop-blur-md">PS5</span>
+            <span className="rounded border border-white/10 bg-black/40 px-2 py-1 backdrop-blur-md">
+            {game.genre || 'Game'}
+            </span>
+        </div>
+        
+        {/* Stats with Glass Background */}
+        <div className="flex items-center gap-4 rounded-lg border border-white/5 bg-black/40 px-3 py-1 backdrop-blur-md">
+            <div className="flex items-center gap-2">
+                <FaClock className="text-orange-400" /> <span>{timeString} Played</span>
+            </div>
+            <div className="h-3 w-[1px] bg-white/20"></div>
+            <div className="flex items-center gap-2">
+                <FaCalendarAlt className="text-blue-400" /> <span>Last: {lastPlayedStr}</span>
+            </div>
+        </div>
       </motion.div>
 
       {/* Description */}

@@ -3,7 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  launchGame: (path: string): Promise<void> => ipcRenderer.invoke('launch-game', path),
+  launchGame: (path: string): Promise<number> => ipcRenderer.invoke('launch-game', path),
   selectFile: (filters: Electron.FileFilter[]): Promise<string | null> => ipcRenderer.invoke('open-file-dialog', filters),
   loadData: (): Promise<string | null> => ipcRenderer.invoke('get-app-data'),
   saveData: (data: string): Promise<boolean> => ipcRenderer.invoke('save-app-data', data),

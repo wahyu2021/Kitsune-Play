@@ -19,9 +19,11 @@ interface UseAppSoundsReturn {
  * Handles initialization, looping, and cleanup to prevent memory leaks and double-playing.
  *
  * @param isSplashShowing - A boolean indicating if the splash screen is currently displayed.
+ * @param volume - Master volume (0.0 to 1.0).
+ * @param isMuted - Whether audio is globally muted.
  * @returns Object containing audio blocked state and SFX playback functions.
  */
-export function useAppSounds(isSplashShowing: boolean): UseAppSoundsReturn {
+export function useAppSounds(isSplashShowing: boolean, volume: number = 0.5, isMuted: boolean = false): UseAppSoundsReturn {
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
   const welcomeAudioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -32,8 +34,49 @@ export function useAppSounds(isSplashShowing: boolean): UseAppSoundsReturn {
 
   const hasInitializedRef = useRef(false)
   const hasPlayedBgMusicRef = useRef(false)
+  const wasPlayingRef = useRef(false) // Track if BG music was playing before blur
 
   const [isAudioBlocked, setIsAudioBlocked] = useState(false)
+
+  // --- Update Volumes & Mute State ---
+  useEffect(() => {
+    const effectiveVolume = isMuted ? 0 : volume
+
+    if (bgAudioRef.current) bgAudioRef.current.volume = effectiveVolume * 0.3 // BG always lower relative to master
+    if (welcomeAudioRef.current) welcomeAudioRef.current.volume = effectiveVolume
+    
+    // SFX refs are templates, but we update them for future clones
+    if (hoverAudioRef.current) hoverAudioRef.current.volume = effectiveVolume * 0.8
+    if (selectAudioRef.current) selectAudioRef.current.volume = effectiveVolume
+    if (backAudioRef.current) backAudioRef.current.volume = effectiveVolume
+  }, [volume, isMuted])
+
+  // --- Window Focus/Blur Handler (Auto-Mute) ---
+  useEffect(() => {
+    const handleBlur = (): void => {
+      if (bgAudioRef.current && !bgAudioRef.current.paused) {
+        bgAudioRef.current.pause()
+        wasPlayingRef.current = true
+        logger.debug('Audio', 'Window blurred, pausing background music')
+      }
+    }
+
+    const handleFocus = (): void => {
+      if (wasPlayingRef.current && bgAudioRef.current && !isSplashShowing) {
+        bgAudioRef.current.play().catch(e => logger.warn('Audio', 'Resume failed', e))
+        wasPlayingRef.current = false
+        logger.debug('Audio', 'Window focused, resuming background music')
+      }
+    }
+
+    window.addEventListener('blur', handleBlur)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      window.removeEventListener('blur', handleBlur)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [isSplashShowing])
 
   useEffect(() => {
     // Prevent double initialization in React Strict Mode
@@ -43,25 +86,21 @@ export function useAppSounds(isSplashShowing: boolean): UseAppSoundsReturn {
     // --- Init BG & Welcome ---
     const bgAudio = new Audio(bgMusicFile)
     bgAudio.loop = true
-    bgAudio.volume = 0.15
+    bgAudio.volume = 0 // Start silent, effect above will set volume
     bgAudioRef.current = bgAudio
 
     const welcomeAudio = new Audio(welcomeSoundFile)
-    welcomeAudio.volume = 0.6
+    welcomeAudio.volume = 0
     welcomeAudioRef.current = welcomeAudio
 
     // --- Init SFX ---
-    // We set volume lower for SFX so they don't blast ears
     const hoverAudio = new Audio(hoverSoundFile)
-    hoverAudio.volume = 0.9
     hoverAudioRef.current = hoverAudio
 
     const selectAudio = new Audio(selectSoundFile)
-    selectAudio.volume = 0.9
     selectAudioRef.current = selectAudio
 
     const backAudio = new Audio(backSoundFile)
-    backAudio.volume = 1.0
     backAudioRef.current = backAudio
 
     const playWelcomeSound = async (): Promise<void> => {

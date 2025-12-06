@@ -87,15 +87,12 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
   // Launch Game Handler
   /**
-   * IPC handler to launch a game or open a URL.
-   * @param _ - Event object (unused).
-   * @param exePath - The executable path or URL to launch.
-   * @returns A promise that resolves to true if successful, or rejects with an error message.
+   * IPC handler to launch a game and monitor its session.
+   * @param _ - Event object.
+   * @param exePath - Path to the executable.
+   * @returns Promise resolving to the session duration in minutes (or 0 if failed/web).
    */
   ipcMain.handle('launch-game', async (_, exePath: string) => {
     return new Promise((resolve, reject) => {
@@ -103,17 +100,30 @@ app.whenReady().then(() => {
 
       if (exePath.startsWith('http://') || exePath.startsWith('https://')) {
         shell.openExternal(exePath)
-          .then(() => resolve(true))
+          .then(() => resolve(0)) // Web apps don't track playtime yet
           .catch((err) => reject(err.message))
       } else {
-        // Execute local file, preventing shell injection
-        execFile(exePath, (error) => {
-          if (error) {
-            console.error('Failed to launch game:', error)
-            reject(error.message)
-          } else {
-            resolve(true)
+        const startTime = Date.now()
+        
+        const child = execFile(exePath, (error) => {
+          if (error && error.signal !== null) {
+             // Non-null signal usually means manually killed or crash, still valid close
+             console.warn('Game process exited with error/signal:', error)
           }
+        })
+
+        // Monitor process exit to calculate playtime
+        child.on('close', () => {
+            const endTime = Date.now()
+            const durationMs = endTime - startTime
+            const durationMinutes = Math.floor(durationMs / 60000)
+            console.log(`Game closed. Duration: ${durationMinutes} mins`)
+            resolve(durationMinutes)
+        })
+
+        child.on('error', (err) => {
+            console.error('Failed to spawn game process:', err)
+            reject(err.message)
         })
       }
     })

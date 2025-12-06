@@ -1,12 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  FaTimes,
-  FaTrashRestore,
-  FaInfoCircle,
-  FaKey,
-  FaExternalLinkAlt,
-  FaSave
-} from 'react-icons/fa'
+import { FaTimes, FaTrashRestore, FaInfoCircle, FaKey, FaExternalLinkAlt, FaSave, FaVolumeUp, FaVolumeMute, FaVolumeDown } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 
 interface SettingsModalProps {
@@ -15,14 +8,22 @@ interface SettingsModalProps {
   onResetLibrary: () => void
   apiKey: string
   onSaveApiKey: (key: string) => void
+  volume: number
+  isMuted: boolean
+  onVolumeChange: (vol: number) => void
+  onMuteToggle: (muted: boolean) => void
 }
 
-export default function SettingsModal({
-  isOpen,
-  onClose,
-  onResetLibrary,
-  apiKey,
-  onSaveApiKey
+export default function SettingsModal({ 
+    isOpen, 
+    onClose, 
+    onResetLibrary, 
+    apiKey, 
+    onSaveApiKey,
+    volume,
+    isMuted,
+    onVolumeChange,
+    onMuteToggle
 }: SettingsModalProps): React.JSX.Element {
   const [version, setVersion] = useState<string>('')
   const [localKey, setLocalKey] = useState(apiKey)
@@ -30,12 +31,12 @@ export default function SettingsModal({
   // Sync local state with prop only when modal opens
   useEffect(() => {
     if (isOpen) {
-      if (window.api) {
-        window.api.getAppVersion().then(setVersion)
-      } else {
-        setVersion('1.0.0 (Dev)')
-      }
-      setLocalKey(apiKey)
+        if (window.api) {
+            window.api.getAppVersion().then(setVersion)
+        } else {
+            setVersion('1.0.0 (Dev)')
+        }
+        setLocalKey(apiKey)
     }
   }, [isOpen]) // Removed apiKey from dependency to prevent loops
 
@@ -57,7 +58,41 @@ export default function SettingsModal({
             </div>
 
             <div className="flex flex-col gap-6">
-              {/* API Integration */}
+                {/* Audio Settings */}
+                <div>
+                    <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-400">Audio</h3>
+                    <div className="rounded-lg bg-white/5 p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <label className="flex items-center gap-2 text-sm font-bold text-white">
+                                {isMuted ? <FaVolumeMute className="text-red-400" /> : <FaVolumeUp />}
+                                Master Volume
+                            </label>
+                            <button
+                                onClick={() => onMuteToggle(!isMuted)}
+                                className={`text-xs font-bold px-2 py-1 rounded ${isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                            >
+                                {isMuted ? 'MUTED' : 'MUTE'}
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <FaVolumeDown className="text-white/40 text-xs" />
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                value={volume}
+                                onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
+                                disabled={isMuted}
+                                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500 disabled:opacity-50"
+                            />
+                            <FaVolumeUp className="text-white/40 text-xs" />
+                        </div>
+                        <p className="text-right text-xs text-white/40 mt-1">{Math.round(volume * 100)}%</p>
+                    </div>
+                </div>
+
+                {/* API Integration */}
               <div>
                 <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-orange-400">
                   Metadata Provider

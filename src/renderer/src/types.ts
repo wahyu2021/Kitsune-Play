@@ -18,6 +18,10 @@ export interface Game {
   bg_image: string
   /** Optional: Path or URL to a background video loop (mp4/webm). Overrides bg_image if present. */
   bg_video?: string
+  /** Total playtime in minutes. */
+  playtime?: number
+  /** ISO timestamp of the last time the game was played. */
+  lastPlayed?: string
 }
 
 /**
@@ -25,4 +29,6 @@ export interface Game {
  */
 export interface AppSettings {
   rawgApiKey: string
+  volume: number // 0.0 to 1.0
+  isMuted: boolean
 }
