@@ -51,7 +51,7 @@ function createWindow(): void {
    * Set a permission check handler to automatically grant 'media' permission.
    * This ensures autoplay works without user prompts, which is ideal for a dedicated launcher.
    */
-  mainWindow.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => {
+  mainWindow.webContents.session.setPermissionCheckHandler((_webContents, permission, _requestingOrigin) => {
     if (permission === 'media') {
       return true
     }
@@ -62,7 +62,7 @@ function createWindow(): void {
    * Set a permission request handler to automatically grant 'media' permission.
    * This handles direct permission requests made by web content.
    */
-  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+  mainWindow.webContents.session.setPermissionRequestHandler((_webContents, permission, callback) => {
     if (permission === 'media') {
       return callback(true)
     }
