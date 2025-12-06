@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes, FaTrashRestore, FaInfoCircle, FaKey, FaExternalLinkAlt, FaSave, FaVolumeUp, FaVolumeMute, FaVolumeDown } from 'react-icons/fa'
+import { FaTimes, FaTrashRestore, FaInfoCircle, FaKey, FaExternalLinkAlt, FaSave, FaVolumeUp, FaVolumeMute } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 
 interface SettingsModalProps {

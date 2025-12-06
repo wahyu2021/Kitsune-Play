@@ -12,6 +12,19 @@ interface UseAppSoundsReturn {
   playHover: () => void
   playSelect: () => void
   playBack: () => void
+  startAudio: () => void
+}
+
+/**
+ * Custom hook to manage application background sounds and UI sound effects.
+ * Handles initialization, looping, and cleanup to prevent memory leaks and double-playing.
+ *
+interface UseAppSoundsReturn {
+  isAudioBlocked: boolean
+  startAudio: () => void // New method to trigger audio manually
+  playHover: () => void
+  playSelect: () => void
+  playBack: () => void
 }
 
 /**
@@ -40,7 +53,7 @@ export function useAppSounds(
 
   const hasInitializedRef = useRef(false)
   const hasPlayedBgMusicRef = useRef(false)
-  const wasPlayingRef = useRef(false) // Track if BG music was playing before blur
+  const wasPlayingRef = useRef(false) 
 
   const [isAudioBlocked, setIsAudioBlocked] = useState(false)
 
@@ -48,12 +61,11 @@ export function useAppSounds(
   useEffect(() => {
     const bgVol = isMuted ? 0 : bgMusicVolume
     const sfxVol = isMuted ? 0 : sfxVolume
-    const welcomeVol = isMuted ? 0 : 0.6 // Hardcoded level, but respects Mute
+    const welcomeVol = isMuted ? 0 : 0.6 
 
     if (bgAudioRef.current) bgAudioRef.current.volume = bgVol
     if (welcomeAudioRef.current) welcomeAudioRef.current.volume = welcomeVol
     
-    // SFX refs are templates, but we update them for future clones
     if (hoverAudioRef.current) hoverAudioRef.current.volume = sfxVol
     if (selectAudioRef.current) selectAudioRef.current.volume = sfxVol
     if (backAudioRef.current) backAudioRef.current.volume = sfxVol
@@ -65,15 +77,13 @@ export function useAppSounds(
       if (bgAudioRef.current && !bgAudioRef.current.paused) {
         bgAudioRef.current.pause()
         wasPlayingRef.current = true
-        logger.debug('Audio', 'Window blurred, pausing background music')
       }
     }
 
     const handleFocus = (): void => {
       if (wasPlayingRef.current && bgAudioRef.current && !isSplashShowing) {
-        bgAudioRef.current.play().catch(e => logger.warn('Audio', 'Resume failed', e))
+        bgAudioRef.current.play().catch(() => {})
         wasPlayingRef.current = false
-        logger.debug('Audio', 'Window focused, resuming background music')
       }
     }
 
@@ -86,22 +96,24 @@ export function useAppSounds(
     }
   }, [isSplashShowing])
 
+  // --- Manual Start Audio ---
+  const startAudio = useCallback(() => {
+    if (welcomeAudioRef.current) {
+        welcomeAudioRef.current.play().catch(e => logger.warn('Audio', 'Welcome play failed', e))
+    }
+  }, [])
+
   useEffect(() => {
-    // Prevent double initialization in React Strict Mode
     if (hasInitializedRef.current) return
     hasInitializedRef.current = true
 
-    // --- Init BG & Welcome ---
     const bgAudio = new Audio(bgMusicFile)
     bgAudio.loop = true
-    bgAudio.volume = 0 // Start silent, effect above will set volume
     bgAudioRef.current = bgAudio
 
     const welcomeAudio = new Audio(welcomeSoundFile)
-    welcomeAudio.volume = 0
     welcomeAudioRef.current = welcomeAudio
 
-    // --- Init SFX ---
     const hoverAudio = new Audio(hoverSoundFile)
     hoverAudioRef.current = hoverAudio
 
@@ -111,59 +123,15 @@ export function useAppSounds(
     const backAudio = new Audio(backSoundFile)
     backAudioRef.current = backAudio
 
-    const playWelcomeSound = async (): Promise<void> => {
-      try {
-        logger.debug('Audio', 'Attempting to play welcome sound...')
-        await welcomeAudio.play()
-        logger.info('Audio', 'Welcome sound playing successfully')
-        setIsAudioBlocked(false)
-      } catch (err: unknown) {
-        const error = err as Error
-        // Industry Standard: Differentiate between "Expected Policy Block" and "Real Errors"
-        if (error.name === 'NotAllowedError') {
-          logger.warn(
-            'Audio',
-            'Autoplay prevented by browser policy. Waiting for user interaction.'
-          )
-        } else {
-          logger.error('Audio', 'Failed to play welcome sound', error)
-        }
-
-        setIsAudioBlocked(true)
-
-        const handleInteraction = (): void => {
-          welcomeAudio
-            .play()
-            .then(() => {
-              setIsAudioBlocked(false)
-              logger.info('Audio', 'Welcome sound recovered after interaction')
-            })
-            .catch((e) => logger.error('Audio', 'Retry welcome failed', e))
-
-          window.removeEventListener('click', handleInteraction)
-          window.removeEventListener('keydown', handleInteraction)
-        }
-        window.addEventListener('click', handleInteraction)
-        window.addEventListener('keydown', handleInteraction)
-      }
-    }
-    playWelcomeSound()
-
     return () => {
       if (bgAudioRef.current) {
         bgAudioRef.current.pause()
         bgAudioRef.current.currentTime = 0
       }
-      if (welcomeAudioRef.current) {
-        welcomeAudioRef.current.pause()
-        welcomeAudioRef.current.currentTime = 0
-      }
-      const handleInteraction = (): void => {}
-      window.removeEventListener('click', handleInteraction)
-      window.removeEventListener('keydown', handleInteraction)
     }
   }, [])
 
+  // Play BG Music after splash is gone
   useEffect(() => {
     if (!isSplashShowing && bgAudioRef.current && !hasPlayedBgMusicRef.current) {
       const playBgMusic = async (): Promise<void> => {
@@ -171,51 +139,27 @@ export function useAppSounds(
           await bgAudioRef.current?.play()
           hasPlayedBgMusicRef.current = true
           setIsAudioBlocked(false)
-          logger.info('Audio', 'Background music started')
-        } catch (err: unknown) {
-          const error = err as Error
-          if (error.name === 'NotAllowedError') {
-            logger.warn('Audio', 'Background music autoplay prevented. Waiting for interaction.')
-          } else {
-            logger.error('Audio', 'Background music failed', error)
-          }
-
+        } catch (err) {
           setIsAudioBlocked(true)
-
-          const handleInteraction = (): void => {
-            bgAudioRef.current
-              ?.play()
-              .then(() => {
-                setIsAudioBlocked(false)
-                logger.info('Audio', 'Background music started after interaction')
-              })
-              .catch((e) => logger.error('Audio', 'Retry bg failed', e))
-            hasPlayedBgMusicRef.current = true
-            window.removeEventListener('click', handleInteraction)
-            window.removeEventListener('keydown', handleInteraction)
-          }
-          window.addEventListener('click', handleInteraction)
-          window.addEventListener('keydown', handleInteraction)
         }
       }
       playBgMusic()
     }
   }, [isSplashShowing])
 
-  // Helper to play SFX safely
-  // Using cloneNode() allows rapid fire playback (overlapping sounds)
   const playSfx = useCallback(
     (audioRef: React.MutableRefObject<HTMLAudioElement | null>) => {
-      if (!audioRef.current || isAudioBlocked) return
+      if (!audioRef.current) return
       const clone = audioRef.current.cloneNode() as HTMLAudioElement
       clone.volume = audioRef.current.volume
-      clone.play().catch((e) => logger.debug('Audio', 'SFX play failed', e))
+      clone.play().catch(() => {})
     },
-    [isAudioBlocked]
+    []
   )
 
   return {
     isAudioBlocked,
+    startAudio,
     playHover: () => playSfx(hoverAudioRef),
     playSelect: () => playSfx(selectAudioRef),
     playBack: () => playSfx(backAudioRef)

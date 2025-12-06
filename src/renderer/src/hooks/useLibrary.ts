@@ -19,6 +19,7 @@ interface UseLibraryReturn {
   setSettings: (settings: AppSettings) => void
   addGame: (game: Game, isMedia: boolean) => void
   deleteGame: (id: string, isMedia: boolean) => void
+  updateGamePlaytime: (id: string, sessionMinutes: number) => void
   resetLibrary: () => void
   isLoaded: boolean
 }
@@ -30,7 +31,7 @@ interface UseLibraryReturn {
 export function useLibrary(): UseLibraryReturn {
   const [games, setGames] = useState<Game[]>([]) 
   const [mediaApps, setMediaApps] = useState<Game[]>([])
-  const [userName, setUserName] = useState('Player 1')
+  const [userName, setUserName] = useState('') // Start empty to avoid overwriting
   const [settings, setSettings] = useState<AppSettings>({ rawgApiKey: '', bgMusicVolume: 0.3, sfxVolume: 0.8, isMuted: false })
   
   const isLoaded = useRef(false)
@@ -47,6 +48,7 @@ export function useLibrary(): UseLibraryReturn {
       if (!window.api) {
         logger.warn('System', 'Electron API not found. Running in browser mode with mock data.')
         setGames(initialDefaults)
+        setUserName('Player 1') // Mock default
         isLoaded.current = true
         setHasLoadedInitial(true)
         return
@@ -59,21 +61,33 @@ export function useLibrary(): UseLibraryReturn {
           const parsed: AppData = JSON.parse(savedData)
           setGames(parsed.games || [])
           setMediaApps(parsed.mediaApps || [])
-          setUserName(parsed.userName || 'Player 1')
-          setSettings({ 
+          
+          // Only use 'Player 1' if the saved name is truly falsy/empty
+          const loadedName = parsed.userName
+          logger.info('System', `Loaded Name from file: "${loadedName}"`)
+          setUserName(loadedName || 'Player 1')
+          
+          // Merge loaded settings with defaults safely
+          const defaultSettings: AppSettings = { 
             rawgApiKey: '', 
             bgMusicVolume: 0.3, 
             sfxVolume: 0.8, 
-            isMuted: false, 
-            ...parsed.settings 
+            isMuted: false 
+          }
+          
+          setSettings({ 
+            ...defaultSettings, 
+            ...(parsed.settings || {}) 
           })
         } catch (e) {
           logger.error('System', 'Failed to parse saved data, using defaults', e)
           setGames(initialDefaults)
+          setUserName('Player 1')
         }
       } else {
-        // First run: Use defaults from config
+        // First run
         setGames(initialDefaults)
+        setUserName('Player 1')
       }
       isLoaded.current = true
       setHasLoadedInitial(true)
@@ -85,19 +99,19 @@ export function useLibrary(): UseLibraryReturn {
    * Persist data changes to disk with a debounce to prevent excessive writes.
    */
   useEffect(() => {
-    // CRITICAL: Do not save until initial load is complete to prevent overwriting with defaults
-    if (!hasLoadedInitial) {
-      return
-    }
+    // CRITICAL: Use the REF isLoaded to prevent saving before loading is done.
+    if (!isLoaded.current) return
 
     const saveData = async (): Promise<void> => {
       // Safety check for browser mode
       if (!window.api) return
 
+      // logger.debug('System', `Saving Library... User: "${userName}"`)
+
       const dataToSave: AppData = {
         games,
         mediaApps,
-        userName,
+        userName: userName || 'Player 1', // Ensure we never save empty string
         settings
       }
       await window.api.saveData(JSON.stringify(dataToSave))
@@ -105,7 +119,7 @@ export function useLibrary(): UseLibraryReturn {
 
     const timeout = setTimeout(saveData, 1000)
     return () => clearTimeout(timeout)
-  }, [games, mediaApps, userName, settings, hasLoadedInitial])
+  }, [games, mediaApps, userName, settings])
 
   // Actions
   const addGame = (newGame: Game, isMedia: boolean): void => {

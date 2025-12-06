@@ -41,58 +41,99 @@ function App(): React.JSX.Element {
     useLibrary()
   const isIdle = useIdleTimer(8000)
 
-  /**
-   * Audio hooks for background music and sound effects.
-   */
-  const { isAudioBlocked, playHover, playSelect, playBack } = useAppSounds(
-    showSplash, 
-    settings?.bgMusicVolume ?? 0.3, 
-    settings?.sfxVolume ?? 0.8,
-    settings?.isMuted ?? false
-  )
+      /**
 
-  /**
-   * Core business logic hooks.
-   */
-  const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
-  const [selectedGameId, setSelectedGameId] = useState<string>('')
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
-  const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
-    message: null,
-    type: 'info'
-  })
-  const showToast = (message: string, type: ToastType): void => setToast({ message, type })
+       * Audio hooks for background music and sound effects.
 
-  /**
-   * Derived state based on active tab.
-   */
-  const currentContent = activeTab === 'games' ? games : mediaApps
-  const selectedGame = currentContent.find((g) => g.id === selectedGameId)
+       */
 
-  /**
-   * Splash screen effect.
-   * Hides splash screen after 3 seconds if data is loaded and audio is not blocked.
-   */
-  useEffect(() => {
-    if (isLoaded && !isAudioBlocked) {
-      const timer = setTimeout(() => {
-        setShowSplash(false)
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-    return undefined
-  }, [isLoaded, isAudioBlocked])
+      const { startAudio, playHover, playSelect, playBack } = useAppSounds(
 
-  /**
-   * UI Event Handlers.
-   */
-  const handleTabChange = useCallback((tab: 'games' | 'media'): void => {
-    setActiveTab(tab)
-  }, [])
+        showSplash, 
+
+        settings?.bgMusicVolume ?? 0.3, 
+
+        settings?.sfxVolume ?? 0.8,
+
+        settings?.isMuted ?? false
+
+      )
+
+  
+
+      /**
+
+  
+
+       * Local UI state management.
+
+  
+
+       */
+
+    const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
+
+    const [selectedGameId, setSelectedGameId] = useState<string>('')
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+
+    const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
+
+    const [toast, setToast] = useState<{ message: string | null; type: ToastType }>(
+
+      {
+
+        message: null,
+
+        type: 'info'
+
+      }
+
+    )
+
+    const showToast = (message: string, type: ToastType): void => setToast({ message, type })
+
+  
+
+    /**
+
+     * Derived state based on active tab.
+
+     */
+
+    const currentContent = activeTab === 'games' ? games : mediaApps
+
+    const selectedGame = currentContent.find((g) => g.id === selectedGameId)
+
+  
+
+    /**
+
+     * UI Event Handlers.
+
+     */
+
+    const handleStart = useCallback(() => {
+
+      startAudio()
+
+      setShowSplash(false)
+
+    }, [startAudio])
+
+  
+
+    const handleTabChange = useCallback((tab: 'games' | 'media'): void => {
+
+      setActiveTab(tab)
+
+    }, [])
 
   const handlePlay = useCallback((): void => {
     if (!selectedGame) return
@@ -275,7 +316,7 @@ function App(): React.JSX.Element {
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
-      <AnimatePresence>{showSplash && <SplashScreen needsInteraction={isAudioBlocked} />}</AnimatePresence>
+      <AnimatePresence>{showSplash && <SplashScreen onStart={handleStart} />}</AnimatePresence>
 
       {/* Layer 0: Background */}
       <div className="fixed inset-0 z-0">
@@ -373,7 +414,7 @@ function App(): React.JSX.Element {
         onClose={() => setIsProfileModalOpen(false)}
         userName={userName}
         onSaveName={(name) => {
-          logger.info('App', `Updating username to: ${name}`)
+          logger.info('UI', `Updating username to: ${name}`)
           setUserName(name)
           showToast('Profile updated!', 'success')
         }}

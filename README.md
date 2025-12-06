@@ -1,67 +1,94 @@
-# Kitsune Play
+# Kitsune Play 🦊🎮
 
-**Kitsune Play** adalah aplikasi desktop launcher game modern dengan antarmuka yang terinspirasi dari **PlayStation 5**. Dibangun dengan teknologi web terbaru (Electron, React, Tailwind CSS, Framer Motion) untuk memberikan pengalaman visual yang imersif, halus, dan premium di PC Anda.
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Electron](https://img.shields.io/badge/Electron-38.0-orange) ![React](https://img.shields.io/badge/React-19-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 
-![Kitsune Play Screenshot](https://via.placeholder.com/1280x720?text=Kitsune+Play+UI+Preview)
+**Kitsune Play** is a modern, immersive game launcher built with Electron and React, designed to bring the premium **PlayStation 5 console experience** directly to your PC desktop.
 
----
-
-## ✨ Fitur Utama
-
-*   **🎨 Atmospheric Lighting:** Warna antarmuka berubah secara dinamis mengikuti genre game yang dipilih (Action=Merah, RPG=Biru, Adventure=Hijau, dll).
-*   **🎮 Cinematic Idle Mode:** Tampilan UI akan menghilang perlahan jika tidak ada aktivitas, mengubah layar Anda menjadi *screensaver* artwork game yang menakjubkan.
-*   **💾 Manajemen Library Lengkap:** Tambah, Edit, dan Hapus game dengan mudah. Data tersimpan permanen.
-*   **🚀 Quick Launch:** Jalankan game `.exe` langsung dari launcher.
-*   **📺 Media Hub:** Tab khusus untuk akses cepat ke aplikasi hiburan seperti YouTube, Spotify, dan Netflix.
-*   **🔍 Global Search:** Temukan game di koleksi Anda secara instan dengan `Ctrl + F`.
-*   **👤 Profil User:** Kustomisasi nama pengguna Anda.
+It organizes your local game library into a stunning, animated interface with live wallpapers, sound effects, and automated metadata.
 
 ---
 
-## 🛠️ Teknologi
+## ✨ Key Features
 
-*   **Core:** [Electron](https://www.electronjs.org/)
-*   **Frontend:** [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-*   **Animation:** [Framer Motion](https://www.framer.com/motion/)
-*   **Build Tool:** [Electron Vite](https://electron-vite.org/)
+### 🖥️ Immersive User Interface
+- **PS5-Inspired Aesthetic:** Smooth animations, glassmorphism effects, and atmospheric gradients.
+- **Live Wallpapers:** Support for looping video backgrounds (.mp4/.webm) for each game.
+- **Dynamic Theming:** UI colors adapt based on the game's genre.
 
----
+### ⚡ Smart Functionality
+- **Auto-Metadata Scraping:** Integrated with **RAWG.io API** to automatically fetch game covers, backgrounds, and descriptions.
+- **Playtime Tracker:** Tracks your sessions and calculates total playtime automatically.
+- **Real-Time System Info:** Displays clock, date, and system status.
 
-## 🚀 Cara Menjalankan (Development)
+### 🔊 Advanced Audio System
+- **Background Ambience:** Soothing loop music that auto-mutes when the window loses focus.
+- **UI Sound Effects:** Satisfying navigation sounds (Hover, Select, Back) for a tactile feel.
+- **Volume Mixer:** Independent controls for Music and SFX levels.
 
-1.  **Clone Repository**
-    ```bash
-    git clone https://github.com/username/kitsune-play.git
-    cd kitsune-play
-    ```
-
-2.  **Install Dependencies**
-    ```bash
-    npm install
-    ```
-
-3.  **Jalankan Aplikasi**
-    ```bash
-    npm run dev
-    ```
+### 🎮 Input Support
+- **Full Controller Support:** Navigate the entire interface using an Xbox or PlayStation controller.
+- **Keyboard Navigation:** Fully accessible via Arrow keys, Enter, and Esc.
 
 ---
 
-## 📦 Cara Build (Production)
+## 🛠️ Tech Stack
 
-Untuk membuat file `.exe` (Windows) siap pakai:
+- **Core:** [Electron](https://www.electronjs.org/), [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool:** [Electron-Vite](https://electron-vite.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) (Animations)
+- **State Management:** React Hooks (Custom `useLibrary`, `useGamepad`)
+- **Data Persistence:** Local filesystem (JSON)
 
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/kitsune-play.git
+   cd kitsune-play
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run in Development Mode**
+   ```bash
+   npm run dev
+   ```
+
+### Building for Production (Windows)
+To create a standalone `.exe` installer:
 ```bash
 npm run build:win
 ```
-
-File installer akan muncul di folder `dist/`.
+The installer will be generated in the `dist/` folder.
 
 ---
 
-## 📝 Lisensi
+## 🗺️ Roadmap
 
-Project ini dilisensikan di bawah **MIT License**. Lihat file [LICENSE](LICENSE) untuk detail selengkapnya.
+- [x] **Phase 1:** Core UI, Glassmorphism, Game Library Management.
+- [x] **Phase 2:** Audio System, Playtime Tracking, RAWG Integration.
+- [x] **Phase 3:** Controller Support, Video Backgrounds.
+- [ ] **Future:** Theme Store, Cloud Save Sync, Steam Import.
 
-Copyright © 2025 Kitsune Play
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  Built with ❤️ by Kitsune Dev
+</p>

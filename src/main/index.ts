@@ -5,6 +5,10 @@ import icon from '../../resources/icon.png?asset'
 import { execFile } from 'child_process'
 import fs from 'fs/promises'
 
+// Fix: Ensure audio can autoplay without user interaction (common for launchers)
+// Must be called before app 'ready' event
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+
 /**
  * Creates the main Electron browser window for the application.
  */
@@ -161,7 +165,7 @@ app.whenReady().then(() => {
   ipcMain.handle('get-app-data', async () => {
     try {
       const data = await fs.readFile(dataPath, 'utf-8')
-      return JSON.parse(data)
+      return data // Return raw string, let renderer parse it
     } catch (error) {
       return null
     }
@@ -175,10 +179,15 @@ app.whenReady().then(() => {
    */
   ipcMain.handle('save-app-data', async (_, data: string) => {
     try {
+      console.log(`[Main] Saving data to: ${dataPath}`)
+      console.log(`[Main] Data size: ${data.length} bytes`)
+      // console.log(`[Main] Preview: ${data.substring(0, 100)}...`)
+      
       await fs.writeFile(dataPath, data, 'utf-8')
+      console.log('[Main] Save success!')
       return true
     } catch (error) {
-      console.error('Failed to save data:', error)
+      console.error('[Main] Failed to save data:', error)
       return false
     }
   })
