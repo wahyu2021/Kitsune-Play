@@ -17,9 +17,12 @@ export default function Toast({ message, type, onClose }: ToastProps): React.JSX
 
   const getIcon = (): React.JSX.Element => {
     switch (type) {
-      case 'success': return <FaCheckCircle className="text-green-400" />
-      case 'error': return <FaExclamationCircle className="text-red-400" />
-      default: return <FaInfoCircle className="text-blue-400" />
+      case 'success':
+        return <FaCheckCircle className="text-green-400" />
+      case 'error':
+        return <FaExclamationCircle className="text-red-400" />
+      default:
+        return <FaInfoCircle className="text-blue-400" />
     }
   }
 

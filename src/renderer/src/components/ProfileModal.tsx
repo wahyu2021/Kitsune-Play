@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaSave, FaUserCircle } from 'react-icons/fa'
+import { logger } from '../utils/logger'
 
 interface ProfileModalProps {
   isOpen: boolean
@@ -9,12 +10,18 @@ interface ProfileModalProps {
   onSaveName: (newName: string) => void
 }
 
-export default function ProfileModal({ isOpen, onClose, userName, onSaveName }: ProfileModalProps): React.JSX.Element {
+export default function ProfileModal({
+  isOpen,
+  onClose,
+  userName,
+  onSaveName
+}: ProfileModalProps): React.JSX.Element {
   const [name, setName] = useState(userName)
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault()
     if (name.trim()) {
+      logger.info('UI', `ProfileModal: Saving name as "${name}"`)
       onSaveName(name)
       onClose()
     }
@@ -38,10 +45,10 @@ export default function ProfileModal({ isOpen, onClose, userName, onSaveName }: 
             </div>
 
             <div className="mb-8 flex flex-col items-center justify-center gap-4">
-                <div className="rounded-full bg-white/5 p-4 ring-2 ring-white/20">
-                    <FaUserCircle className="text-8xl text-white/80" />
-                </div>
-                <p className="text-sm text-white/50">Avatar editing coming soon</p>
+              <div className="rounded-full bg-white/5 p-4 ring-2 ring-white/20">
+                <FaUserCircle className="text-8xl text-white/80" />
+              </div>
+              <p className="text-sm text-white/50">Avatar editing coming soon</p>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">

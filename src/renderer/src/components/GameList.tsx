@@ -4,11 +4,18 @@ import GameCard from './GameCard'
 import { FaGhost } from 'react-icons/fa'
 
 interface GameListProps {
+  /** Array of games to display. */
   games: Game[]
+  /** ID of the currently selected game. */
   selectedGameId: string
+  /** Callback triggered when a game is clicked. */
   onSelectGame: (id: string) => void
 }
 
+/**
+ * Horizontal scrollable list of games.
+ * Handles empty state and renders `GameCard` components.
+ */
 export default function GameList({
   games,
   selectedGameId,

@@ -1,29 +1,47 @@
 [
   {
-    "id": "1",
-    "title": "God of War",
-    "description": "Kratos returns in this Nordic adventure.",
-    "genre": "Action Adventure",
-    "path_to_exe": "C:\\Games\\GodOfWar\\GoW.exe",
-    "cover_image": "god-cover.jpg",
-    "bg_image": "gof-banner.jpg"
-  },
-  {
-    "id": "2",
-    "title": "Spider-Man: Miles Morales",
-    "description": "Be greater. Be yourself.",
+    "id": "3498",
+    "title": "Grand Theft Auto V",
+    "description": "Explore the stunning world of Los Santos and Blaine County in the ultimate Grand Theft Auto experience, featuring a range of technical upgrades and enhancements for new and returning players.",
     "genre": "Action",
-    "path_to_exe": "C:\\Games\\SpiderMan\\SpiderMan.exe",
-    "cover_image": "spiderman-miles-morales-cover.jpg",
-    "bg_image": "spiderman-miles-morales.jpg"
+    "path_to_exe": "C:\\Games\\GTAV\\GTA5.exe",
+    "cover_image": "https://media.rawg.io/media/games/20a/20aa03a10cda45239fe22d035c0ebe64.jpg",
+    "bg_image": "https://media.rawg.io/media/games/20a/20aa03a10cda45239fe22d035c0ebe64.jpg"
   },
   {
-    "id": "3",
-    "title": "Elden Ring",
-    "description": "The Golden Order has been broken.",
-    "genre": "RPG",
-    "path_to_exe": "C:\\Games\\EldenRing\\EldenRing.exe",
-    "cover_image": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2000/phvVT0qZfcGms5qDA.png",
-    "bg_image": ""
+    "id": "3328",
+    "title": "The Witcher 3: Wild Hunt",
+    "description": "You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down the Child of Prophecy.",
+    "genre": "Action, RPG",
+    "path_to_exe": "C:\\Games\\TheWitcher3\\bin\\x64\\witcher3.exe",
+    "cover_image": "https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg",
+    "bg_image": "https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg"
+  },
+  {
+    "id": "5679",
+    "title": "The Elder Scrolls V: Skyrim",
+    "description": "The next chapter in the highly anticipated Elder Scrolls saga arrives from the makers of the 2006 and 2008 Games of the Year, Bethesda Game Studios. Skyrim reimagines and revolutionizes the open-world fantasy epic.",
+    "genre": "Action, RPG",
+    "path_to_exe": "C:\\Games\\Skyrim\\SkyrimSE.exe",
+    "cover_image": "https://media.rawg.io/media/games/7cf/7cfc9220b401b7a300e409e539c9afd5.jpg",
+    "bg_image": "https://media.rawg.io/media/games/7cf/7cfc9220b401b7a300e409e539c9afd5.jpg"
+  },
+  {
+    "id": "28",
+    "title": "Red Dead Redemption 2",
+    "description": "America, 1899. The end of the wild west era has begun as lawmen hunt down the last remaining outlaw gangs. Those who will not surrender or succumb are killed.",
+    "genre": "Action, Adventure",
+    "path_to_exe": "C:\\Games\\RedDeadRedemption2\\RDR2.exe",
+    "cover_image": "https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg",
+    "bg_image": "https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg"
+  },
+  {
+    "id": "4062",
+    "title": "BioShock Infinite",
+    "description": "Indebted to the wrong people, with his life on the line, veteran of the U.S. Cavalry and now hired gun, Booker DeWitt has only one opportunity to wipe his slate clean. He must rescue Elizabeth, a mysterious girl imprisoned since childhood.",
+    "genre": "Shooter, Action",
+    "path_to_exe": "C:\\Games\\BioShockInfinite\\BioShockInfinite.exe",
+    "cover_image": "https://media.rawg.io/media/games/fc1/fc1307a2774506b5bd65d7e8424664a7.jpg",
+    "bg_image": "https://media.rawg.io/media/games/fc1/fc1307a2774506b5bd65d7e8424664a7.jpg"
   }
 ]

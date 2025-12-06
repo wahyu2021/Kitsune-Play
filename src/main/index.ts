@@ -5,13 +5,16 @@ import icon from '../../resources/icon.png?asset'
 import { execFile } from 'child_process'
 import fs from 'fs/promises'
 
+/**
+ * Creates the main Electron browser window for the application.
+ */
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
-    backgroundColor: '#000000', // Fix: Black background to match splash screen
+    backgroundColor: '#000000', 
     autoHideMenuBar: true,
     icon: icon, // Explicitly set icon for all platforms
     frame: false, // Frameless for custom UI
@@ -43,13 +46,38 @@ function createWindow(): void {
   // Window Controls Handlers
   ipcMain.on('app-minimize', () => mainWindow.minimize())
   ipcMain.on('app-quit', () => app.quit())
+
+  /**
+   * Set a permission check handler to automatically grant 'media' permission.
+   * This ensures autoplay works without user prompts, which is ideal for a dedicated launcher.
+   */
+  mainWindow.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin) => {
+    if (permission === 'media') {
+      return true
+    }
+    return false
+  })
+  
+  /**
+   * Set a permission request handler to automatically grant 'media' permission.
+   * This handles direct permission requests made by web content.
+   */
+  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === 'media') {
+      return callback(true)
+    }
+    return callback(false)
+  })
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
+  /**
+   * Set app user model id for windows.
+   * This ensures the application is correctly identified by the OS.
+   */
   electronApp.setAppUserModelId('com.electron')
 
   // Default open or close DevTools by F12 in development
@@ -63,17 +91,22 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // Launch Game Handler
+  /**
+   * IPC handler to launch a game or open a URL.
+   * @param _ - Event object (unused).
+   * @param exePath - The executable path or URL to launch.
+   * @returns A promise that resolves to true if successful, or rejects with an error message.
+   */
   ipcMain.handle('launch-game', async (_, exePath: string) => {
     return new Promise((resolve, reject) => {
       console.log('Launching:', exePath)
 
-      // Logic: Check if it's a Web URL or Local File
       if (exePath.startsWith('http://') || exePath.startsWith('https://')) {
         shell.openExternal(exePath)
           .then(() => resolve(true))
           .catch((err) => reject(err.message))
       } else {
-        // Use execFile to prevent shell injection and ensure specific file execution
+        // Execute local file, preventing shell injection
         execFile(exePath, (error) => {
           if (error) {
             console.error('Failed to launch game:', error)
@@ -87,6 +120,12 @@ app.whenReady().then(() => {
   })
 
   // Open File Dialog Handler
+  /**
+   * IPC handler to open a file dialog.
+   * @param _ - Event object (unused).
+   * @param filters - An array of file filters.
+   * @returns The selected file path or null if canceled.
+   */
   ipcMain.handle('open-file-dialog', async (_, filters: Electron.FileFilter[]) => {
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
@@ -102,17 +141,28 @@ app.whenReady().then(() => {
 
   // --- DATA PERSISTENCE ---
   const dataPath = join(app.getPath('userData'), 'library.json')
+  console.log('Data Path:', dataPath)
 
+  /**
+   * IPC handler to retrieve application data from a JSON file.
+   * If the file does not exist, returns null.
+   * @returns Parsed JSON data or null.
+   */
   ipcMain.handle('get-app-data', async () => {
     try {
       const data = await fs.readFile(dataPath, 'utf-8')
       return JSON.parse(data)
     } catch (error) {
-      // If file doesn't exist, return null (renderer will use defaults)
       return null
     }
   })
 
+  /**
+   * IPC handler to save application data to a JSON file.
+   * @param _ - Event object (unused).
+   * @param data - The JSON string data to save.
+   * @returns True if save was successful, false otherwise.
+   */
   ipcMain.handle('save-app-data', async (_, data: string) => {
     try {
       await fs.writeFile(dataPath, data, 'utf-8')
@@ -123,27 +173,32 @@ app.whenReady().then(() => {
     }
   })
 
+  /**
+   * IPC handler to get the application version.
+   * @returns The application version string.
+   */
   ipcMain.handle('get-app-version', () => {
     return app.getVersion()
   })
 
   createWindow()
 
+  /**
+   * On macOS, it's common to re-create a window in the app when the
+   * dock icon is clicked and there are no other windows open.
+   */
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+/**
+ * Quit when all windows are closed, except on macOS. There, it's common
+ * for applications and their menu bar to stay active until the user quits
+ * explicitly with Cmd + Q.
+ */
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

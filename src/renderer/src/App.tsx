@@ -19,67 +19,84 @@ import { useLibrary } from './hooks/useLibrary'
 import { useIdleTimer } from './hooks/useIdleTimer'
 import { getGenreColor } from './utils/theme'
 import { DEFAULT_BANNER } from './config'
+import { useAppSounds } from './hooks/useAppSounds'
+import { logger } from './utils/logger'
+import LazyImage from './components/LazyImage'
 
+/**
+ * Main application component responsible for rendering the game launcher UI.
+ * Manages global state, audio playback, splash screen, and user interactions.
+ */
 function App(): React.JSX.Element {
-  // --- Custom Hooks (Business Logic) ---
-  const { games, mediaApps, userName, setUserName, addGame, deleteGame, resetLibrary, isLoaded } =
-    useLibrary()
+  /**
+   * State for controlling the splash screen visibility.
+   */
+  const [showSplash, setShowSplash] = useState(true)
 
+  /**
+   * Audio hooks for background music and sound effects.
+   */
+  const { isAudioBlocked, playHover, playSelect, playBack } = useAppSounds(showSplash)
+
+  /**
+   * Core business logic hooks.
+   */
+  const { games, mediaApps, userName, setUserName, settings, setSettings, addGame, deleteGame, resetLibrary, isLoaded } =
+    useLibrary()
   const isIdle = useIdleTimer(8000)
 
-  // --- Local UI State ---
-  const [showSplash, setShowSplash] = useState(true)
+  /**
+   * Local UI state management.
+   */
   const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
   const [selectedGameId, setSelectedGameId] = useState<string>('')
-
-  // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-
-  // Edit Mode State
   const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
-
-  // Toast Notification
   const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
     message: null,
     type: 'info'
   })
   const showToast = (message: string, type: ToastType): void => setToast({ message, type })
 
-  // --- Derived State ---
+  /**
+   * Derived state based on active tab.
+   */
   const currentContent = activeTab === 'games' ? games : mediaApps
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
 
-  // --- Splash Screen Logic ---
+  /**
+   * Splash screen effect.
+   * Hides splash screen after 3 seconds if data is loaded and audio is not blocked.
+   */
   useEffect(() => {
-    // Keep splash visible for at least 3 seconds or until data is loaded
-    if (isLoaded) {
+    if (isLoaded && !isAudioBlocked) {
       const timer = setTimeout(() => {
         setShowSplash(false)
       }, 3000)
       return () => clearTimeout(timer)
     }
     return undefined
-  }, [isLoaded])
+  }, [isLoaded, isAudioBlocked])
 
-  // --- Handlers (Memoized) ---
-
+  /**
+   * UI Event Handlers.
+   */
   const handleTabChange = useCallback((tab: 'games' | 'media'): void => {
     setActiveTab(tab)
-    // Selection reset is handled by useEffect [isLoaded, currentContent, selectedGame]
   }, [])
 
   const handlePlay = useCallback((): void => {
     if (!selectedGame) return
-    console.log('Playing', selectedGame.title)
+    logger.info('Game', `Launching: ${selectedGame.title}`)
 
     window.api
       .launchGame(selectedGame.path_to_exe)
       .then(() => showToast(`Launching ${selectedGame.title}...`, 'success'))
       .catch((err) => {
-        console.error('Failed to launch:', err)
+        logger.error('Game', 'Failed to launch game', err)
         const msg = err instanceof Error ? err.message : String(err)
         showToast(`Failed: ${msg}`, 'error')
       })
@@ -116,23 +133,26 @@ function App(): React.JSX.Element {
     showToast('Library reset to defaults.', 'info')
   }, [resetLibrary])
 
-  // --- Effects ---
-
-  // 1. Select first game when content loads/changes or tab switches
+  /**
+   * Effect to select the first game by default when content loads.
+   */
   useEffect(() => {
     if (isLoaded && currentContent.length > 0 && !selectedGame) {
       setSelectedGameId(currentContent[0].id)
     }
   }, [isLoaded, currentContent, selectedGame])
 
-  // 2. Keyboard Navigation
+  /**
+   * Global Keyboard Navigation Handler.
+   * Manages arrow keys for selection, Enter for actions, Escape for closing modals, and Tab for switching tabs.
+   */
   useEffect(() => {
-    // Block input while splash is showing
     if (showSplash) return
 
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (isAddModalOpen || isProfileModalOpen || isSearchModalOpen || isSettingsModalOpen) {
         if (e.key === 'Escape') {
+          playBack()
           setIsSearchModalOpen(false)
           setIsSettingsModalOpen(false)
           setIsAddModalOpen(false)
@@ -152,17 +172,22 @@ function App(): React.JSX.Element {
       const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)
 
       if (e.key === 'ArrowRight') {
+        playHover()
         const nextIndex = (currentIndex + 1) % currentContent.length
         setSelectedGameId(currentContent[nextIndex].id)
       } else if (e.key === 'ArrowLeft') {
+        playHover()
         const prevIndex = (currentIndex - 1 + currentContent.length) % currentContent.length
         setSelectedGameId(currentContent[prevIndex].id)
       } else if (e.key === 'Enter') {
+        playSelect()
         handlePlay()
       } else if (e.ctrlKey && e.key === 'f') {
+        playSelect()
         setIsSearchModalOpen(true)
       } else if (e.key === 'Tab') {
         e.preventDefault()
+        playHover()
         handleTabChange(activeTab === 'games' ? 'media' : 'games')
       } else if (e.key === 'Delete') {
         handleDeleteAction()
@@ -182,37 +207,42 @@ function App(): React.JSX.Element {
     handlePlay,
     handleDeleteAction,
     handleTabChange,
-    showSplash
+    showSplash,
+    playHover,
+    playSelect,
+    playBack
   ])
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
-      <AnimatePresence>{showSplash && <SplashScreen />}</AnimatePresence>
+      <AnimatePresence>{showSplash && <SplashScreen needsInteraction={isAudioBlocked} />}</AnimatePresence>
 
       {/* Layer 0: Background */}
       <div className="fixed inset-0 z-0">
         <AnimatePresence mode="wait">
-          <motion.img
+          <motion.div
             key={selectedGame?.bg_image || 'default'}
-            src={selectedGame?.bg_image || DEFAULT_BANNER}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="h-full w-full object-cover opacity-100"
-            alt="Background"
-          />
+            transition={{ duration: 0.7 }}
+            className="h-full w-full"
+          >
+            <LazyImage
+                src={selectedGame?.bg_image || DEFAULT_BANNER}
+                alt="Background"
+                className="h-full w-full object-cover"
+            />
+          </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Layer 1: Atmospheric Gradient Overlays */}
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
       <div
         className={`absolute inset-0 z-10 bg-gradient-to-t ${getGenreColor(selectedGame?.genre || '')} via-transparent to-transparent mix-blend-overlay transition-colors duration-1000 ease-in-out opacity-75`}
       />
       <div className="absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-black/80 to-transparent" />
 
-      {/* Layer 2: Main Interface */}
       <motion.div
         className="relative z-20 flex h-full flex-col justify-between px-16 pt-8 pb-4"
         animate={{ opacity: isIdle ? 0 : 1, y: isIdle ? 20 : 0 }}
@@ -251,7 +281,6 @@ function App(): React.JSX.Element {
         <BottomBar />
       </motion.div>
 
-      {/* Modals Layer */}
       <AddGameModal
         isOpen={isAddModalOpen}
         onClose={() => {
@@ -260,6 +289,7 @@ function App(): React.JSX.Element {
         }}
         onAddGame={handleSaveGame}
         editGame={gameToEdit}
+        apiKey={settings.rawgApiKey}
       />
 
       <ProfileModal
@@ -267,6 +297,7 @@ function App(): React.JSX.Element {
         onClose={() => setIsProfileModalOpen(false)}
         userName={userName}
         onSaveName={(name) => {
+          logger.info('App', `Updating username to: ${name}`)
           setUserName(name)
           showToast('Profile updated!', 'success')
         }}
@@ -287,6 +318,11 @@ function App(): React.JSX.Element {
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
         onResetLibrary={handleResetLibraryAction}
+        apiKey={settings.rawgApiKey}
+        onSaveApiKey={(key) => {
+            setSettings({ ...settings, rawgApiKey: key })
+            showToast('API Key saved!', 'success')
+        }}
       />
 
       <Toast

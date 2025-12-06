@@ -6,7 +6,6 @@ import {
   FaUserCircle,
   FaSearch,
   FaPlus,
-  FaRegClock,
   FaPowerOff,
   FaMinus
 } from 'react-icons/fa'
@@ -32,10 +31,12 @@ export default function TopBar({
   onOpenSearch
 }: TopBarProps): React.JSX.Element {
   const [time, setTime] = useState<string>('')
+  const [dateStr, setDateStr] = useState<string>('')
 
   useEffect(() => {
     const updateTime = (): void => {
       const now = new Date()
+      // Time: 20:45
       setTime(
         now.toLocaleTimeString('en-US', {
           hour: '2-digit',
@@ -43,14 +44,22 @@ export default function TopBar({
           hour12: false
         })
       )
+      // Date: Sun 07/12
+      setDateStr(
+        now.toLocaleDateString('en-GB', {
+          weekday: 'short',
+          day: '2-digit',
+          month: '2-digit'
+        })
+      )
     }
     updateTime()
-    const interval = setInterval(updateTime, 60000)
+    const interval = setInterval(updateTime, 30000) // Update every 30s
     return () => clearInterval(interval)
   }, [])
 
   return (
-    <header className="flex w-full items-center justify-between drop-shadow-lg">
+    <header className="flex w-full items-center justify-between drop-shadow-lg px-2">
       {/* Left: Tabs with Sliding Animation */}
       <div className="flex items-center gap-10">
         {/* Games Tab */}
@@ -109,10 +118,10 @@ export default function TopBar({
           <FaCog className="text-xl opacity-70 hover:opacity-100" />
         </div>
 
-        {/* Time */}
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-light tabular-nums opacity-90">{time}</span>
-          <FaRegClock className="text-xl opacity-70" />
+        {/* Time & Date */}
+        <div className="flex flex-col items-end leading-tight mr-2">
+          <span className="text-2xl font-light tabular-nums opacity-90">{time}</span>
+          <span className="text-xs font-bold tracking-widest opacity-60 uppercase">{dateStr}</span>
         </div>
 
         {/* User Profile */}

@@ -12,7 +12,7 @@ export default function BottomBar(): React.JSX.Element {
           </div>
           <span className="text-xs font-bold uppercase tracking-widest text-white/60">Play</span>
         </div>
-        
+
         {/* Navigation Action */}
         <div className="flex items-center gap-3">
           <div className="flex h-8 items-center gap-2 rounded-full bg-white/10 px-3 backdrop-blur-sm ring-1 ring-white/30">
@@ -20,7 +20,9 @@ export default function BottomBar(): React.JSX.Element {
             <div className="h-3 w-[1px] bg-white/30"></div>
             <FaArrowRight className="text-xs text-white" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-widest text-white/60">Navigate</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+            Navigate
+          </span>
         </div>
       </div>
     </div>

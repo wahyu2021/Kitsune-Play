@@ -10,7 +10,12 @@ interface SearchModalProps {
   onSelectGame: (gameId: string) => void
 }
 
-export default function SearchModal({ isOpen, onClose, games, onSelectGame }: SearchModalProps): React.JSX.Element {
+export default function SearchModal({
+  isOpen,
+  onClose,
+  games,
+  onSelectGame
+}: SearchModalProps): React.JSX.Element {
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -23,9 +28,10 @@ export default function SearchModal({ isOpen, onClose, games, onSelectGame }: Se
     }
   }, [isOpen])
 
-  const filteredGames = games.filter(g => 
-    g.title.toLowerCase().includes(query.toLowerCase()) || 
-    g.genre.toLowerCase().includes(query.toLowerCase())
+  const filteredGames = games.filter(
+    (g) =>
+      g.title.toLowerCase().includes(query.toLowerCase()) ||
+      g.genre.toLowerCase().includes(query.toLowerCase())
   )
 
   const handleSelect = (id: string): void => {
@@ -55,7 +61,9 @@ export default function SearchModal({ isOpen, onClose, games, onSelectGame }: Se
                 className="flex-1 bg-transparent text-xl font-medium text-white placeholder-white/30 focus:outline-none"
               />
               <button onClick={onClose} className="text-white/50 hover:text-white">
-                 <span className="text-xs font-bold uppercase tracking-wider border border-white/20 px-2 py-1 rounded">ESC</span>
+                <span className="text-xs font-bold uppercase tracking-wider border border-white/20 px-2 py-1 rounded">
+                  ESC
+                </span>
               </button>
             </div>
 
@@ -69,9 +77,9 @@ export default function SearchModal({ isOpen, onClose, games, onSelectGame }: Se
                       onClick={() => handleSelect(game.id)}
                       className="flex cursor-pointer items-center gap-4 rounded-xl p-3 transition-colors hover:bg-white/10"
                     >
-                      <img 
-                        src={game.cover_image} 
-                        alt={game.title} 
+                      <img
+                        src={game.cover_image}
+                        alt={game.title}
                         className="h-12 w-12 rounded object-cover"
                       />
                       <div className="flex flex-col">

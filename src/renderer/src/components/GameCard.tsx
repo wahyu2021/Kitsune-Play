@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Game } from '../types'
 import { useRef, useEffect } from 'react'
+import LazyImage from './LazyImage'
 
 interface GameCardProps {
   game: Game
@@ -33,11 +34,7 @@ function GameCard({ game, isActive, onClick }: GameCardProps): React.JSX.Element
       onClick={onClick}
       whileHover={{ scale: 1.05 }}
     >
-      <img
-        src={game.cover_image}
-        alt={game.title}
-        className="h-full w-full rounded-lg object-cover shadow-lg"
-      />
+      <LazyImage src={game.cover_image} alt={game.title} className="h-full w-full rounded-lg" />
     </motion.div>
   )
 }
