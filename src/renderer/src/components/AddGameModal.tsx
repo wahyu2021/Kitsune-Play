@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes, FaSave, FaFolderOpen, FaImage, FaMagic, FaSpinner } from 'react-icons/fa'
+import { FaTimes, FaSave, FaFolderOpen, FaImage, FaMagic, FaSpinner, FaVideo } from 'react-icons/fa'
 import { Game } from '../types'
 import { fetchGameMetadata } from '../services/rawg'
 import { logger } from '../utils/logger'
@@ -32,7 +32,8 @@ export default function AddGameModal({
     genre: '',
     path_to_exe: '',
     cover_image: '',
-    bg_image: ''
+    bg_image: '',
+    bg_video: ''
   })
 
   // Populate form when Edit Mode is active
@@ -47,7 +48,8 @@ export default function AddGameModal({
         genre: '',
         path_to_exe: '',
         cover_image: '',
-        bg_image: ''
+        bg_image: '',
+        bg_video: ''
       })
     }
   }, [isOpen, editGame])
@@ -83,7 +85,8 @@ export default function AddGameModal({
 
       if (filePath) {
         let finalPath = filePath
-        if (field === 'cover_image' || field === 'bg_image') {
+        // For images and videos, we might need file:// protocol
+        if (field === 'cover_image' || field === 'bg_image' || field === 'bg_video') {
           finalPath = `file://${filePath.replace(/\\/g, '/')}`
         }
 
@@ -104,7 +107,8 @@ export default function AddGameModal({
         genre: formData.genre || 'Unknown',
         path_to_exe: formData.path_to_exe || '',
         cover_image: formData.cover_image || '',
-        bg_image: formData.bg_image || ''
+        bg_image: formData.bg_image || '',
+        bg_video: formData.bg_video || ''
       }
       onAddGame(newGame)
       onClose()
@@ -254,6 +258,30 @@ export default function AddGameModal({
                       <FaImage />
                     </button>
                   </div>
+                </div>
+              </div>
+
+              {/* Background Video (Browse Button) */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-white/70">
+                  Background Video (Live Wallpaper)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="bg_video"
+                    value={formData.bg_video}
+                    onChange={handleChange}
+                    className="flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none"
+                    placeholder="Path to .mp4 or .webm video..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleBrowse('bg_video', ['mp4', 'webm'])}
+                    className="flex items-center gap-2 rounded-lg bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20"
+                  >
+                    <FaVideo /> Browse
+                  </button>
                 </div>
               </div>
 

@@ -58,7 +58,7 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 
 ## 🔮 Future Ideas (Backlog)
 
-- [ ] **Auto-Metadata Scraping:** Integrate IGDB API to automatically fetch game covers and descriptions based on the game title.
+- [x] **Auto-Metadata Scraping:** Integrate IGDB API to automatically fetch game covers and descriptions based on the game title.
 - [ ] **Theming Engine:** Allow users to pick accent colors (Blue, Red, Purple) instead of the default Orange.
 - [ ] **Play Time Tracker:** Track how long each game has been played.
 - [ ] **Favorites System:** "Pin" favorite games to the start of the list.

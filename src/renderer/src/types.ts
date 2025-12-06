@@ -16,6 +16,8 @@ export interface Game {
   cover_image: string
   /** Path or URL to the background wallpaper (landscape). */
   bg_image: string
+  /** Optional: Path or URL to a background video loop (mp4/webm). Overrides bg_image if present. */
+  bg_video?: string
 }
 
 /**

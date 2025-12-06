@@ -220,20 +220,36 @@ function App(): React.JSX.Element {
       {/* Layer 0: Background */}
       <div className="fixed inset-0 z-0">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedGame?.bg_image || 'default'}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-            className="h-full w-full"
-          >
-            <LazyImage
+          {selectedGame?.bg_video ? (
+            <motion.video
+              key={selectedGame.bg_video}
+              src={selectedGame.bg_video}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="h-full w-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : (
+            <motion.div
+              key={selectedGame?.bg_image || 'default'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7 }}
+              className="h-full w-full"
+            >
+              <LazyImage
                 src={selectedGame?.bg_image || DEFAULT_BANNER}
                 alt="Background"
                 className="h-full w-full object-cover"
-            />
-          </motion.div>
+              />
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
