@@ -8,9 +8,11 @@ interface SettingsModalProps {
   onResetLibrary: () => void
   apiKey: string
   onSaveApiKey: (key: string) => void
-  volume: number
+  bgMusicVolume: number
+  sfxVolume: number
   isMuted: boolean
-  onVolumeChange: (vol: number) => void
+  onBgMusicVolumeChange: (vol: number) => void
+  onSfxVolumeChange: (vol: number) => void
   onMuteToggle: (muted: boolean) => void
 }
 
@@ -20,9 +22,11 @@ export default function SettingsModal({
     onResetLibrary, 
     apiKey, 
     onSaveApiKey,
-    volume,
+    bgMusicVolume,
+    sfxVolume,
     isMuted,
-    onVolumeChange,
+    onBgMusicVolumeChange,
+    onSfxVolumeChange,
     onMuteToggle
 }: SettingsModalProps): React.JSX.Element {
   const [version, setVersion] = useState<string>('')
@@ -65,30 +69,51 @@ export default function SettingsModal({
                         <div className="flex items-center justify-between mb-4">
                             <label className="flex items-center gap-2 text-sm font-bold text-white">
                                 {isMuted ? <FaVolumeMute className="text-red-400" /> : <FaVolumeUp />}
-                                Master Volume
+                                Sound Controls
                             </label>
                             <button
                                 onClick={() => onMuteToggle(!isMuted)}
                                 className={`text-xs font-bold px-2 py-1 rounded ${isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
                             >
-                                {isMuted ? 'MUTED' : 'MUTE'}
+                                {isMuted ? 'MUTED' : 'MUTE ALL'}
                             </button>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <FaVolumeDown className="text-white/40 text-xs" />
+                        
+                        {/* Music Slider */}
+                        <div className="mb-3">
+                            <div className="flex justify-between text-xs text-white/60 mb-1">
+                                <span>Music</span>
+                                <span>{Math.round(bgMusicVolume * 100)}%</span>
+                            </div>
                             <input
                                 type="range"
                                 min="0"
                                 max="1"
                                 step="0.05"
-                                value={volume}
-                                onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
+                                value={bgMusicVolume}
+                                onChange={(e) => onBgMusicVolumeChange(parseFloat(e.target.value))}
                                 disabled={isMuted}
                                 className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500 disabled:opacity-50"
                             />
-                            <FaVolumeUp className="text-white/40 text-xs" />
                         </div>
-                        <p className="text-right text-xs text-white/40 mt-1">{Math.round(volume * 100)}%</p>
+
+                        {/* SFX Slider */}
+                        <div>
+                            <div className="flex justify-between text-xs text-white/60 mb-1">
+                                <span>SFX (Navigation)</span>
+                                <span>{Math.round(sfxVolume * 100)}%</span>
+                            </div>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                value={sfxVolume}
+                                onChange={(e) => onSfxVolumeChange(parseFloat(e.target.value))}
+                                disabled={isMuted}
+                                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500 disabled:opacity-50"
+                            />
+                        </div>
                     </div>
                 </div>
 

@@ -45,12 +45,13 @@ function App(): React.JSX.Element {
    */
   const { isAudioBlocked, playHover, playSelect, playBack } = useAppSounds(
     showSplash, 
-    settings?.volume ?? 0.5, 
+    settings?.bgMusicVolume ?? 0.3, 
+    settings?.sfxVolume ?? 0.8,
     settings?.isMuted ?? false
   )
 
   /**
-   * Local UI state management.
+   * Core business logic hooks.
    */
   const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
   const [selectedGameId, setSelectedGameId] = useState<string>('')
@@ -352,9 +353,11 @@ function App(): React.JSX.Element {
             setSettings({ ...settings, rawgApiKey: key })
             showToast('API Key saved!', 'success')
         }}
-        volume={settings?.volume ?? 0.5}
+        bgMusicVolume={settings?.bgMusicVolume ?? 0.3}
+        sfxVolume={settings?.sfxVolume ?? 0.8}
         isMuted={settings?.isMuted ?? false}
-        onVolumeChange={(vol) => setSettings({ ...settings, volume: vol })}
+        onBgMusicVolumeChange={(vol) => setSettings({ ...settings, bgMusicVolume: vol })}
+        onSfxVolumeChange={(vol) => setSettings({ ...settings, sfxVolume: vol })}
         onMuteToggle={(muted) => setSettings({ ...settings, isMuted: muted })}
       />
 

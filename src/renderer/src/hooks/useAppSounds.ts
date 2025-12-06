@@ -19,11 +19,17 @@ interface UseAppSoundsReturn {
  * Handles initialization, looping, and cleanup to prevent memory leaks and double-playing.
  *
  * @param isSplashShowing - A boolean indicating if the splash screen is currently displayed.
- * @param volume - Master volume (0.0 to 1.0).
+ * @param bgMusicVolume - Volume for background music (0.0 to 1.0).
+ * @param sfxVolume - Volume for sound effects (0.0 to 1.0).
  * @param isMuted - Whether audio is globally muted.
  * @returns Object containing audio blocked state and SFX playback functions.
  */
-export function useAppSounds(isSplashShowing: boolean, volume: number = 0.5, isMuted: boolean = false): UseAppSoundsReturn {
+export function useAppSounds(
+  isSplashShowing: boolean, 
+  bgMusicVolume: number = 0.3, 
+  sfxVolume: number = 0.8, 
+  isMuted: boolean = false
+): UseAppSoundsReturn {
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
   const welcomeAudioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -40,16 +46,18 @@ export function useAppSounds(isSplashShowing: boolean, volume: number = 0.5, isM
 
   // --- Update Volumes & Mute State ---
   useEffect(() => {
-    const effectiveVolume = isMuted ? 0 : volume
+    const bgVol = isMuted ? 0 : bgMusicVolume
+    const sfxVol = isMuted ? 0 : sfxVolume
+    const welcomeVol = isMuted ? 0 : 0.6 // Hardcoded level, but respects Mute
 
-    if (bgAudioRef.current) bgAudioRef.current.volume = effectiveVolume * 0.3 // BG always lower relative to master
-    if (welcomeAudioRef.current) welcomeAudioRef.current.volume = effectiveVolume
+    if (bgAudioRef.current) bgAudioRef.current.volume = bgVol
+    if (welcomeAudioRef.current) welcomeAudioRef.current.volume = welcomeVol
     
     // SFX refs are templates, but we update them for future clones
-    if (hoverAudioRef.current) hoverAudioRef.current.volume = effectiveVolume * 0.8
-    if (selectAudioRef.current) selectAudioRef.current.volume = effectiveVolume
-    if (backAudioRef.current) backAudioRef.current.volume = effectiveVolume
-  }, [volume, isMuted])
+    if (hoverAudioRef.current) hoverAudioRef.current.volume = sfxVol
+    if (selectAudioRef.current) selectAudioRef.current.volume = sfxVol
+    if (backAudioRef.current) backAudioRef.current.volume = sfxVol
+  }, [bgMusicVolume, sfxVolume, isMuted])
 
   // --- Window Focus/Blur Handler (Auto-Mute) ---
   useEffect(() => {

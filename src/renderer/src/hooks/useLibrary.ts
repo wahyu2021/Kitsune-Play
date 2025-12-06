@@ -31,7 +31,7 @@ export function useLibrary(): UseLibraryReturn {
   const [games, setGames] = useState<Game[]>([]) 
   const [mediaApps, setMediaApps] = useState<Game[]>([])
   const [userName, setUserName] = useState('Player 1')
-  const [settings, setSettings] = useState<AppSettings>({ rawgApiKey: '', volume: 0.5, isMuted: false })
+  const [settings, setSettings] = useState<AppSettings>({ rawgApiKey: '', bgMusicVolume: 0.3, sfxVolume: 0.8, isMuted: false })
   
   const isLoaded = useRef(false)
   const [hasLoadedInitial, setHasLoadedInitial] = useState(false)
@@ -62,7 +62,8 @@ export function useLibrary(): UseLibraryReturn {
           setUserName(parsed.userName || 'Player 1')
           setSettings({ 
             rawgApiKey: '', 
-            volume: 0.5, 
+            bgMusicVolume: 0.3, 
+            sfxVolume: 0.8, 
             isMuted: false, 
             ...parsed.settings 
           })
