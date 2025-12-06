@@ -22,6 +22,7 @@ import { DEFAULT_BANNER } from './config'
 import { useAppSounds } from './hooks/useAppSounds'
 import { logger } from './utils/logger'
 import LazyImage from './components/LazyImage'
+import { useGamepad } from './hooks/useGamepad'
 
 /**
  * Main application component responsible for rendering the game launcher UI.
@@ -156,11 +157,60 @@ function App(): React.JSX.Element {
     }
   }, [isLoaded, currentContent, selectedGame])
 
+  const handleNavRight = useCallback((): void => {
+    if (currentContent.length === 0) return
+    const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)
+    const nextIndex = (currentIndex + 1) % currentContent.length
+    playHover()
+    setSelectedGameId(currentContent[nextIndex].id)
+  }, [currentContent, selectedGameId, playHover])
+
+  const handleNavLeft = useCallback((): void => {
+    if (currentContent.length === 0) return
+    const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)
+    const prevIndex = (currentIndex - 1 + currentContent.length) % currentContent.length
+    playHover()
+    setSelectedGameId(currentContent[prevIndex].id)
+  }, [currentContent, selectedGameId, playHover])
+
   /**
-   * Global Keyboard Navigation Handler.
-   * Manages arrow keys for selection, Enter for actions, Escape for closing modals, and Tab for switching tabs.
+   * Gamepad Integration.
+   * Maps controller inputs to UI actions.
    */
+  const handleGamepadBack = useCallback(() => {
+    if (isAddModalOpen || isProfileModalOpen || isSearchModalOpen || isSettingsModalOpen) {
+      playBack()
+      setIsSearchModalOpen(false)
+      setIsSettingsModalOpen(false)
+      setIsAddModalOpen(false)
+      setIsProfileModalOpen(false)
+      setGameToEdit(null)
+    }
+  }, [isAddModalOpen, isProfileModalOpen, isSearchModalOpen, isSettingsModalOpen, playBack])
+
+  useGamepad({
+    onNavigateLeft: handleNavLeft,
+    onNavigateRight: handleNavRight,
+    onSelect: () => {
+      playSelect()
+      if (!isAddModalOpen && !isSettingsModalOpen) {
+        handlePlay()
+      }
+    },
+    onBack: handleGamepadBack,
+    onSearch: () => {
+        playSelect()
+        setIsSearchModalOpen(true)
+    },
+    onTabSwitch: () => {
+        playHover()
+        handleTabChange(activeTab === 'games' ? 'media' : 'games')
+    }
+  }, !showSplash)
+
+  // 2. Keyboard Navigation
   useEffect(() => {
+    // Block input while splash is showing
     if (showSplash) return
 
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -183,16 +233,10 @@ function App(): React.JSX.Element {
         return
       }
 
-      const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)
-
       if (e.key === 'ArrowRight') {
-        playHover()
-        const nextIndex = (currentIndex + 1) % currentContent.length
-        setSelectedGameId(currentContent[nextIndex].id)
+        handleNavRight()
       } else if (e.key === 'ArrowLeft') {
-        playHover()
-        const prevIndex = (currentIndex - 1 + currentContent.length) % currentContent.length
-        setSelectedGameId(currentContent[prevIndex].id)
+        handleNavLeft()
       } else if (e.key === 'Enter') {
         playSelect()
         handlePlay()
@@ -224,7 +268,9 @@ function App(): React.JSX.Element {
     showSplash,
     playHover,
     playSelect,
-    playBack
+    playBack,
+    handleNavRight,
+    handleNavLeft
   ])
 
   return (
