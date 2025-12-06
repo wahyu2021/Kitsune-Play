@@ -2,7 +2,7 @@
 
 This document tracks the progress of the **Kitsune Play** PS5-style game launcher.
 
-## ✅ Completed Features (Phase 1 & 2)
+## Features
 
 ### Core Architecture
 - [x] **Project Setup:** Electron + React + TypeScript + Vite.
@@ -27,11 +27,7 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
   - Welcome Voiceover
 - [x] **Smart Autoplay:** Logic to handle browser autoplay blocking with user interaction recovery.
 
----
-
-## 🚧 Upcoming Features (Phase 3)
-
-### 1. 🎮 Gamepad / Controller Support
+### Gamepad / Controller Support
 **Objective:** Allow full navigation using a game controller (PlayStation/Xbox).
 
 **Implementation Plan:**
@@ -43,7 +39,7 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
   - **Button Y / Triangle:** Search (`Ctrl+F`).
 - [ ] Integrate with existing `handleKeyDown` logic or create a unified `NavigationController`.
 
-### 2. 🎬 Video Backgrounds (Live Wallpapers)
+### Video Backgrounds (Live Wallpapers)
 **Objective:** Replace static background images with looping video trailers for a premium feel.
 
 **Implementation Plan:**
@@ -56,7 +52,7 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 
 ---
 
-## 🔮 Future Ideas (Backlog)
+## Future Ideas (Backlog)
 
 - [x] **Auto-Metadata Scraping:** Integrate IGDB API to automatically fetch game covers and descriptions based on the game title.
 - [ ] **Theming Engine:** Allow users to pick accent colors (Blue, Red, Purple) instead of the default Orange.
