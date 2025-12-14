@@ -133,13 +133,20 @@ function App(): React.JSX.Element {
 
     // launchGame now waits for the process to exit
     window.api
-      .launchGame(selectedGame.path_to_exe, selectedGame.title, selectedGame.launchArgs)
+      .launchGame(
+        selectedGame.path_to_exe,
+        selectedGame.title,
+        selectedGame.launchArgs,
+        selectedGame.executableName
+      )
       .then((duration) => {
         logger.info('Game', `Session ended. Duration: ${duration} mins`)
         setIsPlaying(false)
 
+        // Always update last played timestamp, even if duration is 0
+        updateGamePlaytime(selectedGame.id, duration)
+
         if (duration > 0) {
-          updateGamePlaytime(selectedGame.id, duration)
           showToast(`Played for ${duration} mins`, 'info')
         }
       })

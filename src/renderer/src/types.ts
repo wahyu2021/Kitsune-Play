@@ -20,6 +20,8 @@ export interface Game {
   bg_video?: string
   /** Optional: Custom command line arguments to pass to the executable. */
   launchArgs?: string
+  /** Optional: The actual process name to track (e.g., 'dota2.exe') for launcher-based games (Steam/Epic) */
+  executableName?: string
   /** Total playtime in minutes. */
   playtime?: number
   /** ISO timestamp of the last time the game was played. */

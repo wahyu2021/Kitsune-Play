@@ -98,26 +98,48 @@ app.whenReady().then(() => {
   // Launch Game Handler
   /**
    * IPC handler to launch a game and monitor its session.
-   * Handles both web URLs and local executables.
-   * 
-   * @param _ - Event object.
-   * @param exePath - Absolute path to the executable or URL.
-   * @param gameName - Name of the game (used for Discord Rich Presence).
-   * @param launchArgs - Optional command line arguments string (e.g., "-windowed -nointro").
-   * @returns Promise resolving to the session duration in minutes.
+   * Handles both web URLs, Steam protocols, and local executables.
+   * Implements Hybrid Tracking (Child Process vs Process Polling).
    */
-  ipcMain.handle('launch-game', async (_, exePath: string, gameName: string = 'Unknown Game', launchArgs: string = '') => {
+  ipcMain.handle('launch-game', async (_, exePath: string, gameName: string = 'Unknown Game', launchArgs: string = '', executableName?: string) => {
     return new Promise((resolve, reject) => {
-      console.log(`[Main] Launching: ${gameName}`)
+      console.log(`[Main] Launching: ${gameName} | Exe: ${executableName || 'Standard'}`)
 
-      // Update Discord Status to "Playing"
       setDiscordActivity('Playing Game', gameName, new Date())
+      const startTime = Date.now()
 
-      // Handle Web/URL Games
+      // --- HELPER: POLLING MONITOR ---
+      const startPolling = (targetProcessName: string) => {
+        console.log(`[Main] Starting polling monitor for: ${targetProcessName}`)
+        
+        // Initial delay to let the process start
+        setTimeout(() => {
+          const interval = setInterval(() => {
+            const cmd = process.platform === 'win32' 
+              ? `tasklist /FI "IMAGENAME eq ${targetProcessName}" /NH`
+              : `ps -A | grep "${targetProcessName}"`
+
+            require('child_process').exec(cmd, (err, stdout) => {
+              // If error or empty output (or specific "No tasks" msg on Windows), process is gone
+              const isRunning = stdout && stdout.toLowerCase().includes(targetProcessName.toLowerCase())
+              
+              if (!isRunning) {
+                clearInterval(interval)
+                const endTime = Date.now()
+                const durationMinutes = Math.floor((endTime - startTime) / 60000)
+                console.log(`[Main] Polling ended. Duration: ${durationMinutes} mins`)
+                setDiscordActivity('Browsing Library', 'In Menu')
+                resolve(durationMinutes)
+              }
+            })
+          }, 5000) // Check every 5 seconds
+        }, 5000) // Wait 5s before first check
+      }
+
+      // 1. Handle Web URLs (http/https)
       if (exePath.startsWith('http://') || exePath.startsWith('https://')) {
         shell.openExternal(exePath)
           .then(() => {
-             // Web games don't have a process to monitor, so we revert status after a short delay
              setTimeout(() => {
                 setDiscordActivity('Browsing Library', 'In Menu')
              }, 5000)
@@ -128,12 +150,29 @@ app.whenReady().then(() => {
              reject(err.message)
           })
       } 
-      // Handle Local Executables
+      // 2. Handle Steam Protocol (steam://)
+      else if (exePath.startsWith('steam://')) {
+        shell.openExternal(exePath)
+          .then(() => {
+            if (executableName) {
+              // If user provided an exe name, track it!
+              startPolling(executableName)
+            } else {
+              // Otherwise, we can't track Steam games accurately
+              setTimeout(() => {
+                setDiscordActivity('Browsing Library', 'In Menu')
+                resolve(0)
+              }, 5000)
+            }
+          })
+          .catch((err) => {
+            setDiscordActivity('Browsing Library', 'In Menu')
+            reject(err.message)
+          })
+      }
+      // 3. Handle Local Executables
       else {
-        const startTime = Date.now()
-        
-        // Parse arguments: split by space but respect quoted strings
-        // Example: -g "C:\My Files\Game.iso" -> ['-g', 'C:\My Files\Game.iso']
+        // Parse arguments
         const args = launchArgs.match(/(?:[^\s"]+|"[^"]*")+/g)?.map(arg => arg.replace(/^"|"$/g, '')) || []
 
         const child = execFile(exePath, args, (error) => {
@@ -142,25 +181,28 @@ app.whenReady().then(() => {
           }
         })
 
-        // Monitor process exit to calculate playtime
-        child.on('close', () => {
-            const endTime = Date.now()
-            const durationMs = endTime - startTime
-            const durationMinutes = Math.floor(durationMs / 60000)
-            
-            console.log(`[Main] Session ended. Duration: ${durationMinutes} mins`)
-            
-            // Revert Discord Status to "In Menu"
-            setDiscordActivity('Browsing Library', 'In Menu')
+        // DECISION: Polling vs Child Process
+        if (executableName) {
+          // If explicit exe name provided, ignore child process exit (it might be a launcher)
+          // and start polling for the real game process.
+          startPolling(executableName)
+        } else {
+          // Standard monitoring
+          child.on('close', () => {
+              const endTime = Date.now()
+              const durationMinutes = Math.floor((endTime - startTime) / 60000)
+              
+              console.log(`[Main] Session ended. Duration: ${durationMinutes} mins`)
+              setDiscordActivity('Browsing Library', 'In Menu')
+              resolve(durationMinutes)
+          })
 
-            resolve(durationMinutes)
-        })
-
-        child.on('error', (err) => {
-            console.error('[Main] Failed to spawn game process:', err)
-            setDiscordActivity('Browsing Library', 'In Menu')
-            reject(err.message)
-        })
+          child.on('error', (err) => {
+              console.error('[Main] Failed to spawn game process:', err)
+              setDiscordActivity('Browsing Library', 'In Menu')
+              reject(err.message)
+          })
+        }
       }
     })
   })

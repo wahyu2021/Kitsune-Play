@@ -159,18 +159,18 @@ export function useLibrary(): UseLibraryReturn {
   }
 
   const updateGamePlaytime = (id: string, sessionMinutes: number): void => {
-    if (sessionMinutes <= 0) return
-
-    setGames(prev => prev.map(game => {
+    setGames((prev) =>
+      prev.map((game) => {
         if (game.id === id) {
-            return {
-                ...game,
-                playtime: (game.playtime || 0) + sessionMinutes,
-                lastPlayed: new Date().toISOString()
-            }
+          return {
+            ...game,
+            playtime: (game.playtime || 0) + (sessionMinutes > 0 ? sessionMinutes : 0),
+            lastPlayed: new Date().toISOString()
+          }
         }
         return game
-    }))
+      })
+    )
   }
 
   return {

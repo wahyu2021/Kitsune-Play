@@ -38,7 +38,8 @@ export default function AddGameModal({
     cover_image: '',
     bg_image: '',
     bg_video: '',
-    launchArgs: ''
+    launchArgs: '',
+    executableName: ''
   })
 
   // Populate form when Edit Mode is active
@@ -55,7 +56,8 @@ export default function AddGameModal({
         cover_image: '',
         bg_image: '',
         bg_video: '',
-        launchArgs: ''
+        launchArgs: '',
+        executableName: ''
       })
     }
   }, [isOpen, editGame])
@@ -113,7 +115,8 @@ export default function AddGameModal({
         cover_image: formData.cover_image || '',
         bg_image: formData.bg_image || '',
         bg_video: formData.bg_video || '',
-        launchArgs: formData.launchArgs || ''
+        launchArgs: formData.launchArgs || '',
+        executableName: formData.executableName || ''
       }
       onAddGame(newGame)
       onClose()
@@ -215,6 +218,21 @@ export default function AddGameModal({
                   onChange={handleChange}
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none font-mono text-sm"
                   placeholder='e.g., -windowed -skipintro'
+                />
+              </div>
+
+              {/* Executable Name (For Process Tracking) */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-white/70">
+                  Target Process Name (For Steam/Epic Tracking)
+                </label>
+                <input
+                  type="text"
+                  name="executableName"
+                  value={formData.executableName || ''}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none font-mono text-sm"
+                  placeholder='e.g., dota2.exe (Leave empty for standard games)'
                 />
               </div>
 
