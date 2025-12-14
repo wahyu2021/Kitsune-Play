@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { execFile } from 'child_process'
 import fs from 'fs/promises'
+import { initDiscordRPC, setDiscordActivity } from './discord'
 
 // Fix: Ensure audio can autoplay without user interaction (common for launchers)
 // Must be called before app 'ready' event
@@ -78,6 +79,9 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // Initialize Discord RPC
+  initDiscordRPC()
+
   /**
    * Set app user model id for windows.
    * This ensures the application is correctly identified by the OS.
@@ -94,25 +98,47 @@ app.whenReady().then(() => {
   // Launch Game Handler
   /**
    * IPC handler to launch a game and monitor its session.
+   * Handles both web URLs and local executables.
+   * 
    * @param _ - Event object.
-   * @param exePath - Path to the executable.
-   * @returns Promise resolving to the session duration in minutes (or 0 if failed/web).
+   * @param exePath - Absolute path to the executable or URL.
+   * @param gameName - Name of the game (used for Discord Rich Presence).
+   * @param launchArgs - Optional command line arguments string (e.g., "-windowed -nointro").
+   * @returns Promise resolving to the session duration in minutes.
    */
-  ipcMain.handle('launch-game', async (_, exePath: string) => {
+  ipcMain.handle('launch-game', async (_, exePath: string, gameName: string = 'Unknown Game', launchArgs: string = '') => {
     return new Promise((resolve, reject) => {
-      console.log('Launching:', exePath)
+      console.log(`[Main] Launching: ${gameName}`)
 
+      // Update Discord Status to "Playing"
+      setDiscordActivity('Playing Game', gameName, new Date())
+
+      // Handle Web/URL Games
       if (exePath.startsWith('http://') || exePath.startsWith('https://')) {
         shell.openExternal(exePath)
-          .then(() => resolve(0)) // Web apps don't track playtime yet
-          .catch((err) => reject(err.message))
-      } else {
+          .then(() => {
+             // Web games don't have a process to monitor, so we revert status after a short delay
+             setTimeout(() => {
+                setDiscordActivity('Browsing Library', 'In Menu')
+             }, 5000)
+             resolve(0)
+          }) 
+          .catch((err) => {
+             setDiscordActivity('Browsing Library', 'In Menu')
+             reject(err.message)
+          })
+      } 
+      // Handle Local Executables
+      else {
         const startTime = Date.now()
         
-        const child = execFile(exePath, (error) => {
+        // Parse arguments: split by space but respect quoted strings
+        // Example: -g "C:\My Files\Game.iso" -> ['-g', 'C:\My Files\Game.iso']
+        const args = launchArgs.match(/(?:[^\s"]+|"[^"]*")+/g)?.map(arg => arg.replace(/^"|"$/g, '')) || []
+
+        const child = execFile(exePath, args, (error) => {
           if (error && error.signal !== null) {
-             // Non-null signal usually means manually killed or crash, still valid close
-             console.warn('Game process exited with error/signal:', error)
+             console.warn('[Main] Game process exited with error/signal:', error)
           }
         })
 
@@ -121,16 +147,28 @@ app.whenReady().then(() => {
             const endTime = Date.now()
             const durationMs = endTime - startTime
             const durationMinutes = Math.floor(durationMs / 60000)
-            console.log(`Game closed. Duration: ${durationMinutes} mins`)
+            
+            console.log(`[Main] Session ended. Duration: ${durationMinutes} mins`)
+            
+            // Revert Discord Status to "In Menu"
+            setDiscordActivity('Browsing Library', 'In Menu')
+
             resolve(durationMinutes)
         })
 
         child.on('error', (err) => {
-            console.error('Failed to spawn game process:', err)
+            console.error('[Main] Failed to spawn game process:', err)
+            setDiscordActivity('Browsing Library', 'In Menu')
             reject(err.message)
         })
       }
     })
+  })
+
+  // IPC to manually update status (e.g., Idle)
+  ipcMain.handle('discord-update-status', (_, status: string) => {
+    // We assume 'Browsing Library' as the detail for these states
+    setDiscordActivity('Browsing Library', status)
   })
 
   // Open File Dialog Handler

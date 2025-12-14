@@ -13,6 +13,10 @@ interface AddGameModalProps {
   apiKey?: string
 }
 
+/**
+ * Modal component for adding or editing game details.
+ * Supports auto-fetching metadata from RAWG.io if an API key is provided.
+ */
 export default function AddGameModal({
   isOpen,
   onClose,
@@ -33,7 +37,8 @@ export default function AddGameModal({
     path_to_exe: '',
     cover_image: '',
     bg_image: '',
-    bg_video: ''
+    bg_video: '',
+    launchArgs: ''
   })
 
   // Populate form when Edit Mode is active
@@ -49,7 +54,8 @@ export default function AddGameModal({
         path_to_exe: '',
         cover_image: '',
         bg_image: '',
-        bg_video: ''
+        bg_video: '',
+        launchArgs: ''
       })
     }
   }, [isOpen, editGame])
@@ -78,11 +84,9 @@ export default function AddGameModal({
 
   // Helper to browse files via Electron Native Dialog
   const handleBrowse = async (field: keyof Game, extensions: string[]): Promise<void> => {
-    console.log(`[AddGameModal] Browse clicked for ${field} with extensions:`, extensions)
     try {
       const filePath = await window.api.selectFile([{ name: 'Files', extensions }])
-      console.log('[AddGameModal] Dialog result:', filePath)
-
+      
       if (filePath) {
         let finalPath = filePath
 
@@ -108,7 +112,8 @@ export default function AddGameModal({
         path_to_exe: formData.path_to_exe || '',
         cover_image: formData.cover_image || '',
         bg_image: formData.bg_image || '',
-        bg_video: formData.bg_video || ''
+        bg_video: formData.bg_video || '',
+        launchArgs: formData.launchArgs || ''
       }
       onAddGame(newGame)
       onClose()
@@ -123,7 +128,7 @@ export default function AddGameModal({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="w-full max-w-lg rounded-2xl border border-white/10 bg-black/40 p-8 shadow-2xl backdrop-blur-xl backdrop-saturate-150"
+            className="w-full max-w-lg rounded-2xl border border-white/10 bg-black/40 p-8 shadow-2xl backdrop-blur-xl backdrop-saturate-150 overflow-y-auto max-h-[90vh]"
           >
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white">
@@ -196,6 +201,21 @@ export default function AddGameModal({
                     <FaFolderOpen /> Browse
                   </button>
                 </div>
+              </div>
+              
+              {/* Launch Arguments */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-white/70">
+                  Launch Arguments (Optional)
+                </label>
+                <input
+                  type="text"
+                  name="launchArgs"
+                  value={formData.launchArgs}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none font-mono text-sm"
+                  placeholder='e.g., -windowed -skipintro'
+                />
               </div>
 
               {/* Description */}

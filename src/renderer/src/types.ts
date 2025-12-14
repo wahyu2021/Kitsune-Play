@@ -18,6 +18,8 @@ export interface Game {
   bg_image: string
   /** Optional: Path or URL to a background video loop (mp4/webm). Overrides bg_image if present. */
   bg_video?: string
+  /** Optional: Custom command line arguments to pass to the executable. */
+  launchArgs?: string
   /** Total playtime in minutes. */
   playtime?: number
   /** ISO timestamp of the last time the game was played. */

@@ -12,6 +12,7 @@ import SearchModal from './components/SearchModal'
 import SettingsModal from './components/SettingsModal'
 import Toast, { ToastType } from './components/Toast'
 import SplashScreen from './components/SplashScreen'
+import Screensaver from './components/Screensaver'
 
 // Logic & Config
 import { Game } from './types'
@@ -37,122 +38,101 @@ function App(): React.JSX.Element {
   /**
    * Core business logic hooks.
    */
-  const { games, mediaApps, userName, setUserName, settings, setSettings, addGame, deleteGame, updateGamePlaytime, resetLibrary, isLoaded } =
-    useLibrary()
-  const isIdle = useIdleTimer(8000)
+  const {
+    games,
+    mediaApps,
+    userName,
+    setUserName,
+    settings,
+    setSettings,
+    addGame,
+    deleteGame,
+    updateGamePlaytime,
+    resetLibrary,
+    isLoaded
+  } = useLibrary()
+  const isIdle = useIdleTimer(5000) // 10 seconds for testing (was 60s)
 
-      /**
+  /**
+   * Audio hooks for background music and sound effects.
+   */
+  const { startAudio, playHover, playSelect, playBack } = useAppSounds(
+    showSplash,
+    settings?.bgMusicVolume ?? 0.3,
+    settings?.sfxVolume ?? 0.8,
+    settings?.isMuted ?? false
+  )
 
-       * Audio hooks for background music and sound effects.
+  /**
+   * Local UI state management.
+   */
+  const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
+  const [selectedGameId, setSelectedGameId] = useState<string>('')
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false) // Track if a game is running
 
-       */
+  const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
+    message: null,
+    type: 'info'
+  })
+  const showToast = (message: string, type: ToastType): void => setToast({ message, type })
 
-      const { startAudio, playHover, playSelect, playBack } = useAppSounds(
+  /**
+   * Derived state based on active tab.
+   */
+  const currentContent = activeTab === 'games' ? games : mediaApps
+  const selectedGame = currentContent.find((g) => g.id === selectedGameId)
 
-        showSplash, 
+  /**
+   * Discord RPC: Handle Idle State
+   */
+  useEffect(() => {
+    if (isPlaying) return // Don't override status if game is running
 
-        settings?.bgMusicVolume ?? 0.3, 
+    if (isIdle) {
+      window.api.updateDiscordStatus('Idle')
+    } else {
+      window.api.updateDiscordStatus('In Menu')
+    }
+  }, [isIdle, isPlaying])
 
-        settings?.sfxVolume ?? 0.8,
+  /**
+   * UI Event Handlers.
+   */
+  const handleStart = useCallback(() => {
+    startAudio()
+    setShowSplash(false)
+  }, [startAudio])
 
-        settings?.isMuted ?? false
-
-      )
-
-  
-
-      /**
-
-  
-
-       * Local UI state management.
-
-  
-
-       */
-
-    const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
-
-    const [selectedGameId, setSelectedGameId] = useState<string>('')
-
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-
-    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
-
-    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
-
-    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-
-    const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
-
-    const [toast, setToast] = useState<{ message: string | null; type: ToastType }>(
-
-      {
-
-        message: null,
-
-        type: 'info'
-
-      }
-
-    )
-
-    const showToast = (message: string, type: ToastType): void => setToast({ message, type })
-
-  
-
-    /**
-
-     * Derived state based on active tab.
-
-     */
-
-    const currentContent = activeTab === 'games' ? games : mediaApps
-
-    const selectedGame = currentContent.find((g) => g.id === selectedGameId)
-
-  
-
-    /**
-
-     * UI Event Handlers.
-
-     */
-
-    const handleStart = useCallback(() => {
-
-      startAudio()
-
-      setShowSplash(false)
-
-    }, [startAudio])
-
-  
-
-    const handleTabChange = useCallback((tab: 'games' | 'media'): void => {
-
-      setActiveTab(tab)
-
-    }, [])
+  const handleTabChange = useCallback((tab: 'games' | 'media'): void => {
+    setActiveTab(tab)
+  }, [])
 
   const handlePlay = useCallback((): void => {
     if (!selectedGame) return
     logger.info('Game', `Launching: ${selectedGame.title}`)
     showToast(`Launching ${selectedGame.title}...`, 'success')
+    setIsPlaying(true)
 
     // launchGame now waits for the process to exit
     window.api
-      .launchGame(selectedGame.path_to_exe)
+      .launchGame(selectedGame.path_to_exe, selectedGame.title, selectedGame.launchArgs)
       .then((duration) => {
         logger.info('Game', `Session ended. Duration: ${duration} mins`)
-        
+        setIsPlaying(false)
+
         if (duration > 0) {
-            updateGamePlaytime(selectedGame.id, duration)
-            showToast(`Played for ${duration} mins`, 'info')
+          updateGamePlaytime(selectedGame.id, duration)
+          showToast(`Played for ${duration} mins`, 'info')
         }
       })
       .catch((err) => {
         logger.error('Game', 'Failed to launch game', err)
+        setIsPlaying(false)
         const msg = err instanceof Error ? err.message : String(err)
         showToast(`Failed: ${msg}`, 'error')
       })
@@ -229,25 +209,28 @@ function App(): React.JSX.Element {
     }
   }, [isAddModalOpen, isProfileModalOpen, isSearchModalOpen, isSettingsModalOpen, playBack])
 
-  useGamepad({
-    onNavigateLeft: handleNavLeft,
-    onNavigateRight: handleNavRight,
-    onSelect: () => {
-      playSelect()
-      if (!isAddModalOpen && !isSettingsModalOpen) {
-        handlePlay()
-      }
-    },
-    onBack: handleGamepadBack,
-    onSearch: () => {
+  useGamepad(
+    {
+      onNavigateLeft: handleNavLeft,
+      onNavigateRight: handleNavRight,
+      onSelect: () => {
+        playSelect()
+        if (!isAddModalOpen && !isSettingsModalOpen) {
+          handlePlay()
+        }
+      },
+      onBack: handleGamepadBack,
+      onSearch: () => {
         playSelect()
         setIsSearchModalOpen(true)
-    },
-    onTabSwitch: () => {
+      },
+      onTabSwitch: () => {
         playHover()
         handleTabChange(activeTab === 'games' ? 'media' : 'games')
-    }
-  }, !showSplash)
+      }
+    },
+    !showSplash
+  )
 
   // 2. Keyboard Navigation
   useEffect(() => {
@@ -314,11 +297,17 @@ function App(): React.JSX.Element {
     handleNavLeft
   ])
 
-  return (
-    <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
-      <AnimatePresence>{showSplash && <SplashScreen onStart={handleStart} />}</AnimatePresence>
+    return (
 
-      {/* Layer 0: Background */}
+      <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
+
+        <AnimatePresence>{showSplash && <SplashScreen onStart={handleStart} />}</AnimatePresence>
+
+        <AnimatePresence>{isIdle && !isPlaying && !showSplash && <Screensaver activeGame={selectedGame} />}</AnimatePresence>
+
+  
+
+        {/* Layer 0: Background */}
       <div className="fixed inset-0 z-0">
         <AnimatePresence mode="wait">
           {selectedGame?.bg_video ? (
@@ -437,8 +426,8 @@ function App(): React.JSX.Element {
         onResetLibrary={handleResetLibraryAction}
         apiKey={settings?.rawgApiKey || ''}
         onSaveApiKey={(key) => {
-            setSettings({ ...settings, rawgApiKey: key })
-            showToast('API Key saved!', 'success')
+          setSettings({ ...settings, rawgApiKey: key })
+          showToast('API Key saved!', 'success')
         }}
         bgMusicVolume={settings?.bgMusicVolume ?? 0.3}
         sfxVolume={settings?.sfxVolume ?? 0.8}

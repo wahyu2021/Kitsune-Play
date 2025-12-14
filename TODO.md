@@ -5,9 +5,9 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 <!-- ## Features -->
 
 # Kitsune Play - Usulan Fitur Pembaruan (v1.1)
-[] Sleep Mode / Screensaver
-[] Custom Launch Arguments
-[] Discord Rich Presence (RPC)
+[x] Sleep Mode / Screensaver
+[x] Custom Launch Arguments
+[x] Discord Rich Presence (RPC)
 
 ## 1. Discord Rich Presence (RPC)
 
