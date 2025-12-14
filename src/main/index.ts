@@ -119,7 +119,7 @@ app.whenReady().then(() => {
               ? `tasklist /FI "IMAGENAME eq ${targetProcessName}" /NH`
               : `ps -A | grep "${targetProcessName}"`
 
-            require('child_process').exec(cmd, (err, stdout) => {
+            require('child_process').exec(cmd, (_err, stdout) => {
               // If error or empty output (or specific "No tasks" msg on Windows), process is gone
               const isRunning = stdout && stdout.toLowerCase().includes(targetProcessName.toLowerCase())
               
