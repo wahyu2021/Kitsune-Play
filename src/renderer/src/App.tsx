@@ -22,7 +22,6 @@ import { getGenreColor } from './utils/theme'
 import { DEFAULT_BANNER } from './config'
 import { useAppSounds } from './hooks/useAppSounds'
 import { logger } from './utils/logger'
-import LazyImage from './components/LazyImage'
 import { useGamepad } from './hooks/useGamepad'
 
 /**
