@@ -51,7 +51,7 @@ function App(): React.JSX.Element {
     resetLibrary,
     isLoaded
   } = useLibrary()
-  const isIdle = useIdleTimer(5000) // 10 seconds for testing (was 60s)
+  const isIdle = useIdleTimer(30000)
 
   /**
    * Audio hooks for background music and sound effects.
@@ -74,6 +74,7 @@ function App(): React.JSX.Element {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
   const [isPlaying, setIsPlaying] = useState(false) // Track if a game is running
+  const [showVideo, setShowVideo] = useState(false) // Delayed video preview state
 
   const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
     message: null,
@@ -86,6 +87,19 @@ function App(): React.JSX.Element {
    */
   const currentContent = activeTab === 'games' ? games : mediaApps
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
+
+  /**
+   * Delayed Video Preview Logic
+   * Resets showVideo on selection change, then enables it after N seconds.
+   */
+  useEffect(() => {
+    setShowVideo(false)
+    const timer = setTimeout(() => {
+      setShowVideo(true)
+    }, 5000) // 3 seconds delay
+
+    return () => clearTimeout(timer)
+  }, [selectedGameId])
 
   /**
    * Discord RPC: Handle Idle State
@@ -297,52 +311,45 @@ function App(): React.JSX.Element {
     handleNavLeft
   ])
 
-    return (
+  return (
+    <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
+      <AnimatePresence>{showSplash && <SplashScreen onStart={handleStart} />}</AnimatePresence>
 
-      <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
+      <AnimatePresence>
+        {isIdle && !isPlaying && !showSplash && <Screensaver activeGame={selectedGame} />}
+      </AnimatePresence>
 
-        <AnimatePresence>{showSplash && <SplashScreen onStart={handleStart} />}</AnimatePresence>
-
-        <AnimatePresence>{isIdle && !isPlaying && !showSplash && <Screensaver activeGame={selectedGame} />}</AnimatePresence>
-
-  
-
-        {/* Layer 0: Background */}
+      {/* Layer 0: Background */}
       <div className="fixed inset-0 z-0">
         <AnimatePresence mode="wait">
-          {selectedGame?.bg_video ? (
+          {selectedGame?.bg_video && showVideo ? (
             <motion.video
               key={selectedGame.bg_video}
               src={selectedGame.bg_video}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="h-full w-full object-cover"
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 h-full w-full object-cover"
               autoPlay
               loop
               muted
               playsInline
             />
           ) : (
-            <motion.div
+            <motion.img
               key={selectedGame?.bg_image || 'default'}
+              src={selectedGame?.bg_image || DEFAULT_BANNER}
+              alt="Background"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.7 }}
-              className="h-full w-full"
-            >
-              <LazyImage
-                src={selectedGame?.bg_image || DEFAULT_BANNER}
-                alt="Background"
-                className="h-full w-full object-cover"
-              />
-            </motion.div>
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
           )}
         </AnimatePresence>
       </div>
-
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
       <div
         className={`absolute inset-0 z-10 bg-gradient-to-t ${getGenreColor(selectedGame?.genre || '')} via-transparent to-transparent mix-blend-overlay transition-colors duration-1000 ease-in-out opacity-75`}
