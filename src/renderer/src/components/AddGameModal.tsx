@@ -85,7 +85,7 @@ export default function AddGameModal({
 
       if (filePath) {
         let finalPath = filePath
-        // For images and videos, we might need file:// protocol
+
         if (field === 'cover_image' || field === 'bg_image' || field === 'bg_video') {
           finalPath = `file://${filePath.replace(/\\/g, '/')}`
         }
@@ -101,7 +101,7 @@ export default function AddGameModal({
     e.preventDefault()
     if (formData.title && formData.path_to_exe) {
       const newGame: Game = {
-        id: editGame ? editGame.id : Date.now().toString(), // Preserve ID if editing
+        id: editGame ? editGame.id : Date.now().toString(),
         title: formData.title || 'Untitled',
         description: formData.description || '',
         genre: formData.genre || 'Unknown',

@@ -2,59 +2,82 @@
 
 This document tracks the progress of the **Kitsune Play** PS5-style game launcher.
 
-## Features
+<!-- ## Features -->
 
-### Core Architecture
-- [x] **Project Setup:** Electron + React + TypeScript + Vite.
-- [x] **Data Persistence:** Custom `useLibrary` hook saving data to `library.json`.
-- [x] **File Management:** IPC handlers for opening file dialogs and launching executables.
-- [x] **Error Handling:** Robust try-catch blocks with a custom `Logger` utility (`src/renderer/src/utils/logger.ts`).
-- [x] **Code Quality:** Comprehensive JSDoc documentation and strict TypeScript typing.
+# Kitsune Play - Usulan Fitur Pembaruan (v1.1)
+[] Sleep Mode / Screensaver
+[] Custom Launch Arguments
+[] Discord Rich Presence (RPC)
 
-### User Interface (UI/UX)
-- [x] **PS5 Aesthetic:** Immersive layout with "Atmospheric" gradient overlays and Framer Motion animations.
-- [x] **Glassmorphism:** Frosted glass effects on modals and info panels (`backdrop-blur`).
-- [x] **Splash Screen:** Animated intro with a "Click to Start" fallback for browser autoplay policies.
-- [x] **Top Bar:** Real-time clock (Time & Date), User Profile, and System Controls.
-- [x] **Navigation:** Keyboard support (Arrow Keys, Enter, Esc, Tab).
+## 1. Discord Rich Presence (RPC)
 
-### Audio System
-- [x] **Background Music:** Looping ambient track with volume control (`useAppSounds`).
-- [x] **Sound Effects (SFX):**
-  - Navigation (Hover/Swoosh)
-  - Selection (Ping)
-  - Back/Cancel (Esc)
-  - Welcome Voiceover
-- [x] **Smart Autoplay:** Logic to handle browser autoplay blocking with user interaction recovery.
+### 📝 Deskripsi
+Fitur ini menghubungkan Kitsune Play dengan aplikasi Discord di PC pengguna. Saat pengguna membuka launcher atau memainkan game tertentu, status profil Discord mereka akan diperbarui secara otomatis secara *real-time*.
 
-### Gamepad / Controller Support
-**Objective:** Allow full navigation using a game controller (PlayStation/Xbox).
+### 🎯 Nilai Tambah
+* **Visual Sosial Tinggi:** Mengubah status "Online" biasa menjadi tampilan kartu aktivitas yang menarik.
+* **Profesional:** Memberikan kesan bahwa Kitsune Play adalah aplikasi yang terintegrasi penuh, setara dengan Steam atau Epic Games.
+* **Informasi:** Teman pengguna dapat melihat game apa yang sedang dimainkan dan sudah berapa lama sesi berlangsung.
 
-**Implementation Plan:**
-- [ ] Create a `useGamepad` hook using the HTML5 Gamepad API (`navigator.getGamepads()`).
-- [ ] Map standard buttons:
-  - **D-Pad / Left Stick:** Navigate Game List (Left/Right).
-  - **Button A / Cross:** Select/Play Game (`playSelect`).
-  - **Button B / Circle:** Back/Close Modal (`playBack`).
-  - **Button Y / Triangle:** Search (`Ctrl+F`).
-- [ ] Integrate with existing `handleKeyDown` logic or create a unified `NavigationController`.
-
-### Video Backgrounds (Live Wallpapers)
-**Objective:** Replace static background images with looping video trailers for a premium feel.
-
-**Implementation Plan:**
-- [x] Update `Game` interface in `types.ts` to include optional `bg_video_path`.
-- [x] Update `AddGameModal` to allow selecting `.mp4` or `.webm` files.
-- [x] Modify `App.tsx`:
-  - Render a `<video>` tag behind the gradients.
-  - Logic: If `bg_video_path` exists, play video (muted/low volume); otherwise, fallback to `bg_image`.
-  - Add smooth crossfade transition when switching games.
+### 💻 Konsep Implementasi Teknis
+* **Backend (Electron Main Process):**
+    * Menggunakan library Node.js seperti `discord-rpc`.
+    * Dijalankan di `src/main/index.ts` saat aplikasi dimulai.
+* **Komunikasi (IPC):**
+    * Renderer (React) mengirim sinyal ke Main Process saat game dipilih atau diluncurkan.
+    * Contoh data yang dikirim: `Nama Game`, `Timestamp Mulai`, `Ikon Game`.
+* **Tampilan di Discord:**
+    ```text
+    Playing Kitsune Play
+    [Gambar Cover Game]
+    God of War
+    Playing for 00:45:12
+    ```
 
 ---
 
-## Future Ideas (Backlog)
+## 2. Custom Launch Arguments
 
-- [x] **Auto-Metadata Scraping:** Integrate IGDB API to automatically fetch game covers and descriptions based on the game title.
-- [ ] **Theming Engine:** Allow users to pick accent colors (Blue, Red, Purple) instead of the default Orange.
-- [x] **Play Time Tracker:** Track how long each game has been played.
-- [ ] **Favorites System:** "Pin" favorite games to the start of the list.
+### 📝 Deskripsi
+Fitur ini memberikan kolom input tambahan di menu "Edit Game" yang memungkinkan pengguna menyisipkan perintah teks (arguments/flags) khusus yang akan diteruskan ke file executable (`.exe`) saat dijalankan.
+
+### 🎯 Nilai Tambah (Fungsional)
+Sangat krusial untuk **Power Users** dan **Gamer PC** karena:
+1.  **Emulator Support:** Memungkinkan peluncuran game emulator langsung ke judul tertentu tanpa membuka menu emulator (misal: `-g "C:\Roms\Mario.iso"`).
+2.  **Troubleshooting:** Membantu menjalankan game tua yang butuh parameter khusus (misal: `-windowed`, `-skipintro`, `-dx11`).
+3.  **Modding:** Beberapa game memerlukan argumen khusus untuk memuat folder mod.
+
+### 💻 Konsep Implementasi Teknis
+* **Database Update (`types.ts`):**
+    Menambahkan field baru pada interface `Game`:
+    ```typescript
+    export interface Game {
+      // ... field lainnya
+      launchArgs?: string; // e.g., "-fullscreen -nointro"
+    }
+    ```
+* **Execution Logic:**
+    Pada fungsi peluncuran game (di Main Process), gabungkan path executable dengan argumen ini sebelum memanggil `child_process.spawn`.
+
+---
+
+## 3. Sleep Mode / Screensaver
+
+### 📝 Deskripsi
+Fitur estetika yang meniru perilaku konsol (PS5/Xbox). Jika aplikasi mendeteksi tidak ada aktivitas (input mouse/keyboard/gamepad) selama durasi tertentu, antarmuka utama akan memudar dan digantikan oleh tampilan screensaver.
+
+### 🎯 Nilai Tambah (Estetika & UI)
+* **Perlindungan Layar:** Mencegah *burn-in* pada monitor (terutama OLED) jika launcher ditinggal statis terlalu lama.
+* **Imersi Konsol:** Memberikan nuansa "premium" dan hidup. Launcher tidak pernah benar-benar "diam".
+* **Pameran Koleksi:** Screensaver bisa berupa *slideshow* otomatis dari koleksi game pengguna.
+
+### 💻 Konsep Implementasi Teknis
+* **Deteksi Idle:**
+    Memanfaatkan hook yang sudah ada: `src/renderer/src/hooks/useIdleTimer.ts`.
+* **Mode Tampilan:**
+    1.  **Cinematic:** Memutar ulang video background (jika ada) tanpa elemen UI yang mengganggu.
+    2.  **Dimmed:** Layar menjadi gelap dengan jam digital minimalis dan logo Kitsune Play yang berdenyut (*breathing effect*).
+* **Transisi:**
+    Menggunakan `framer-motion` (AnimatePresence) untuk efek *fade-in/fade-out* yang halus saat masuk atau keluar dari mode tidur.
+
+---
