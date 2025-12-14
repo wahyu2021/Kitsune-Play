@@ -96,7 +96,19 @@ export default function AddGameModal({
           finalPath = `file://${filePath.replace(/\\/g, '/')}`
         }
 
-        setFormData((prev) => ({ ...prev, [field]: finalPath }))
+        setFormData((prev) => {
+          const updates: Partial<Game> = { [field]: finalPath }
+          
+          // Auto-fill executableName if browsing for exe and field is empty
+          if (field === 'path_to_exe' && !prev.executableName) {
+             const fileName = filePath.split(/[/\\]/).pop() // Extract 'Game.exe'
+             if (fileName) {
+                updates.executableName = fileName
+             }
+          }
+          
+          return { ...prev, ...updates }
+        })
       }
     } catch (error) {
       console.error('[AddGameModal] Error opening dialog:', error)
