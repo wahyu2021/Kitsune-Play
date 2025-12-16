@@ -1,9 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_DISCORD_CLIENT_ID: string
   readonly VITE_RAWG_BASE_URL: string
-  // Add other VITE_ environment variables here as needed
+  readonly VITE_DISCORD_CLIENT_ID: string
 }
 
 interface ImportMeta {

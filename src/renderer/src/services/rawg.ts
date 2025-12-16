@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger'
 
-const RAWG_BASE_URL = 'https://api.rawg.io/api'
+const RAWG_BASE_URL = import.meta.env.VITE_RAWG_BASE_URL || 'https://api.rawg.io/api'
 
 export interface GameMetadata {
   description: string
