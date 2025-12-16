@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { Game, AppSettings } from '../types'
-import { getInitialGamesData, DEFAULT_BANNER } from '../config'
-import { logger } from '../utils/logger'
+import { Game } from '@/features/library/types'
+import { AppSettings } from '@/features/settings/types'
+import { getInitialGamesData, DEFAULT_BANNER } from '@/config'
+import { logger } from '@/utils/logger'
 
 interface AppData {
   games: Game[]

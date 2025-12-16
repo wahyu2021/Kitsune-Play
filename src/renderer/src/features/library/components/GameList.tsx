@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Game } from '../types'
+import { Game } from '@/features/library/types'
 import GameCard from './GameCard'
 import { FaGhost } from 'react-icons/fa'
 

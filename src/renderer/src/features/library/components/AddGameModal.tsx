@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaSave, FaFolderOpen, FaImage, FaMagic, FaSpinner, FaVideo } from 'react-icons/fa'
-import { Game } from '../types'
-import { fetchGameMetadata } from '../services/rawg'
-import { logger } from '../utils/logger'
+import { Game } from '@/features/library/types'
+import { fetchGameMetadata } from '@/services/rawg'
+import { logger } from '@/utils/logger'
 
 interface AddGameModalProps {
   isOpen: boolean

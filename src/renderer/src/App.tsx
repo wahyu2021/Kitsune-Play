@@ -1,28 +1,27 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-// Components
-import GameList from './components/GameList'
-import InfoPanel from './components/InfoPanel'
-import TopBar from './components/TopBar'
-import BottomBar from './components/BottomBar'
-import AddGameModal from './components/AddGameModal'
-import ProfileModal from './components/ProfileModal'
-import SearchModal from './components/SearchModal'
-import SettingsModal from './components/SettingsModal'
-import Toast, { ToastType } from './components/Toast'
-import SplashScreen from './components/SplashScreen'
-import Screensaver from './components/Screensaver'
+// Features
+import { GameList, InfoPanel, AddGameModal } from '@/features/library'
+import { TopBar, BottomBar } from '@/features/navigation'
+import { ProfileModal } from '@/features/profile'
+import { SearchModal } from '@/features/search'
+import { SettingsModal } from '@/features/settings'
+
+// Shared UI
+import { Toast, ToastType } from '@/components/ui'
+import SplashScreen from '@/components/SplashScreen'
+import Screensaver from '@/components/Screensaver'
+import AppBackground from '@/components/AppBackground'
 
 // Logic & Config
-import { Game } from './types'
-import { useLibrary } from './hooks/useLibrary'
-import { useIdleTimer } from './hooks/useIdleTimer'
-import { getGenreColor } from './utils/theme'
-import { DEFAULT_BANNER } from './config'
-import { useAppSounds } from './hooks/useAppSounds'
-import { logger } from './utils/logger'
-import { useGamepad } from './hooks/useGamepad'
+import { Game, useLibrary } from '@/features/library'
+import { useNavigation } from '@/features/navigation'
+import { useIdleTimer } from '@/hooks/useIdleTimer'
+import { useAppSounds } from '@/hooks/useAppSounds'
+import { logger } from '@/utils/logger'
+import { useGameLauncher } from '@/hooks/useGameLauncher'
+import MainLayout from '@/layouts/MainLayout'
 
 /**
  * Main application component responsible for rendering the game launcher UI.
@@ -72,8 +71,6 @@ function App(): React.JSX.Element {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false) // Track if a game is running
-  const [showVideo, setShowVideo] = useState(false) // Delayed video preview state
 
   const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
     message: null,
@@ -81,24 +78,13 @@ function App(): React.JSX.Element {
   })
   const showToast = (message: string, type: ToastType): void => setToast({ message, type })
 
+  const { isPlaying, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
+
   /**
    * Derived state based on active tab.
    */
   const currentContent = activeTab === 'games' ? games : mediaApps
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
-
-  /**
-   * Delayed Video Preview Logic
-   * Resets showVideo on selection change, then enables it after N seconds.
-   */
-  useEffect(() => {
-    setShowVideo(false)
-    const timer = setTimeout(() => {
-      setShowVideo(true)
-    }, 5000) // 3 seconds delay
-
-    return () => clearTimeout(timer)
-  }, [selectedGameId])
 
   /**
    * Discord RPC: Handle Idle State
@@ -126,37 +112,8 @@ function App(): React.JSX.Element {
   }, [])
 
   const handlePlay = useCallback((): void => {
-    if (!selectedGame) return
-    logger.info('Game', `Launching: ${selectedGame.title}`)
-    showToast(`Launching ${selectedGame.title}...`, 'success')
-    setIsPlaying(true)
-
-    // launchGame now waits for the process to exit
-    window.api
-      .launchGame(
-        selectedGame.path_to_exe,
-        selectedGame.title,
-        selectedGame.launchArgs,
-        selectedGame.executableName
-      )
-      .then((duration) => {
-        logger.info('Game', `Session ended. Duration: ${duration} mins`)
-        setIsPlaying(false)
-
-        // Always update last played timestamp, even if duration is 0
-        updateGamePlaytime(selectedGame.id, duration)
-
-        if (duration > 0) {
-          showToast(`Played for ${duration} mins`, 'info')
-        }
-      })
-      .catch((err) => {
-        logger.error('Game', 'Failed to launch game', err)
-        setIsPlaying(false)
-        const msg = err instanceof Error ? err.message : String(err)
-        showToast(`Failed: ${msg}`, 'error')
-      })
-  }, [selectedGame, updateGamePlaytime])
+    if (selectedGame) launchGame(selectedGame)
+  }, [selectedGame, launchGame])
 
   const handleSaveGame = useCallback(
     (gameData: Game): void => {
@@ -198,169 +155,41 @@ function App(): React.JSX.Element {
     }
   }, [isLoaded, currentContent, selectedGame])
 
-  const handleNavRight = useCallback((): void => {
-    if (currentContent.length === 0) return
-    const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)
-    const nextIndex = (currentIndex + 1) % currentContent.length
-    playHover()
-    setSelectedGameId(currentContent[nextIndex].id)
-  }, [currentContent, selectedGameId, playHover])
+  const isAnyModalOpen =
+    isAddModalOpen || isProfileModalOpen || isSearchModalOpen || isSettingsModalOpen
 
-  const handleNavLeft = useCallback((): void => {
-    if (currentContent.length === 0) return
-    const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)
-    const prevIndex = (currentIndex - 1 + currentContent.length) % currentContent.length
-    playHover()
-    setSelectedGameId(currentContent[prevIndex].id)
-  }, [currentContent, selectedGameId, playHover])
+  const closeAllModals = useCallback(() => {
+    setIsSearchModalOpen(false)
+    setIsSettingsModalOpen(false)
+    setIsAddModalOpen(false)
+    setIsProfileModalOpen(false)
+    setGameToEdit(null)
+  }, [])
 
-  /**
-   * Gamepad Integration.
-   * Maps controller inputs to UI actions.
-   */
-  const handleGamepadBack = useCallback(() => {
-    if (isAddModalOpen || isProfileModalOpen || isSearchModalOpen || isSettingsModalOpen) {
-      playBack()
-      setIsSearchModalOpen(false)
-      setIsSettingsModalOpen(false)
-      setIsAddModalOpen(false)
-      setIsProfileModalOpen(false)
-      setGameToEdit(null)
-    }
-  }, [isAddModalOpen, isProfileModalOpen, isSearchModalOpen, isSettingsModalOpen, playBack])
-
-  useGamepad(
-    {
-      onNavigateLeft: handleNavLeft,
-      onNavigateRight: handleNavRight,
-      onSelect: () => {
-        playSelect()
-        if (!isAddModalOpen && !isSettingsModalOpen) {
-          handlePlay()
-        }
-      },
-      onBack: handleGamepadBack,
-      onSearch: () => {
-        playSelect()
-        setIsSearchModalOpen(true)
-      },
-      onTabSwitch: () => {
-        playHover()
-        handleTabChange(activeTab === 'games' ? 'media' : 'games')
-      }
-    },
-    !showSplash
-  )
-
-  // 2. Keyboard Navigation
-  useEffect(() => {
-    // Block input while splash is showing
-    if (showSplash) return
-
-    const handleKeyDown = (e: KeyboardEvent): void => {
-      if (isAddModalOpen || isProfileModalOpen || isSearchModalOpen || isSettingsModalOpen) {
-        if (e.key === 'Escape') {
-          playBack()
-          setIsSearchModalOpen(false)
-          setIsSettingsModalOpen(false)
-          setIsAddModalOpen(false)
-          setGameToEdit(null)
-        }
-        return
-      }
-
-      if (currentContent.length === 0) {
-        if (e.key === 'Tab') {
-          e.preventDefault()
-          handleTabChange(activeTab === 'games' ? 'media' : 'games')
-        }
-        return
-      }
-
-      if (e.key === 'ArrowRight') {
-        handleNavRight()
-      } else if (e.key === 'ArrowLeft') {
-        handleNavLeft()
-      } else if (e.key === 'Enter') {
-        playSelect()
-        handlePlay()
-      } else if (e.ctrlKey && e.key === 'f') {
-        playSelect()
-        setIsSearchModalOpen(true)
-      } else if (e.key === 'Tab') {
-        e.preventDefault()
-        playHover()
-        handleTabChange(activeTab === 'games' ? 'media' : 'games')
-      } else if (e.key === 'Delete') {
-        handleDeleteAction()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [
-    selectedGameId,
+  useNavigation({
     currentContent,
+    selectedGameId,
+    setSelectedGameId,
     activeTab,
-    isAddModalOpen,
-    isProfileModalOpen,
-    isSearchModalOpen,
-    isSettingsModalOpen,
+    onTabChange: handleTabChange,
+    isAnyModalOpen,
+    closeAllModals,
+    openSearch: () => setIsSearchModalOpen(true),
     handlePlay,
-    handleDeleteAction,
-    handleTabChange,
-    showSplash,
-    playHover,
-    playSelect,
-    playBack,
-    handleNavRight,
-    handleNavLeft
-  ])
+    handleDelete: handleDeleteAction,
+    audio: { playHover, playSelect, playBack },
+    showSplash
+  })
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#0f0f0f] font-sans text-white selection:bg-transparent">
+    <MainLayout>
       <AnimatePresence>{showSplash && <SplashScreen onStart={handleStart} />}</AnimatePresence>
 
       <AnimatePresence>
         {isIdle && !isPlaying && !showSplash && <Screensaver activeGame={selectedGame} />}
       </AnimatePresence>
 
-      {/* Layer 0: Background */}
-      <div className="fixed inset-0 z-0">
-        <AnimatePresence mode="wait">
-          {selectedGame?.bg_video && showVideo ? (
-            <motion.video
-              key={selectedGame.bg_video}
-              src={selectedGame.bg_video}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 h-full w-full object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          ) : (
-            <motion.img
-              key={selectedGame?.bg_image || 'default'}
-              src={selectedGame?.bg_image || DEFAULT_BANNER}
-              alt="Background"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          )}
-        </AnimatePresence>
-      </div>
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-      <div
-        className={`absolute inset-0 z-10 bg-gradient-to-t ${getGenreColor(selectedGame?.genre || '')} via-transparent to-transparent mix-blend-overlay transition-colors duration-1000 ease-in-out opacity-75`}
-      />
-      <div className="absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-black/80 to-transparent" />
+      <AppBackground selectedGame={selectedGame} />
 
       <motion.div
         className="relative z-20 flex h-full flex-col justify-between px-16 pt-8 pb-4"
@@ -455,7 +284,7 @@ function App(): React.JSX.Element {
         type={toast.type}
         onClose={() => setToast({ ...toast, message: null })}
       />
-    </div>
+    </MainLayout>
   )
 }
 

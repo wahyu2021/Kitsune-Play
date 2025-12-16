@@ -1,4 +1,4 @@
-import { Game } from './types'
+import { Game } from '@/features/library/types'
 
 // Assets Imports
 import gofBanner from './assets/games/gof-banner.jpg'

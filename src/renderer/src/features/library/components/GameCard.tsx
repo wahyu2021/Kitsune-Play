@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
-import { Game } from '../types'
+import { Game } from '@/features/library/types'
 import { useRef, useEffect } from 'react'
-import LazyImage from './LazyImage'
+import LazyImage from '@/components/ui/LazyImage'
 
 interface GameCardProps {
   game: Game

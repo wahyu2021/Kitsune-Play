@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { DEFAULT_BANNER } from '../config'
+import { DEFAULT_BANNER } from '../../config'
 
 interface LazyImageProps {
   src: string

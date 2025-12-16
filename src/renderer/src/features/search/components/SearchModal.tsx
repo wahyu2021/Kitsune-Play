@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaSearch, FaGamepad } from 'react-icons/fa'
-import { Game } from '../types'
+import { useState, useEffect, useRef } from 'react'
+import { Game } from '@/features/library/types'
 
 interface SearchModalProps {
   isOpen: boolean

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Game } from '../types'
+import { Game } from '@/features/library/types'
 import { FaPlay, FaPen, FaTrash, FaClock, FaCalendarAlt } from 'react-icons/fa'
 
 interface InfoPanelProps {
