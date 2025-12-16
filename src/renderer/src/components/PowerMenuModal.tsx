@@ -1,12 +1,15 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaPowerOff, FaRedo, FaMoon, FaTimes, FaDoorOpen } from 'react-icons/fa'
+import { FaPowerOff, FaRedo, FaMoon, FaDoorOpen } from 'react-icons/fa'
 
 interface PowerMenuModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps): React.JSX.Element {
+export default function PowerMenuModal({
+  isOpen,
+  onClose
+}: PowerMenuModalProps): React.JSX.Element {
   const handleAction = (action: 'shutdown' | 'restart' | 'sleep' | 'quit'): void => {
     if (window.api) {
       switch (action) {
@@ -50,7 +53,6 @@ export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps)
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md">
           <div className="absolute inset-0" onClick={onClose} /> {/* Click outside to close */}
-          
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -58,7 +60,7 @@ export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps)
             exit="exit"
             className="relative z-10 w-full max-w-4xl p-8 text-center"
           >
-            <motion.h2 
+            <motion.h2
               variants={itemVariants}
               className="mb-12 text-3xl font-light text-white tracking-widest uppercase"
             >
@@ -78,8 +80,12 @@ export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps)
                   <FaMoon className="text-3xl text-white/80 group-hover:text-white" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-lg font-medium text-white group-hover:text-blue-400">Sleep</span>
-                  <span className="block text-xs text-white/40 uppercase tracking-wider">Suspend</span>
+                  <span className="block text-lg font-medium text-white group-hover:text-blue-400">
+                    Sleep
+                  </span>
+                  <span className="block text-xs text-white/40 uppercase tracking-wider">
+                    Suspend
+                  </span>
                 </div>
               </motion.button>
 
@@ -95,8 +101,12 @@ export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps)
                   <FaRedo className="text-3xl text-white/80 group-hover:text-white" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-lg font-medium text-white group-hover:text-orange-400">Restart</span>
-                  <span className="block text-xs text-white/40 uppercase tracking-wider">Reboot</span>
+                  <span className="block text-lg font-medium text-white group-hover:text-orange-400">
+                    Restart
+                  </span>
+                  <span className="block text-xs text-white/40 uppercase tracking-wider">
+                    Reboot
+                  </span>
                 </div>
               </motion.button>
 
@@ -112,8 +122,12 @@ export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps)
                   <FaPowerOff className="text-3xl text-white/80 group-hover:text-white" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-lg font-medium text-white group-hover:text-red-400">Turn Off</span>
-                  <span className="block text-xs text-white/40 uppercase tracking-wider">Shutdown</span>
+                  <span className="block text-lg font-medium text-white group-hover:text-red-400">
+                    Turn Off
+                  </span>
+                  <span className="block text-xs text-white/40 uppercase tracking-wider">
+                    Shutdown
+                  </span>
                 </div>
               </motion.button>
 
@@ -129,8 +143,12 @@ export default function PowerMenuModal({ isOpen, onClose }: PowerMenuModalProps)
                   <FaDoorOpen className="text-3xl text-white/80 group-hover:text-white" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-lg font-medium text-white group-hover:text-gray-400">Exit App</span>
-                  <span className="block text-xs text-white/40 uppercase tracking-wider">Desktop</span>
+                  <span className="block text-lg font-medium text-white group-hover:text-gray-400">
+                    Exit App
+                  </span>
+                  <span className="block text-xs text-white/40 uppercase tracking-wider">
+                    Desktop
+                  </span>
                 </div>
               </motion.button>
             </div>
