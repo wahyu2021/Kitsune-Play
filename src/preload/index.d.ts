@@ -4,7 +4,12 @@ declare global {
   interface Window {
     electron: ElectronAPI
     api: {
-      launchGame: (path: string, name: string, launchArgs?: string, executableName?: string) => Promise<number>
+      launchGame: (
+        path: string,
+        name: string,
+        launchArgs?: string,
+        executableName?: string
+      ) => Promise<number>
       updateDiscordStatus: (status: string) => Promise<void>
       selectFile: (filters: Electron.FileFilter[]) => Promise<string | null>
       loadData: () => Promise<string | null>

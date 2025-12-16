@@ -30,7 +30,7 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
   // Refs to track input timing for throttling (cooldown)
   const lastInputTime = useRef<number>(0)
   const lastButtonState = useRef<Record<number, boolean>>({})
-  
+
   // Constants
   const THRESHOLD_STICK = 0.5 // Analog deadzone
   const COOLDOWN_NAV = 150 // ms between navigation moves (scrolling)
@@ -67,24 +67,24 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
 
         // --- Actions (Buttons) - State Locked (Press once) ---
         // We handle these differently: Action triggers on "Press Down" edge, not hold.
-        
+
         const checkButton = (index: number, callback: () => void): void => {
           const isPressed = gp.buttons[index]?.pressed
           const wasPressed = lastButtonState.current[index] || false
 
-          if (isPressed && !wasPressed && (now - lastInputTime.current > COOLDOWN_ACTION)) {
+          if (isPressed && !wasPressed && now - lastInputTime.current > COOLDOWN_ACTION) {
             callback()
             lastInputTime.current = now
           }
-          
+
           lastButtonState.current[index] = isPressed
         }
 
-        checkButton(0, handlers.onSelect)     // A / Cross
-        checkButton(1, handlers.onBack)       // B / Circle
-        checkButton(3, handlers.onSearch)     // Y / Triangle
-        checkButton(4, handlers.onTabSwitch)  // L1 (Bumper Left)
-        checkButton(5, handlers.onTabSwitch)  // R1 (Bumper Right)
+        checkButton(0, handlers.onSelect) // A / Cross
+        checkButton(1, handlers.onBack) // B / Circle
+        checkButton(3, handlers.onSearch) // Y / Triangle
+        checkButton(4, handlers.onTabSwitch) // L1 (Bumper Left)
+        checkButton(5, handlers.onTabSwitch) // R1 (Bumper Right)
       }
 
       animationFrameId = requestAnimationFrame(scanGamepad)
@@ -92,22 +92,24 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
 
     // Start loop
     animationFrameId = requestAnimationFrame(scanGamepad)
-    
+
     // Cleanup
     return () => cancelAnimationFrame(animationFrameId)
   }, [handlers, isEnabled])
-  
+
   // Log connection events
   useEffect(() => {
-    const onConnect = (e: GamepadEvent): void => logger.info('System', `Gamepad connected: ${e.gamepad.id}`)
-    const onDisconnect = (e: GamepadEvent): void => logger.info('System', `Gamepad disconnected: ${e.gamepad.id}`)
-    
+    const onConnect = (e: GamepadEvent): void =>
+      logger.info('System', `Gamepad connected: ${e.gamepad.id}`)
+    const onDisconnect = (e: GamepadEvent): void =>
+      logger.info('System', `Gamepad disconnected: ${e.gamepad.id}`)
+
     window.addEventListener('gamepadconnected', onConnect)
     window.addEventListener('gamepaddisconnected', onDisconnect)
-    
+
     return () => {
-        window.removeEventListener('gamepadconnected', onConnect)
-        window.removeEventListener('gamepaddisconnected', onDisconnect)
+      window.removeEventListener('gamepadconnected', onConnect)
+      window.removeEventListener('gamepaddisconnected', onDisconnect)
     }
   }, [])
 }

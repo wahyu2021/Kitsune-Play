@@ -1,5 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes, FaTrashRestore, FaInfoCircle, FaKey, FaExternalLinkAlt, FaSave, FaVolumeUp, FaVolumeMute } from 'react-icons/fa'
+import {
+  FaTimes,
+  FaTrashRestore,
+  FaInfoCircle,
+  FaKey,
+  FaExternalLinkAlt,
+  FaSave,
+  FaVolumeUp,
+  FaVolumeMute
+} from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 
 interface SettingsModalProps {
@@ -16,18 +25,18 @@ interface SettingsModalProps {
   onMuteToggle: (muted: boolean) => void
 }
 
-export default function SettingsModal({ 
-    isOpen, 
-    onClose, 
-    onResetLibrary, 
-    apiKey, 
-    onSaveApiKey,
-    bgMusicVolume,
-    sfxVolume,
-    isMuted,
-    onBgMusicVolumeChange,
-    onSfxVolumeChange,
-    onMuteToggle
+export default function SettingsModal({
+  isOpen,
+  onClose,
+  onResetLibrary,
+  apiKey,
+  onSaveApiKey,
+  bgMusicVolume,
+  sfxVolume,
+  isMuted,
+  onBgMusicVolumeChange,
+  onSfxVolumeChange,
+  onMuteToggle
 }: SettingsModalProps): React.JSX.Element {
   const [version, setVersion] = useState<string>('')
   const [localKey, setLocalKey] = useState(apiKey)
@@ -35,14 +44,14 @@ export default function SettingsModal({
   // Sync local state with prop only when modal opens
   useEffect(() => {
     if (isOpen) {
-        if (window.api) {
-            window.api.getAppVersion().then(setVersion)
-        } else {
-            setVersion('1.0.0 (Dev)')
-        }
-        setLocalKey(apiKey)
+      if (window.api) {
+        window.api.getAppVersion().then(setVersion)
+      } else {
+        setVersion('1.0.0 (Dev)')
+      }
+      setLocalKey(apiKey)
     }
-  }, [isOpen]) // Removed apiKey from dependency to prevent loops
+  }, [isOpen, apiKey]) // Removed apiKey from dependency to prevent loops
 
   return (
     <AnimatePresence>
@@ -62,62 +71,64 @@ export default function SettingsModal({
             </div>
 
             <div className="flex flex-col gap-6">
-                {/* Audio Settings */}
-                <div>
-                    <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-400">Audio</h3>
-                    <div className="rounded-lg bg-white/5 p-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <label className="flex items-center gap-2 text-sm font-bold text-white">
-                                {isMuted ? <FaVolumeMute className="text-red-400" /> : <FaVolumeUp />}
-                                Sound Controls
-                            </label>
-                            <button
-                                onClick={() => onMuteToggle(!isMuted)}
-                                className={`text-xs font-bold px-2 py-1 rounded ${isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                            >
-                                {isMuted ? 'MUTED' : 'MUTE ALL'}
-                            </button>
-                        </div>
-                        
-                        {/* Music Slider */}
-                        <div className="mb-3">
-                            <div className="flex justify-between text-xs text-white/60 mb-1">
-                                <span>Music</span>
-                                <span>{Math.round(bgMusicVolume * 100)}%</span>
-                            </div>
-                            <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.05"
-                                value={bgMusicVolume}
-                                onChange={(e) => onBgMusicVolumeChange(parseFloat(e.target.value))}
-                                disabled={isMuted}
-                                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500 disabled:opacity-50"
-                            />
-                        </div>
+              {/* Audio Settings */}
+              <div>
+                <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-400">
+                  Audio
+                </h3>
+                <div className="rounded-lg bg-white/5 p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="flex items-center gap-2 text-sm font-bold text-white">
+                      {isMuted ? <FaVolumeMute className="text-red-400" /> : <FaVolumeUp />}
+                      Sound Controls
+                    </label>
+                    <button
+                      onClick={() => onMuteToggle(!isMuted)}
+                      className={`text-xs font-bold px-2 py-1 rounded ${isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                    >
+                      {isMuted ? 'MUTED' : 'MUTE ALL'}
+                    </button>
+                  </div>
 
-                        {/* SFX Slider */}
-                        <div>
-                            <div className="flex justify-between text-xs text-white/60 mb-1">
-                                <span>SFX (Navigation)</span>
-                                <span>{Math.round(sfxVolume * 100)}%</span>
-                            </div>
-                            <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.05"
-                                value={sfxVolume}
-                                onChange={(e) => onSfxVolumeChange(parseFloat(e.target.value))}
-                                disabled={isMuted}
-                                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500 disabled:opacity-50"
-                            />
-                        </div>
+                  {/* Music Slider */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs text-white/60 mb-1">
+                      <span>Music</span>
+                      <span>{Math.round(bgMusicVolume * 100)}%</span>
                     </div>
-                </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={bgMusicVolume}
+                      onChange={(e) => onBgMusicVolumeChange(parseFloat(e.target.value))}
+                      disabled={isMuted}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500 disabled:opacity-50"
+                    />
+                  </div>
 
-                {/* API Integration */}
+                  {/* SFX Slider */}
+                  <div>
+                    <div className="flex justify-between text-xs text-white/60 mb-1">
+                      <span>SFX (Navigation)</span>
+                      <span>{Math.round(sfxVolume * 100)}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={sfxVolume}
+                      onChange={(e) => onSfxVolumeChange(parseFloat(e.target.value))}
+                      disabled={isMuted}
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500 disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* API Integration */}
               <div>
                 <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-orange-400">
                   Metadata Provider

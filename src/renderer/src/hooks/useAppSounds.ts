@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { logger } from '../utils/logger'
+import { logger } from '@/utils/logger'
 
-import bgMusicFile from '../assets/sounds/bg-music.mp3'
-import welcomeSoundFile from '../assets/sounds/welcome.mp3'
-import hoverSoundFile from '../assets/sounds/hover.mp3'
-import selectSoundFile from '../assets/sounds/select.mp3'
-import backSoundFile from '../assets/sounds/back.mp3'
+import bgMusicFile from '@/assets/sounds/bg-music.mp3'
+import welcomeSoundFile from '@/assets/sounds/welcome.mp3'
+import hoverSoundFile from '@/assets/sounds/hover.mp3'
+import selectSoundFile from '@/assets/sounds/select.mp3'
+import backSoundFile from '@/assets/sounds/back.mp3'
 
 interface UseAppSoundsReturn {
   isAudioBlocked: boolean
@@ -18,29 +18,12 @@ interface UseAppSoundsReturn {
 /**
  * Custom hook to manage application background sounds and UI sound effects.
  * Handles initialization, looping, and cleanup to prevent memory leaks and double-playing.
- *
-interface UseAppSoundsReturn {
-  isAudioBlocked: boolean
-  startAudio: () => void // New method to trigger audio manually
-  playHover: () => void
-  playSelect: () => void
-  playBack: () => void
-}
-
-/**
- * Custom hook to manage application background sounds and UI sound effects.
- * Handles initialization, looping, and cleanup to prevent memory leaks and double-playing.
- *
- * @param isSplashShowing - A boolean indicating if the splash screen is currently displayed.
- * @param bgMusicVolume - Volume for background music (0.0 to 1.0).
- * @param sfxVolume - Volume for sound effects (0.0 to 1.0).
- * @param isMuted - Whether audio is globally muted.
- * @returns Object containing audio blocked state and SFX playback functions.
+ * Use optimized playback (rewind instead of cloning) for better performance.
  */
 export function useAppSounds(
-  isSplashShowing: boolean, 
-  bgMusicVolume: number = 0.3, 
-  sfxVolume: number = 0.8, 
+  isSplashShowing: boolean,
+  bgMusicVolume: number = 0.3,
+  sfxVolume: number = 0.8,
   isMuted: boolean = false
 ): UseAppSoundsReturn {
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
@@ -53,7 +36,7 @@ export function useAppSounds(
 
   const hasInitializedRef = useRef(false)
   const hasPlayedBgMusicRef = useRef(false)
-  const wasPlayingRef = useRef(false) 
+  const wasPlayingRef = useRef(false)
 
   const [isAudioBlocked, setIsAudioBlocked] = useState(false)
 
@@ -61,11 +44,11 @@ export function useAppSounds(
   useEffect(() => {
     const bgVol = isMuted ? 0 : bgMusicVolume
     const sfxVol = isMuted ? 0 : sfxVolume
-    const welcomeVol = isMuted ? 0 : 0.6 
+    const welcomeVol = isMuted ? 0 : 0.6
 
     if (bgAudioRef.current) bgAudioRef.current.volume = bgVol
     if (welcomeAudioRef.current) welcomeAudioRef.current.volume = welcomeVol
-    
+
     if (hoverAudioRef.current) hoverAudioRef.current.volume = sfxVol
     if (selectAudioRef.current) selectAudioRef.current.volume = sfxVol
     if (backAudioRef.current) backAudioRef.current.volume = sfxVol
@@ -99,7 +82,7 @@ export function useAppSounds(
   // --- Manual Start Audio ---
   const startAudio = useCallback(() => {
     if (welcomeAudioRef.current) {
-        welcomeAudioRef.current.play().catch(e => logger.warn('Audio', 'Welcome play failed', e))
+      welcomeAudioRef.current.play().catch((e) => logger.warn('Audio', 'Welcome play failed', e))
     }
   }, [])
 
@@ -139,7 +122,7 @@ export function useAppSounds(
           await bgAudioRef.current?.play()
           hasPlayedBgMusicRef.current = true
           setIsAudioBlocked(false)
-        } catch (err) {
+        } catch {
           setIsAudioBlocked(true)
         }
       }
@@ -147,15 +130,12 @@ export function useAppSounds(
     }
   }, [isSplashShowing])
 
-  const playSfx = useCallback(
-    (audioRef: React.MutableRefObject<HTMLAudioElement | null>) => {
-      if (!audioRef.current) return
-      const clone = audioRef.current.cloneNode() as HTMLAudioElement
-      clone.volume = audioRef.current.volume
-      clone.play().catch(() => {})
-    },
-    []
-  )
+  const playSfx = useCallback((audioRef: React.MutableRefObject<HTMLAudioElement | null>) => {
+    if (!audioRef.current) return
+    // Optimized: Rewind and play instead of cloning (saves memory & CPU)
+    audioRef.current.currentTime = 0
+    audioRef.current.play().catch(() => {})
+  }, [])
 
   return {
     isAudioBlocked,

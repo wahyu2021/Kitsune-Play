@@ -34,7 +34,7 @@ export function useNavigation({
   handleDelete,
   audio: { playHover, playSelect, playBack },
   showSplash
-}: UseNavigationProps) {
+}: UseNavigationProps): void {
   const handleNavRight = useCallback((): void => {
     if (currentContent.length === 0) return
     const currentIndex = currentContent.findIndex((g) => g.id === selectedGameId)

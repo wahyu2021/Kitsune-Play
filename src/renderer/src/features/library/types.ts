@@ -1,3 +1,5 @@
+import { AppSettings } from '@/features/settings/types'
+
 /**
  * Represents a game or media application within the launcher.
  */
@@ -26,4 +28,11 @@ export interface Game {
   playtime?: number
   /** ISO timestamp of the last time the game was played. */
   lastPlayed?: string
+}
+
+export interface AppData {
+  games: Game[]
+  mediaApps: Game[]
+  userName: string
+  settings: AppSettings
 }

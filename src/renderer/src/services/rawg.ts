@@ -1,4 +1,4 @@
-import { logger } from '../utils/logger'
+import { logger } from '@/utils/logger'
 
 const RAWG_BASE_URL = 'https://api.rawg.io/api'
 
@@ -41,9 +41,21 @@ interface RawgGameDetail {
 }
 
 /**
+ * Generic fetch wrapper for RAWG API
+ */
+async function rawgFetch<T>(url: string): Promise<T> {
+  const res = await fetch(url)
+  if (!res.ok) {
+    throw new Error(`RAWG API Error: ${res.status} ${res.statusText}`)
+  }
+  return res.json()
+}
+
+/**
  * Fetches game metadata from RAWG.io
  * @param title The game title to search for
  * @param apiKey The user's RAWG API Key
+ * @returns Metadata object or null if not found/error
  */
 export const fetchGameMetadata = async (
   title: string,
@@ -59,31 +71,18 @@ export const fetchGameMetadata = async (
 
     // 1. Search for the game
     const searchUrl = `${RAWG_BASE_URL}/games?key=${apiKey}&search=${encodeURIComponent(title)}&page_size=1`
-    const searchRes = await fetch(searchUrl)
-
-    if (!searchRes.ok) {
-      throw new Error(`RAWG Search API Error: ${searchRes.status} ${searchRes.statusText}`)
-    }
-
-    const searchData: RawgSearchResponse = await searchRes.json()
+    const searchData = await rawgFetch<RawgSearchResponse>(searchUrl)
 
     if (!searchData.results || searchData.results.length === 0) {
       logger.warn('System', 'No results found on RAWG')
       return null
     }
 
-    const gameSummary = searchData.results[0]
-    const gameId = gameSummary.id
+    const gameId = searchData.results[0].id
 
     // 2. Get detailed info
     const detailUrl = `${RAWG_BASE_URL}/games/${gameId}?key=${apiKey}`
-    const detailRes = await fetch(detailUrl)
-
-    if (!detailRes.ok) {
-      throw new Error(`RAWG Detail API Error: ${detailRes.status} ${detailRes.statusText}`)
-    }
-
-    const detailData: RawgGameDetail = await detailRes.json()
+    const detailData = await rawgFetch<RawgGameDetail>(detailUrl)
 
     return {
       description: detailData.description_raw || detailData.description || '',

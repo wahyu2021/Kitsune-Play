@@ -10,13 +10,13 @@ export function useIdleTimer(timeoutMs: number = 8000): boolean {
   const [isIdle, setIsIdle] = useState(false)
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const resetIdleTimer = (): void => {
-    setIsIdle(false)
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-    idleTimerRef.current = setTimeout(() => setIsIdle(true), timeoutMs)
-  }
-
   useEffect(() => {
+    const resetIdleTimer = (): void => {
+      setIsIdle(false)
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+      idleTimerRef.current = setTimeout(() => setIsIdle(true), timeoutMs)
+    }
+
     // Attach listeners to detect activity
     window.addEventListener('mousemove', resetIdleTimer)
     window.addEventListener('keydown', resetIdleTimer)

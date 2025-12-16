@@ -8,7 +8,10 @@ interface UseGameLauncherProps {
   showToast: (message: string, type: ToastType) => void
 }
 
-export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLauncherProps) {
+export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLauncherProps): {
+  isPlaying: boolean
+  launchGame: (game: Game) => Promise<void>
+} {
   const [isPlaying, setIsPlaying] = useState(false)
 
   const launchGame = useCallback(

@@ -1,15 +1,8 @@
 import DiscordRPC from 'discord-rpc'
-
-/**
- * Discord Client ID.
- * Replace this with your specific Application ID from the Discord Developer Portal
- * if you want to customize the rich presence name and assets.
- */
-const clientId = '1449702184559181886'
+import { DISCORD_CONFIG } from './config'
 
 let rpcClient: DiscordRPC.Client | null = null
 let retryCount = 0
-const MAX_RETRIES = 3
 
 /**
  * Initializes the Discord RPC client and attempts to log in.
@@ -30,15 +23,15 @@ export function initDiscordRPC(): void {
 function login(): void {
   if (!rpcClient) return
 
-  rpcClient.login({ clientId }).catch((err) => {
+  rpcClient.login({ clientId: DISCORD_CONFIG.clientId }).catch((err) => {
     console.warn(`[Discord RPC] Login failed: ${err.message}`)
 
-    if (retryCount < MAX_RETRIES) {
+    if (retryCount < DISCORD_CONFIG.maxRetries) {
       retryCount++
       console.log(
-        `[Discord RPC] Retrying connection in 5 seconds... (${retryCount}/${MAX_RETRIES})`
+        `[Discord RPC] Retrying connection in ${DISCORD_CONFIG.retryDelay / 1000} seconds... (${retryCount}/${DISCORD_CONFIG.maxRetries})`
       )
-      setTimeout(login, 5000)
+      setTimeout(login, DISCORD_CONFIG.retryDelay)
     } else {
       console.error('[Discord RPC] Gave up connecting to Discord. Is it running?')
     }
@@ -60,8 +53,8 @@ export function setDiscordActivity(details: string, state: string, startTimestam
       details,
       state,
       startTimestamp,
-      largeImageKey: 'icon', // Matches the asset key uploaded to Discord Dev Portal
-      largeImageText: 'Kitsune Play',
+      largeImageKey: DISCORD_CONFIG.largeImageKey,
+      largeImageText: DISCORD_CONFIG.largeImageText,
       instance: false
     })
     .catch((err) => console.warn('[Discord RPC] Failed to set activity:', err.message))

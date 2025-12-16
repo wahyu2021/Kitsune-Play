@@ -33,26 +33,26 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
       {/* Layer 1: Animated Background (Ken Burns Effect) */}
       <div className="absolute inset-0 z-0">
         <motion.div
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-            className="h-full w-full"
+          animate={{ scale: [1, 1.15, 1] }}
+          transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+          className="h-full w-full"
         >
-            {activeGame?.bg_video ? (
+          {activeGame?.bg_video ? (
             <video
-                src={activeGame.bg_video}
-                className="h-full w-full object-cover opacity-60"
-                autoPlay
-                loop
-                muted
-                playsInline
+              src={activeGame.bg_video}
+              className="h-full w-full object-cover opacity-60"
+              autoPlay
+              loop
+              muted
+              playsInline
             />
-            ) : (
+          ) : (
             <img
-                src={activeGame?.bg_image || DEFAULT_BANNER}
-                alt="Screensaver BG"
-                className="h-full w-full object-cover opacity-60"
+              src={activeGame?.bg_image || DEFAULT_BANNER}
+              alt="Screensaver BG"
+              className="h-full w-full object-cover opacity-60"
             />
-            )}
+          )}
         </motion.div>
       </div>
 
@@ -61,29 +61,29 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
       <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
 
       {/* Layer 3: Content with Pixel Shift */}
-      <motion.div 
+      <motion.div
         className="z-20 flex flex-col items-center text-center px-8 max-w-5xl antialiased"
         style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
-        animate={{ 
-            x: [0, -10, 0, 10, 0],
-            y: [0, 5, 0, -5, 0]
+        animate={{
+          x: [0, -10, 0, 10, 0],
+          y: [0, 5, 0, -5, 0]
         }}
-        transition={{ 
-            duration: 60, // 1 minute loop
-            repeat: Infinity, 
-            ease: 'linear' 
+        transition={{
+          duration: 60, // 1 minute loop
+          repeat: Infinity,
+          ease: 'linear'
         }}
       >
         {/* Game Title - THE HERO ELEMENT */}
         {activeGame && (
-            <motion.h2 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, duration: 1.5, ease: "easeOut" }}
-                className="mb-8 text-7xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-lg leading-tight"
-            >
-                {activeGame.title}
-            </motion.h2>
+          <motion.h2
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 1.5, ease: 'easeOut' }}
+            className="mb-8 text-7xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 drop-shadow-lg leading-tight"
+          >
+            {activeGame.title}
+          </motion.h2>
         )}
 
         {/* Digital Clock - Secondary Element */}
@@ -96,20 +96,22 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
 
         {/* Date */}
         <div className="mt-4 flex items-center gap-4 justify-center">
-            <div className="h-[1px] w-20 bg-orange-500/50" />
-            <p className="text-xl font-medium tracking-[0.2em] text-orange-400 uppercase">
+          <div className="h-[1px] w-20 bg-orange-500/50" />
+          <p className="text-xl font-medium tracking-[0.2em] text-orange-400 uppercase">
             {time.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
-            </p>
-            <div className="h-[1px] w-20 bg-orange-500/50" />
+          </p>
+          <div className="h-[1px] w-20 bg-orange-500/50" />
         </div>
-        
+
         {/* Resume Hint */}
-        <motion.div 
-            animate={{ opacity: [0, 0.4, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-12 flex flex-col items-center gap-2"
+        <motion.div
+          animate={{ opacity: [0, 0.4, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-12 flex flex-col items-center gap-2"
         >
-             <span className="text-xs font-bold tracking-[0.5em] uppercase text-white/40">Press any key to resume</span>
+          <span className="text-xs font-bold tracking-[0.5em] uppercase text-white/40">
+            Press any key to resume
+          </span>
         </motion.div>
       </motion.div>
     </motion.div>

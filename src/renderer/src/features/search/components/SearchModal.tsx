@@ -92,7 +92,7 @@ export default function SearchModal({
                 </div>
               ) : (
                 <div className="py-8 text-center text-white/40">
-                  No games found matching "{query}"
+                  No games found matching &quot;{query}&quot;
                 </div>
               )}
             </div>

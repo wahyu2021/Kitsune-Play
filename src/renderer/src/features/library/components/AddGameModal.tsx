@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaSave, FaFolderOpen, FaImage, FaMagic, FaSpinner, FaVideo } from 'react-icons/fa'
 import { Game } from '@/features/library/types'
-import { fetchGameMetadata } from '@/services/rawg'
 import { logger } from '@/utils/logger'
+import { useAddGameForm } from '@/features/library/hooks/useAddGameForm'
 
 interface AddGameModalProps {
   isOpen: boolean
@@ -15,7 +15,7 @@ interface AddGameModalProps {
 
 /**
  * Modal component for adding or editing game details.
- * Supports auto-fetching metadata from RAWG.io if an API key is provided.
+ * Logic is encapsulated in useAddGameForm hook.
  */
 export default function AddGameModal({
   isOpen,
@@ -24,116 +24,13 @@ export default function AddGameModal({
   editGame,
   apiKey = ''
 }: AddGameModalProps): React.JSX.Element {
-  const [isFetching, setIsFetching] = useState(false)
   // Debug API Key
   useEffect(() => {
     if (isOpen) logger.debug('UI', `AddGameModal opened. API Key present: ${!!apiKey}`)
   }, [isOpen, apiKey])
 
-  const [formData, setFormData] = useState<Partial<Game>>({
-    title: '',
-    description: '',
-    genre: '',
-    path_to_exe: '',
-    cover_image: '',
-    bg_image: '',
-    bg_video: '',
-    launchArgs: '',
-    executableName: ''
-  })
-
-  // Populate form when Edit Mode is active
-  useEffect(() => {
-    if (isOpen && editGame) {
-      setFormData(editGame)
-    } else if (isOpen && !editGame) {
-      // Reset if opening in Add Mode
-      setFormData({
-        title: '',
-        description: '',
-        genre: '',
-        path_to_exe: '',
-        cover_image: '',
-        bg_image: '',
-        bg_video: '',
-        launchArgs: '',
-        executableName: ''
-      })
-    }
-  }, [isOpen, editGame])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleAutoFill = async (): Promise<void> => {
-    if (!formData.title || !apiKey) return
-
-    setIsFetching(true)
-    const metadata = await fetchGameMetadata(formData.title, apiKey)
-    setIsFetching(false)
-
-    if (metadata) {
-      setFormData((prev) => ({
-        ...prev,
-        description: metadata.description || prev.description,
-        genre: metadata.genre || prev.genre,
-        cover_image: metadata.cover_image || prev.cover_image,
-        bg_image: metadata.bg_image || prev.bg_image
-      }))
-    }
-  }
-
-  // Helper to browse files via Electron Native Dialog
-  const handleBrowse = async (field: keyof Game, extensions: string[]): Promise<void> => {
-    try {
-      const filePath = await window.api.selectFile([{ name: 'Files', extensions }])
-      
-      if (filePath) {
-        let finalPath = filePath
-
-        if (field === 'cover_image' || field === 'bg_image' || field === 'bg_video') {
-          finalPath = `file://${filePath.replace(/\\/g, '/')}`
-        }
-
-        setFormData((prev) => {
-          const updates: Partial<Game> = { [field]: finalPath }
-          
-          // Auto-fill executableName if browsing for exe and field is empty
-          if (field === 'path_to_exe' && !prev.executableName) {
-             const fileName = filePath.split(/[/\\]/).pop() // Extract 'Game.exe'
-             if (fileName) {
-                updates.executableName = fileName
-             }
-          }
-          
-          return { ...prev, ...updates }
-        })
-      }
-    } catch (error) {
-      console.error('[AddGameModal] Error opening dialog:', error)
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent): void => {
-    e.preventDefault()
-    if (formData.title && formData.path_to_exe) {
-      const newGame: Game = {
-        id: editGame ? editGame.id : Date.now().toString(),
-        title: formData.title || 'Untitled',
-        description: formData.description || '',
-        genre: formData.genre || 'Unknown',
-        path_to_exe: formData.path_to_exe || '',
-        cover_image: formData.cover_image || '',
-        bg_image: formData.bg_image || '',
-        bg_video: formData.bg_video || '',
-        launchArgs: formData.launchArgs || '',
-        executableName: formData.executableName || ''
-      }
-      onAddGame(newGame)
-      onClose()
-    }
-  }
+  const { formData, isFetching, handleChange, handleAutoFill, handleBrowse, handleSubmit } =
+    useAddGameForm({ editGame, onAddGame, onClose, apiKey })
 
   return (
     <AnimatePresence>
@@ -217,7 +114,7 @@ export default function AddGameModal({
                   </button>
                 </div>
               </div>
-              
+
               {/* Launch Arguments */}
               <div>
                 <label className="mb-1 block text-sm font-medium text-white/70">
@@ -229,7 +126,7 @@ export default function AddGameModal({
                   value={formData.launchArgs}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none font-mono text-sm"
-                  placeholder='e.g., -windowed -skipintro'
+                  placeholder="e.g., -windowed -skipintro"
                 />
               </div>
 
@@ -244,7 +141,7 @@ export default function AddGameModal({
                   value={formData.executableName || ''}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none font-mono text-sm"
-                  placeholder='e.g., dota2.exe (Leave empty for standard games)'
+                  placeholder="e.g., dota2.exe (Leave empty for standard games)"
                 />
               </div>
 

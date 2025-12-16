@@ -3,9 +3,16 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  launchGame: (path: string, name: string, launchArgs?: string, executableName?: string): Promise<number> => ipcRenderer.invoke('launch-game', path, name, launchArgs, executableName),
-  updateDiscordStatus: (status: string): Promise<void> => ipcRenderer.invoke('discord-update-status', status),
-  selectFile: (filters: Electron.FileFilter[]): Promise<string | null> => ipcRenderer.invoke('open-file-dialog', filters),
+  launchGame: (
+    path: string,
+    name: string,
+    launchArgs?: string,
+    executableName?: string
+  ): Promise<number> => ipcRenderer.invoke('launch-game', path, name, launchArgs, executableName),
+  updateDiscordStatus: (status: string): Promise<void> =>
+    ipcRenderer.invoke('discord-update-status', status),
+  selectFile: (filters: Electron.FileFilter[]): Promise<string | null> =>
+    ipcRenderer.invoke('open-file-dialog', filters),
   loadData: (): Promise<string | null> => ipcRenderer.invoke('get-app-data'),
   saveData: (data: string): Promise<boolean> => ipcRenderer.invoke('save-app-data', data),
   getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
