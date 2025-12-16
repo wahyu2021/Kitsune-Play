@@ -19,6 +19,7 @@ interface TopBarProps {
   onOpenProfile: () => void
   onOpenSettings: () => void
   onOpenSearch: () => void
+  onOpenPower: () => void
 }
 
 export default function TopBar({
@@ -28,7 +29,8 @@ export default function TopBar({
   onOpenAddGame,
   onOpenProfile,
   onOpenSettings,
-  onOpenSearch
+  onOpenSearch,
+  onOpenPower
 }: TopBarProps): React.JSX.Element {
   const [time, setTime] = useState<string>('')
   const [dateStr, setDateStr] = useState<string>('')
@@ -138,13 +140,13 @@ export default function TopBar({
 
         {/* Window Controls */}
         <div
-          onClick={() => window.api.minimize()}
+          onClick={() => window.api?.minimize()}
           className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
         >
           <FaMinus />
         </div>
         <div
-          onClick={() => window.api.quit()}
+          onClick={onOpenPower}
           className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-red-400 hover:bg-red-500/20 hover:text-red-500"
         >
           <FaPowerOff />

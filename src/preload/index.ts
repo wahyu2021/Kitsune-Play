@@ -16,6 +16,9 @@ const api = {
   loadData: (): Promise<string | null> => ipcRenderer.invoke('get-app-data'),
   saveData: (data: string): Promise<boolean> => ipcRenderer.invoke('save-app-data', data),
   getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
+  shutdownSystem: (): Promise<void> => ipcRenderer.invoke('system-shutdown'),
+  restartSystem: (): Promise<void> => ipcRenderer.invoke('system-restart'),
+  sleepSystem: (): Promise<void> => ipcRenderer.invoke('system-sleep'),
   minimize: (): void => ipcRenderer.send('app-minimize'),
   quit: (): void => ipcRenderer.send('app-quit')
 }

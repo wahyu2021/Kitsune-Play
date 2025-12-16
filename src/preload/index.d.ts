@@ -15,6 +15,9 @@ declare global {
       loadData: () => Promise<string | null>
       saveData: (data: string) => Promise<boolean>
       getAppVersion: () => Promise<string>
+      shutdownSystem: () => Promise<void>
+      restartSystem: () => Promise<void>
+      sleepSystem: () => Promise<void>
       minimize: () => void
       quit: () => void
     }

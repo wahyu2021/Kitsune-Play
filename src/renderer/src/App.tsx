@@ -13,6 +13,7 @@ import { Toast, ToastType } from '@/components/ui'
 import SplashScreen from '@/components/SplashScreen'
 import Screensaver from '@/components/Screensaver'
 import AppBackground from '@/components/AppBackground'
+import PowerMenuModal from '@/components/PowerMenuModal'
 
 // Logic & Config
 import { Game, useLibrary } from '@/features/library'
@@ -70,6 +71,7 @@ function App(): React.JSX.Element {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isPowerModalOpen, setIsPowerModalOpen] = useState(false)
   const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
 
   const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
@@ -92,10 +94,12 @@ function App(): React.JSX.Element {
   useEffect(() => {
     if (isPlaying) return // Don't override status if game is running
 
-    if (isIdle) {
-      window.api.updateDiscordStatus('Idle')
-    } else {
-      window.api.updateDiscordStatus('In Menu')
+    if (window.api) {
+      if (isIdle) {
+        window.api.updateDiscordStatus('Idle')
+      } else {
+        window.api.updateDiscordStatus('In Menu')
+      }
     }
   }, [isIdle, isPlaying])
 
@@ -156,13 +160,18 @@ function App(): React.JSX.Element {
   }, [isLoaded, currentContent, selectedGame])
 
   const isAnyModalOpen =
-    isAddModalOpen || isProfileModalOpen || isSearchModalOpen || isSettingsModalOpen
+    isAddModalOpen ||
+    isProfileModalOpen ||
+    isSearchModalOpen ||
+    isSettingsModalOpen ||
+    isPowerModalOpen
 
   const closeAllModals = useCallback(() => {
     setIsSearchModalOpen(false)
     setIsSettingsModalOpen(false)
     setIsAddModalOpen(false)
     setIsProfileModalOpen(false)
+    setIsPowerModalOpen(false)
     setGameToEdit(null)
   }, [])
 
@@ -207,6 +216,7 @@ function App(): React.JSX.Element {
           onOpenProfile={() => setIsProfileModalOpen(true)}
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
+          onOpenPower={() => setIsPowerModalOpen(true)}
         />
 
         <main className="flex flex-grow flex-col justify-end gap-4">
@@ -278,6 +288,8 @@ function App(): React.JSX.Element {
         onSfxVolumeChange={(vol) => setSettings({ ...settings, sfxVolume: vol })}
         onMuteToggle={(muted) => setSettings({ ...settings, isMuted: muted })}
       />
+
+      <PowerMenuModal isOpen={isPowerModalOpen} onClose={() => setIsPowerModalOpen(false)} />
 
       <Toast
         message={toast.message}
