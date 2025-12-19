@@ -30,7 +30,13 @@ export function useLibrary(): UseLibraryReturn {
     rawgApiKey: '',
     bgMusicVolume: 0.3,
     sfxVolume: 0.8,
-    isMuted: false
+    isMuted: false,
+    weather: {
+      city: 'Jakarta',
+      latitude: -6.2088,
+      longitude: 106.8456,
+      unit: 'celsius'
+    }
   })
 
   const { isLoaded } = usePersistence({

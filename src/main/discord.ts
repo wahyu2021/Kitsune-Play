@@ -6,9 +6,23 @@ let retryCount = 0
 
 /**
  * Initializes the Discord RPC client and attempts to log in.
- * Sets the initial activity to "In Menu" upon success.
  */
 export function initDiscordRPC(): void {
+  attemptConnection()
+}
+
+function attemptConnection(): void {
+  // cleanup previous instance if any
+  if (rpcClient) {
+    try {
+      rpcClient.destroy()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      // ignore
+    }
+    rpcClient = null
+  }
+
   rpcClient = new DiscordRPC.Client({ transport: 'ipc' })
 
   rpcClient.on('ready', () => {
@@ -17,23 +31,19 @@ export function initDiscordRPC(): void {
     retryCount = 0 // Reset retry count on success
   })
 
-  login()
-}
-
-function login(): void {
-  if (!rpcClient) return
-
   rpcClient.login({ clientId: DISCORD_CONFIG.clientId }).catch((err) => {
-    console.warn(`[Discord RPC] Login failed: ${err.message}`)
+    console.warn(`[Discord RPC] Connection failed: ${err.message}`)
 
     if (retryCount < DISCORD_CONFIG.maxRetries) {
       retryCount++
       console.log(
-        `[Discord RPC] Retrying connection in ${DISCORD_CONFIG.retryDelay / 1000} seconds... (${retryCount}/${DISCORD_CONFIG.maxRetries})`
+        `[Discord RPC] Retrying in ${DISCORD_CONFIG.retryDelay / 1000}s... (${retryCount}/${DISCORD_CONFIG.maxRetries})`
       )
-      setTimeout(login, DISCORD_CONFIG.retryDelay)
+      setTimeout(attemptConnection, DISCORD_CONFIG.retryDelay)
     } else {
-      console.error('[Discord RPC] Gave up connecting to Discord. Is it running?')
+      console.error(
+        '[Discord RPC] Connection gave up. Please ensure Discord is open and running on your PC.'
+      )
     }
   })
 }
@@ -57,7 +67,10 @@ export function setDiscordActivity(details: string, state: string, startTimestam
       largeImageText: DISCORD_CONFIG.largeImageText,
       instance: false
     })
-    .catch((err) => console.warn('[Discord RPC] Failed to set activity:', err.message))
+    .catch((err) => {
+      // If setting activity fails, it might mean the connection died.
+      console.warn('[Discord RPC] Failed to set activity:', err.message)
+    })
 }
 
 /**

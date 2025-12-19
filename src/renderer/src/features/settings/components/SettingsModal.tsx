@@ -7,9 +7,12 @@ import {
   FaExternalLinkAlt,
   FaSave,
   FaVolumeUp,
-  FaVolumeMute
+  FaVolumeMute,
+  FaCloudSun,
+  FaMapMarkerAlt
 } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
+import { getCoordinates } from '@/services/weather'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -23,6 +26,8 @@ interface SettingsModalProps {
   onBgMusicVolumeChange: (vol: number) => void
   onSfxVolumeChange: (vol: number) => void
   onMuteToggle: (muted: boolean) => void
+  weatherCity: string
+  onSaveWeatherCity: (city: string, lat: number, lng: number) => void
 }
 
 export default function SettingsModal({
@@ -36,10 +41,15 @@ export default function SettingsModal({
   isMuted,
   onBgMusicVolumeChange,
   onSfxVolumeChange,
-  onMuteToggle
+  onMuteToggle,
+  weatherCity,
+  onSaveWeatherCity
 }: SettingsModalProps): React.JSX.Element {
   const [version, setVersion] = useState<string>('')
   const [localKey, setLocalKey] = useState(apiKey)
+  const [localCity, setLocalCity] = useState(weatherCity)
+  const [isLocating, setIsLocating] = useState(false)
+  const [cityError, setCityError] = useState<string | null>(null)
 
   // Sync local state with prop only when modal opens
   useEffect(() => {
@@ -50,8 +60,29 @@ export default function SettingsModal({
         setVersion('1.0.0 (Dev)')
       }
       setLocalKey(apiKey)
+      setLocalCity(weatherCity)
     }
-  }, [isOpen, apiKey]) // Removed apiKey from dependency to prevent loops
+  }, [isOpen, apiKey, weatherCity])
+
+  const handleSaveCity = async (): Promise<void> => {
+    if (!localCity.trim()) return
+
+    setIsLocating(true)
+    setCityError(null)
+    try {
+      const coords = await getCoordinates(localCity)
+      if (coords) {
+        onSaveWeatherCity(coords.name, coords.lat, coords.lng)
+        setLocalCity(coords.name) // Update with formatted name
+      } else {
+        setCityError('City not found. Try a different name.')
+      }
+    } catch (error) {
+      setCityError('Error connecting to weather service.')
+    } finally {
+      setIsLocating(false)
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -61,7 +92,7 @@ export default function SettingsModal({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#1a1a1a] p-8 shadow-2xl"
+            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#1a1a1a] p-8 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
           >
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white">Settings</h2>
@@ -125,6 +156,44 @@ export default function SettingsModal({
                       className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500 disabled:opacity-50"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Weather Settings */}
+              <div>
+                <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-cyan-400">
+                  Weather Widget
+                </h3>
+                <div className="rounded-lg bg-white/5 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="flex items-center gap-2 text-sm font-bold text-white">
+                      <FaCloudSun className="text-white/60" /> Location
+                    </label>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={localCity}
+                      onChange={(e) => setLocalCity(e.target.value)}
+                      placeholder="Enter city (e.g. Tokyo)"
+                      className="flex-1 rounded bg-black/20 px-3 py-2 text-sm text-white border border-white/10 focus:border-cyan-500 focus:outline-none"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveCity()
+                      }}
+                    />
+                    <button
+                      onClick={handleSaveCity}
+                      disabled={isLocating}
+                      className="flex items-center gap-2 rounded bg-white/10 px-4 text-sm font-bold text-white hover:bg-cyan-500 hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      {isLocating ? <span className="animate-spin">⟳</span> : <FaMapMarkerAlt />}
+                      Set
+                    </button>
+                  </div>
+                  {cityError && <p className="mt-2 text-xs text-red-400">{cityError}</p>}
+                  <p className="mt-2 text-xs text-white/40">
+                    Shows weather info in the Top Bar.
+                  </p>
                 </div>
               </div>
 

@@ -68,7 +68,7 @@ export default function SearchModal({
             </div>
 
             {/* Results List */}
-            <div className="max-h-96 overflow-y-auto p-2">
+            <div className="max-h-96 overflow-y-auto p-2 custom-scrollbar">
               {filteredGames.length > 0 ? (
                 <div className="flex flex-col gap-1">
                   {filteredGames.map((game) => (

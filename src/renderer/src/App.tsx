@@ -217,6 +217,7 @@ function App(): React.JSX.Element {
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
           onOpenPower={() => setIsPowerModalOpen(true)}
+          weatherSettings={settings.weather}
         />
 
         <main className="flex flex-grow flex-col justify-end gap-4">
@@ -287,6 +288,14 @@ function App(): React.JSX.Element {
         onBgMusicVolumeChange={(vol) => setSettings({ ...settings, bgMusicVolume: vol })}
         onSfxVolumeChange={(vol) => setSettings({ ...settings, sfxVolume: vol })}
         onMuteToggle={(muted) => setSettings({ ...settings, isMuted: muted })}
+        weatherCity={settings?.weather?.city || ''}
+        onSaveWeatherCity={(city, lat, lng) => {
+          setSettings({
+            ...settings,
+            weather: { city, latitude: lat, longitude: lng, unit: 'celsius' }
+          })
+          showToast(`Location set to ${city}`, 'success')
+        }}
       />
 
       <PowerMenuModal isOpen={isPowerModalOpen} onClose={() => setIsPowerModalOpen(false)} />

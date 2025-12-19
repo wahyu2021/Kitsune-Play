@@ -10,6 +10,7 @@ import {
   FaMinus
 } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import WeatherWidget from './WeatherWidget'
 
 interface TopBarProps {
   userName: string
@@ -20,6 +21,11 @@ interface TopBarProps {
   onOpenSettings: () => void
   onOpenSearch: () => void
   onOpenPower: () => void
+  weatherSettings?: {
+    city: string
+    latitude: number
+    longitude: number
+  }
 }
 
 export default function TopBar({
@@ -30,7 +36,8 @@ export default function TopBar({
   onOpenProfile,
   onOpenSettings,
   onOpenSearch,
-  onOpenPower
+  onOpenPower,
+  weatherSettings
 }: TopBarProps): React.JSX.Element {
   const [time, setTime] = useState<string>('')
   const [dateStr, setDateStr] = useState<string>('')
@@ -97,6 +104,15 @@ export default function TopBar({
 
       {/* Right: System Info */}
       <div className="flex items-center gap-6 text-white">
+        {/* Weather Widget */}
+        {weatherSettings && weatherSettings.latitude && (
+          <WeatherWidget
+            lat={weatherSettings.latitude}
+            lng={weatherSettings.longitude}
+            city={weatherSettings.city}
+          />
+        )}
+
         {/* Add Game Button (Dedicated) */}
         <div
           onClick={onOpenAddGame}

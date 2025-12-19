@@ -11,21 +11,25 @@ It organizes your local game library into a stunning, animated interface with li
 ## ✨ Key Features
 
 ### 🖥️ Immersive User Interface
+
 - **PS5-Inspired Aesthetic:** Smooth animations, glassmorphism effects, and atmospheric gradients.
 - **Live Wallpapers:** Support for looping video backgrounds (.mp4/.webm) for each game.
 - **Dynamic Theming:** UI colors adapt based on the game's genre.
 
 ### ⚡ Smart Functionality
+
 - **Auto-Metadata Scraping:** Integrated with **RAWG.io API** to automatically fetch game covers, backgrounds, and descriptions.
 - **Playtime Tracker:** Tracks your sessions and calculates total playtime automatically.
 - **Real-Time System Info:** Displays clock, date, and system status.
 
 ### 🔊 Advanced Audio System
+
 - **Background Ambience:** Soothing loop music that auto-mutes when the window loses focus.
 - **UI Sound Effects:** Satisfying navigation sounds (Hover, Select, Back) for a tactile feel.
 - **Volume Mixer:** Independent controls for Music and SFX levels.
 
 ### 🎮 Input Support
+
 - **Full Controller Support:** Navigate the entire interface using an Xbox or PlayStation controller.
 - **Keyboard Navigation:** Fully accessible via Arrow keys, Enter, and Esc.
 
@@ -44,18 +48,21 @@ It organizes your local game library into a stunning, animated interface with li
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm or yarn
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/kitsune-play.git
    cd kitsune-play
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -66,10 +73,13 @@ It organizes your local game library into a stunning, animated interface with li
    ```
 
 ### Building for Production (Windows)
+
 To create a standalone `.exe` installer:
+
 ```bash
 npm run build:win
 ```
+
 The installer will be generated in the `dist/` folder.
 
 ---

@@ -40,7 +40,7 @@ export default function AddGameModal({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="w-full max-w-lg rounded-2xl border border-white/10 bg-black/40 p-8 shadow-2xl backdrop-blur-xl backdrop-saturate-150 overflow-y-auto max-h-[90vh]"
+            className="w-full max-w-lg rounded-2xl border border-white/10 bg-black/40 p-8 shadow-2xl backdrop-blur-xl backdrop-saturate-150 overflow-y-auto max-h-[90vh] custom-scrollbar"
           >
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white">
