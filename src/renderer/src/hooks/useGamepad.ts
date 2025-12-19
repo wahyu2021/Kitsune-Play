@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
-import { logger } from '../utils/logger'
+import { useEffect, useRef, useState } from 'react'
+import { logger } from '@/utils/logger'
 
-export interface GamepadHandlers {
+interface GamepadHandlers {
   onNavigateLeft: () => void
   onNavigateRight: () => void
   onSelect: () => void

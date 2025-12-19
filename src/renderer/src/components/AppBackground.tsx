@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Game } from '@/features/library/types'
-import { getGenreColor } from '../utils/theme'
-import { DEFAULT_BANNER } from '../config'
+import { getGenreColor } from '@/utils/theme'
+import { DEFAULT_BANNER } from '@/config'
 
 interface AppBackgroundProps {
   selectedGame?: Game

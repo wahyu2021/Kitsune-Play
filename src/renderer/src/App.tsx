@@ -10,7 +10,7 @@ import { SearchModal } from '@/features/search'
 import { SettingsModal } from '@/features/settings'
 
 // Shared UI
-import { Toast, ToastType } from '@/components/ui'
+import { Toast, ToastType, Modal, ModalType } from '@/components/ui'
 import SplashScreen from '@/components/SplashScreen'
 import Screensaver from '@/components/Screensaver'
 import AppBackground from '@/components/AppBackground'
@@ -82,6 +82,24 @@ function App(): React.JSX.Element {
   })
   const showToast = (message: string, type: ToastType): void => setToast({ message, type })
 
+  // Custom Modal State
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    type: ModalType
+    onConfirm?: () => void
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  })
+
+  const showConfirm = (title: string, message: string, onConfirm: () => void): void => {
+    setModalConfig({ isOpen: true, title, message, type: 'confirm', onConfirm })
+  }
+
   const { isPlaying, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
 
   /**
@@ -134,10 +152,10 @@ function App(): React.JSX.Element {
   const handleDeleteAction = useCallback((): void => {
     if (!selectedGame) return
 
-    if (confirm(`Delete "${selectedGame.title}"?`)) {
+    showConfirm('Delete Game', `Are you sure you want to delete "${selectedGame.title}"?`, () => {
       deleteGame(selectedGameId, activeTab === 'media')
       showToast('Item deleted.', 'info')
-    }
+    })
   }, [selectedGame, selectedGameId, activeTab, deleteGame])
 
   const handleOpenEdit = useCallback((): void => {
@@ -166,7 +184,8 @@ function App(): React.JSX.Element {
     isProfileModalOpen ||
     isSearchModalOpen ||
     isSettingsModalOpen ||
-    isPowerModalOpen
+    isPowerModalOpen ||
+    modalConfig.isOpen
 
   const closeAllModals = useCallback(() => {
     setIsSearchModalOpen(false)
@@ -174,6 +193,7 @@ function App(): React.JSX.Element {
     setIsAddModalOpen(false)
     setIsProfileModalOpen(false)
     setIsPowerModalOpen(false)
+    setModalConfig((prev) => ({ ...prev, isOpen: false }))
     setGameToEdit(null)
   }, [])
 
@@ -311,8 +331,9 @@ function App(): React.JSX.Element {
         }}
         onImportGames={(newGames) => {
           addGames(newGames, activeTab === 'media')
-          showToast(`Imported ${newGames.length} games!`, 'success')
+          // Modal handles the specific summary alert now
         }}
+        games={[...games, ...mediaApps]}
       />
 
       <PowerMenuModal isOpen={isPowerModalOpen} onClose={() => setIsPowerModalOpen(false)} />
@@ -321,6 +342,16 @@ function App(): React.JSX.Element {
         message={toast.message}
         type={toast.type}
         onClose={() => setToast({ ...toast, message: null })}
+      />
+
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        type={modalConfig.type}
+        onConfirm={modalConfig.onConfirm}
+        confirmLabel={modalConfig.type === 'confirm' ? 'Delete' : 'OK'}
       />
     </MainLayout>
   )

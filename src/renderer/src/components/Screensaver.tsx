@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
-import { DEFAULT_BANNER } from '../config'
+import { DEFAULT_BANNER } from '@/config'
 
 interface ScreensaverProps {
   activeGame?: Game | null

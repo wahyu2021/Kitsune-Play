@@ -1,15 +1,19 @@
+import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import logoIcon from '../assets/icon.png'
-import bannerBg from '../assets/banner-game.png'
 import { FaPlay } from 'react-icons/fa'
-import { useEffect } from 'react'
+import logoIcon from '@/assets/icon.png'
+import bannerBg from '@/assets/banner-game.png'
+
+interface SplashScreenProps {
+  onStart: () => void
+}
 
 /**
  * Renders an animated splash screen for the application startup.
  * Requires user interaction to proceed, ensuring audio context is unlocked.
  * @param onStart - Callback function triggered when the user clicks start.
  */
-export default function SplashScreen({ onStart }: { onStart: () => void }): React.JSX.Element {
+export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.Element {
   // Handle "Press Any Key" interaction
   useEffect(() => {
     const handleKeyDown = (): void => {

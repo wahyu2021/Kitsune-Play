@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { DEFAULT_BANNER } from '../../config'
+import { DEFAULT_BANNER } from '@/config'
 
-interface LazyImageProps {
+interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string
   alt: string
   className?: string

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaUserCircle, FaSave } from 'react-icons/fa'
-import { logger } from '../../../utils/logger'
+import { logger } from '@/utils/logger'
 
 interface ProfileModalProps {
   isOpen: boolean
