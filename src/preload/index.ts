@@ -14,7 +14,7 @@ const api = {
   selectFile: (filters: Electron.FileFilter[]): Promise<string | null> =>
     ipcRenderer.invoke('open-file-dialog', filters),
   selectFolder: (): Promise<string | null> => ipcRenderer.invoke('open-folder-dialog'),
-  scanSteamLibrary: (path: string): Promise<any[]> =>
+  scanSteamLibrary: (path: string): Promise<unknown[]> =>
     ipcRenderer.invoke('scan-steam-library', path),
   loadData: (): Promise<string | null> => ipcRenderer.invoke('get-app-data'),
   saveData: (data: string): Promise<boolean> => ipcRenderer.invoke('save-app-data', data),

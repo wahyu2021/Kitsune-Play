@@ -6,10 +6,8 @@ import gofCover from '@/assets/games/god-cover.jpg'
 import spiderManBanner from '@/assets/games/spiderman-miles-morales.jpg'
 import spiderManCover from '@/assets/games/spiderman-miles-morales-cover.jpg'
 import defaultBanner from '@/assets/games/default-banner.jpg'
-import bannerBg from '@/assets/banner-game.png'
 
 import gamesConfig from './games.json' // Keep relative for JSON adjacent file
-import { Game } from '@/features/library/types'
 
 /**
  * Mapping of filename strings (from JSON) to actual Vite imported assets.

@@ -67,15 +67,13 @@ export function useLibrary(): UseLibraryReturn {
       // Check for strict duplicate (same title AND same path)
       // Normalize to handle case sensitivity (Windows paths)
       const newSig = createSignature(gameWithDefaults.title, gameWithDefaults.path_to_exe)
-      const isDuplicate = list.some(
-        (g) => createSignature(g.title, g.path_to_exe) === newSig
-      )
+      const isDuplicate = list.some((g) => createSignature(g.title, g.path_to_exe) === newSig)
 
       if (isDuplicate) {
         // If ID matches, we update (edit mode).
-        const idMatch = list.some(g => g.id === gameWithDefaults.id)
+        const idMatch = list.some((g) => g.id === gameWithDefaults.id)
         if (idMatch) {
-             return list.map((g) => (g.id === gameWithDefaults.id ? gameWithDefaults : g))
+          return list.map((g) => (g.id === gameWithDefaults.id ? gameWithDefaults : g))
         }
         console.warn('Skipping duplicate game add:', newGame.title)
         return list
@@ -86,7 +84,7 @@ export function useLibrary(): UseLibraryReturn {
       if (existsId) {
         return list.map((g) => (g.id === gameWithDefaults.id ? gameWithDefaults : g))
       }
-      
+
       return [...list, gameWithDefaults]
     }
 
@@ -98,25 +96,25 @@ export function useLibrary(): UseLibraryReturn {
   }
 
   const addGames = (newGames: Game[], isMedia: boolean): void => {
-    const gamesWithDefaults = newGames.map(g => ({
+    const gamesWithDefaults = newGames.map((g) => ({
       ...g,
       bg_image: g.bg_image || DEFAULT_BANNER
     }))
 
     const updateList = (list: Game[]): Game[] => {
-      // Filter out existing ones to avoid duplicates or overwrite? 
+      // Filter out existing ones to avoid duplicates or overwrite?
       // For bulk import, check if title+path already exists in the CURRENT list
-      const existingSignatures = new Set(list.map(g => createSignature(g.title, g.path_to_exe)))
-      
-      const uniqueNewGames = gamesWithDefaults.filter(g => {
+      const existingSignatures = new Set(list.map((g) => createSignature(g.title, g.path_to_exe)))
+
+      const uniqueNewGames = gamesWithDefaults.filter((g) => {
         const signature = createSignature(g.title, g.path_to_exe)
         if (existingSignatures.has(signature)) return false
-        
+
         // Also ensure no duplicates within the IMPORT batch itself
-        existingSignatures.add(signature) 
+        existingSignatures.add(signature)
         return true
       })
-      
+
       return [...list, ...uniqueNewGames]
     }
 

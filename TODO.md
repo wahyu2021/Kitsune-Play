@@ -12,10 +12,10 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 [x] Delayed Background Video Preview
 
 # Kitsune Play - Riwayat Fitur (v1.2 - Selesai)
+
 [x] System Power Menu
 [x] Auto-Scan & Import Games (Steam/Epic)
 [x] Weather Widget (Cuaca)
-
 
 ---
 

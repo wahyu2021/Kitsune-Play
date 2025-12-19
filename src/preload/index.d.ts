@@ -13,7 +13,9 @@ declare global {
       updateDiscordStatus: (status: string) => Promise<void>
       selectFile: (filters: Electron.FileFilter[]) => Promise<string | null>
       selectFolder: () => Promise<string | null>
-      scanSteamLibrary: (path: string) => Promise<{ appId: string; name: string; installDir: string }[]>
+      scanSteamLibrary: (
+        path: string
+      ) => Promise<{ appId: string; name: string; installDir: string }[]>
       loadData: () => Promise<string | null>
       saveData: (data: string) => Promise<boolean>
       getAppVersion: () => Promise<string>

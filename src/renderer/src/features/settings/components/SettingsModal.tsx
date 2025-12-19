@@ -15,8 +15,16 @@ import {
 import { useEffect, useState } from 'react'
 import { getCoordinates } from '@/services/weather'
 import { Game } from '@/features/library/types'
-import { fetchGameMetadata } from '@/services/rawg'
+import { fetchGameMetadata, GameMetadata } from '@/services/rawg'
 import { Modal, ModalType } from '@/components/ui'
+
+// Define the shape of data returned by the main process scanner
+interface SteamGame {
+  appId: string
+  name: string
+  installDir: string
+  executablePath?: string
+}
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -58,7 +66,7 @@ export default function SettingsModal({
   const [localCity, setLocalCity] = useState(weatherCity)
   const [isLocating, setIsLocating] = useState(false)
   const [cityError, setCityError] = useState<string | null>(null)
-  
+
   // Import State
   const [isImporting, setIsImporting] = useState(false)
   const [importStatus, setImportStatus] = useState('')
@@ -77,11 +85,11 @@ export default function SettingsModal({
     type: 'info'
   })
 
-  const showAlert = (title: string, message: string, type: ModalType = 'info') => {
+  const showAlert = (title: string, message: string, type: ModalType = 'info'): void => {
     setModalConfig({ isOpen: true, title, message, type })
   }
 
-  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+  const showConfirm = (title: string, message: string, onConfirm: () => void): void => {
     setModalConfig({ isOpen: true, title, message, type: 'confirm', onConfirm })
   }
 
@@ -111,7 +119,7 @@ export default function SettingsModal({
       } else {
         setCityError('City not found. Try a different name.')
       }
-    } catch (error) {
+    } catch {
       setCityError('Error connecting to weather service.')
     } finally {
       setIsLocating(false)
@@ -132,10 +140,14 @@ export default function SettingsModal({
       }
 
       setImportStatus('Scanning library...')
-      const foundGames = await window.api.scanSteamLibrary(steamPath)
-      
+      const foundGames = (await window.api.scanSteamLibrary(steamPath)) as SteamGame[]
+
       if (foundGames.length === 0) {
-        showAlert('No Games Found', 'No Steam games found in the selected folder.\nEnsure you selected the root Steam folder (e.g., C:/Program Files/Steam).', 'warning')
+        showAlert(
+          'No Games Found',
+          'No Steam games found in the selected folder.\nEnsure you selected the root Steam folder (e.g., C:/Program Files/Steam).',
+          'warning'
+        )
         setIsImporting(false)
         setImportStatus('')
         return
@@ -159,55 +171,65 @@ export default function SettingsModal({
       const duplicateCount = foundGames.length - uniqueSteamGames.length
 
       if (uniqueSteamGames.length === 0) {
-        showAlert('Import Complete', `Found ${foundGames.length} games, but they are all already in your library.\n\nSkipped ${duplicateCount} duplicates.`, 'info')
+        showAlert(
+          'Import Complete',
+          `Found ${foundGames.length} games, but they are all already in your library.\n\nSkipped ${duplicateCount} duplicates.`,
+          'info'
+        )
         setIsImporting(false)
         setImportStatus('')
         return
       }
 
-      setImportStatus(`Found ${uniqueSteamGames.length} new games (${duplicateCount} skipped). Fetching metadata...`)
-      
+      setImportStatus(
+        `Found ${uniqueSteamGames.length} new games (${duplicateCount} skipped). Fetching metadata...`
+      )
+
       const newGames: Game[] = []
-      
+
       // Process in batches to avoid rate limits
       const BATCH_SIZE = 3
       for (let i = 0; i < uniqueSteamGames.length; i += BATCH_SIZE) {
         const batch = uniqueSteamGames.slice(i, i + BATCH_SIZE)
-        setImportStatus(`Importing ${i + 1} / ${uniqueSteamGames.length} (Skipped ${duplicateCount} dupe)...`)
+        setImportStatus(
+          `Importing ${i + 1} / ${uniqueSteamGames.length} (Skipped ${duplicateCount} dupe)...`
+        )
 
-        await Promise.all(batch.map(async (steamGame) => {
-          // Debugging: Check if appId exists
-          if (!steamGame.appId) {
-             console.warn('Skipping game with missing AppID:', steamGame.name)
-             return
-          }
+        await Promise.all(
+          batch.map(async (steamGame) => {
+            // Debugging: Check if appId exists
+            if (!steamGame.appId) {
+              console.warn('Skipping game with missing AppID:', steamGame.name)
+              return
+            }
 
-          let metadata = null
-          if (localKey) {
-            metadata = await fetchGameMetadata(steamGame.name, localKey)
-          }
+            let metadata: GameMetadata | null = null
+            if (localKey) {
+              metadata = await fetchGameMetadata(steamGame.name, localKey)
+            }
 
-          newGames.push({
-            id: crypto.randomUUID(),
-            title: steamGame.name,
-            // Use the found executable path if available (fixes user issue), otherwise fallback to Steam Protocol
-            path_to_exe: steamGame.executablePath || `steam://rungameid/${steamGame.appId}`,
-            // Extract filename for process tracking
-            executableName: steamGame.executablePath
-              ? steamGame.executablePath.split(/[\\/]/).pop() || ''
-              : '',
-            cover_image: metadata?.cover_image || '',
-            bg_image: metadata?.bg_image || '',
-            description: metadata?.description || 'Imported from Steam',
-            genre: metadata?.genre || 'Game',
-            playtime: 0,
-            lastPlayed: '',
-            launchArgs: ''
+            newGames.push({
+              id: crypto.randomUUID(),
+              title: steamGame.name,
+              // Use the found executable path if available (fixes user issue), otherwise fallback to Steam Protocol
+              path_to_exe: steamGame.executablePath || `steam://rungameid/${steamGame.appId}`,
+              // Extract filename for process tracking
+              executableName: steamGame.executablePath
+                ? steamGame.executablePath.split(/[\\/]/).pop() || ''
+                : '',
+              cover_image: metadata?.cover_image || '',
+              bg_image: metadata?.bg_image || '',
+              description: metadata?.description || 'Imported from Steam',
+              genre: metadata?.genre || 'Game',
+              playtime: 0,
+              lastPlayed: '',
+              launchArgs: ''
+            })
           })
-        }))
-        
+        )
+
         // Small delay between batches
-        await new Promise(r => setTimeout(r, 500))
+        await new Promise((r) => setTimeout(r, 500))
       }
 
       onImportGames(newGames)
@@ -217,10 +239,10 @@ export default function SettingsModal({
         'success'
       )
       onClose()
-
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error)
-      showAlert('Import Failed', `${error.message || 'Unknown error'}. Try restarting the app.`, 'error')
+      const msg = error instanceof Error ? error.message : 'Unknown error'
+      showAlert('Import Failed', `${msg}. Try restarting the app.`, 'error')
     } finally {
       setIsImporting(false)
       setImportStatus('')
@@ -305,7 +327,7 @@ export default function SettingsModal({
 
                 {/* Import Games */}
                 <div>
-                   <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-green-400">
+                  <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-green-400">
                     Library Import
                   </h3>
                   <div className="rounded-lg bg-white/5 p-4">
@@ -323,10 +345,13 @@ export default function SettingsModal({
                       {isImporting ? 'Scanning...' : 'Scan Steam Library'}
                     </button>
                     {importStatus && (
-                      <p className="mt-2 text-xs text-green-400 text-center animate-pulse">{importStatus}</p>
+                      <p className="mt-2 text-xs text-green-400 text-center animate-pulse">
+                        {importStatus}
+                      </p>
                     )}
                     <p className="mt-2 text-xs text-white/40">
-                      Select your main Steam folder (e.g. C:/Program Files/Steam). Metadata will be fetched via RAWG.
+                      Select your main Steam folder (e.g. C:/Program Files/Steam). Metadata will be
+                      fetched via RAWG.
                     </p>
                   </div>
                 </div>
@@ -363,9 +388,7 @@ export default function SettingsModal({
                       </button>
                     </div>
                     {cityError && <p className="mt-2 text-xs text-red-400">{cityError}</p>}
-                    <p className="mt-2 text-xs text-white/40">
-                      Shows weather info in the Top Bar.
-                    </p>
+                    <p className="mt-2 text-xs text-white/40">Shows weather info in the Top Bar.</p>
                   </div>
                 </div>
 
@@ -431,8 +454,8 @@ export default function SettingsModal({
                         'Reset Library',
                         'Are you sure you want to reset your library?\n\nThis will remove all games and settings. This action cannot be undone.',
                         () => {
-                           onResetLibrary()
-                           onClose()
+                          onResetLibrary()
+                          onClose()
                         }
                       )
                     }}

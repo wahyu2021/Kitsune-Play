@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { logger } from '@/utils/logger'
 
 interface GamepadHandlers {

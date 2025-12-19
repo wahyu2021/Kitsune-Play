@@ -25,7 +25,7 @@ export default function Modal({
   cancelLabel = 'Cancel'
 }: ModalProps): React.JSX.Element {
   // Determine icon and color based on type
-  const getIcon = () => {
+  const getIcon = (): React.JSX.Element => {
     switch (type) {
       case 'warning':
       case 'confirm':
@@ -39,7 +39,7 @@ export default function Modal({
     }
   }
 
-  const getButtonColor = () => {
+  const getButtonColor = (): string => {
     switch (type) {
       case 'warning':
       case 'confirm':
