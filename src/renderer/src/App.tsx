@@ -46,6 +46,7 @@ function App(): React.JSX.Element {
     settings,
     setSettings,
     addGame,
+    addGames,
     deleteGame,
     updateGamePlaytime,
     resetLibrary,
@@ -307,6 +308,10 @@ function App(): React.JSX.Element {
             weather: { city, latitude: lat, longitude: lng, unit: 'celsius' }
           })
           showToast(`Location set to ${city}`, 'success')
+        }}
+        onImportGames={(newGames) => {
+          addGames(newGames, activeTab === 'media')
+          showToast(`Imported ${newGames.length} games!`, 'success')
         }}
       />
 

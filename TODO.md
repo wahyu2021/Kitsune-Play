@@ -13,7 +13,7 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 
 # Kitsune Play - Riwayat Fitur (v1.2 - Selesai)
 [x] System Power Menu
-[] Auto-Scan & Import Games (Steam/Epic)
+[x] Auto-Scan & Import Games (Steam/Epic)
 [x] Weather Widget (Cuaca)
 
 

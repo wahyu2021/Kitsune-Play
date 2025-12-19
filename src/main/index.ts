@@ -9,6 +9,7 @@ import { registerGameLauncherHandlers } from './ipc/gameLauncher'
 import { registerStorageHandlers } from './ipc/storage'
 import { registerDialogHandlers } from './ipc/dialogs'
 import { registerMiscHandlers } from './ipc/misc'
+import { registerScannerHandlers } from './ipc/scanner'
 
 // Fix: Ensure audio can autoplay without user interaction (common for launchers)
 // Must be called before app 'ready' event
@@ -106,6 +107,7 @@ app.whenReady().then(() => {
   registerStorageHandlers()
   registerDialogHandlers()
   registerMiscHandlers()
+  registerScannerHandlers()
 
   createWindow()
 

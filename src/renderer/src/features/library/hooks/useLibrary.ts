@@ -12,6 +12,7 @@ interface UseLibraryReturn {
   setUserName: (name: string) => void
   setSettings: (settings: AppSettings) => void
   addGame: (game: Game, isMedia: boolean) => void
+  addGames: (games: Game[], isMedia: boolean) => void
   deleteGame: (id: string, isMedia: boolean) => void
   updateGamePlaytime: (id: string, sessionMinutes: number) => void
   resetLibrary: () => void
@@ -72,6 +73,27 @@ export function useLibrary(): UseLibraryReturn {
     }
   }
 
+  const addGames = (newGames: Game[], isMedia: boolean): void => {
+    const gamesWithDefaults = newGames.map(g => ({
+      ...g,
+      bg_image: g.bg_image || DEFAULT_BANNER
+    }))
+
+    const updateList = (list: Game[]): Game[] => {
+      // Filter out existing ones to avoid duplicates or overwrite? 
+      // For bulk import, let's just append new ones that don't exist
+      const existingIds = new Set(list.map(g => g.id))
+      const uniqueNewGames = gamesWithDefaults.filter(g => !existingIds.has(g.id))
+      return [...list, ...uniqueNewGames]
+    }
+
+    if (!isMedia) {
+      setGames((prev) => updateList(prev))
+    } else {
+      setMediaApps((prev) => updateList(prev))
+    }
+  }
+
   const deleteGame = (id: string, isMedia: boolean): void => {
     if (!isMedia) {
       setGames((prev) => prev.filter((g) => g.id !== id))
@@ -110,6 +132,7 @@ export function useLibrary(): UseLibraryReturn {
     setUserName,
     setSettings,
     addGame,
+    addGames,
     deleteGame,
     updateGamePlaytime,
     resetLibrary,

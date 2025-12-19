@@ -9,10 +9,13 @@ import {
   FaVolumeUp,
   FaVolumeMute,
   FaCloudSun,
-  FaMapMarkerAlt
+  FaMapMarkerAlt,
+  FaSteam
 } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { getCoordinates } from '@/services/weather'
+import { Game } from '@/features/library/types'
+import { fetchGameMetadata } from '@/services/rawg'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -28,6 +31,7 @@ interface SettingsModalProps {
   onMuteToggle: (muted: boolean) => void
   weatherCity: string
   onSaveWeatherCity: (city: string, lat: number, lng: number) => void
+  onImportGames: (games: Game[]) => void
 }
 
 export default function SettingsModal({
@@ -43,13 +47,18 @@ export default function SettingsModal({
   onSfxVolumeChange,
   onMuteToggle,
   weatherCity,
-  onSaveWeatherCity
+  onSaveWeatherCity,
+  onImportGames
 }: SettingsModalProps): React.JSX.Element {
   const [version, setVersion] = useState<string>('')
   const [localKey, setLocalKey] = useState(apiKey)
   const [localCity, setLocalCity] = useState(weatherCity)
   const [isLocating, setIsLocating] = useState(false)
   const [cityError, setCityError] = useState<string | null>(null)
+  
+  // Import State
+  const [isImporting, setIsImporting] = useState(false)
+  const [importStatus, setImportStatus] = useState('')
 
   // Sync local state with prop only when modal opens
   useEffect(() => {
@@ -81,6 +90,87 @@ export default function SettingsModal({
       setCityError('Error connecting to weather service.')
     } finally {
       setIsLocating(false)
+    }
+  }
+
+  const handleImportSteam = async (): Promise<void> => {
+    if (!window.api) return
+    setIsImporting(true)
+    setImportStatus('Selecting Steam folder...')
+
+    try {
+      const steamPath = await window.api.selectFolder()
+      if (!steamPath) {
+        setIsImporting(false)
+        setImportStatus('')
+        return
+      }
+
+      setImportStatus('Scanning library...')
+      const foundGames = await window.api.scanSteamLibrary(steamPath)
+      
+      if (foundGames.length === 0) {
+        alert('No Steam games found in the selected folder. Ensure you selected the root Steam folder.')
+        setIsImporting(false)
+        setImportStatus('')
+        return
+      }
+
+      setImportStatus(`Found ${foundGames.length} games. Fetching metadata...`)
+      
+      const newGames: Game[] = []
+      
+      // Process in batches to avoid rate limits
+      const BATCH_SIZE = 3
+      for (let i = 0; i < foundGames.length; i += BATCH_SIZE) {
+        const batch = foundGames.slice(i, i + BATCH_SIZE)
+        setImportStatus(`Importing ${i + 1} / ${foundGames.length}...`)
+
+        await Promise.all(batch.map(async (steamGame) => {
+          // Debugging: Check if appId exists
+          if (!steamGame.appId) {
+             console.warn('Skipping game with missing AppID:', steamGame.name)
+             return
+          }
+
+          let metadata = null
+          if (localKey) {
+            metadata = await fetchGameMetadata(steamGame.name, localKey)
+          }
+
+          newGames.push({
+            id: crypto.randomUUID(),
+            title: steamGame.name,
+            // Use the found executable path if available (fixes user issue), otherwise fallback to Steam Protocol
+            path_to_exe: steamGame.executablePath || `steam://rungameid/${steamGame.appId}`,
+            // Extract filename for process tracking
+            executableName: steamGame.executablePath
+              ? steamGame.executablePath.split(/[\\/]/).pop() || ''
+              : '',
+            cover_image: metadata?.cover_image || '',
+            bg_image: metadata?.bg_image || '',
+            description: metadata?.description || 'Imported from Steam',
+            genre: metadata?.genre || 'Game',
+            playtime: 0,
+            lastPlayed: '',
+            launchArgs: ''
+          })
+        }))
+        
+        // Small delay between batches
+        await new Promise(r => setTimeout(r, 500))
+      }
+
+      onImportGames(newGames)
+      alert(`Successfully imported ${newGames.length} games!`)
+      onClose()
+
+    } catch (error: any) {
+      console.error(error)
+      alert(`Import failed: ${error.message || 'Unknown error'}. Try restarting the app.`)
+    } finally {
+      setIsImporting(false)
+      setImportStatus('')
     }
   }
 
@@ -156,6 +246,34 @@ export default function SettingsModal({
                       className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500 disabled:opacity-50"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Import Games */}
+              <div>
+                 <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-green-400">
+                  Library Import
+                </h3>
+                <div className="rounded-lg bg-white/5 p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="flex items-center gap-2 text-sm font-bold text-white">
+                      <FaSteam className="text-white/60" /> Steam Import
+                    </label>
+                  </div>
+                  <button
+                    onClick={handleImportSteam}
+                    disabled={isImporting}
+                    className="flex w-full items-center justify-center gap-2 rounded bg-white/10 py-2 text-sm font-bold text-white hover:bg-green-600 transition-colors disabled:opacity-50"
+                  >
+                    {isImporting ? <span className="animate-spin">⟳</span> : <FaSteam />}
+                    {isImporting ? 'Scanning...' : 'Scan Steam Library'}
+                  </button>
+                  {importStatus && (
+                    <p className="mt-2 text-xs text-green-400 text-center animate-pulse">{importStatus}</p>
+                  )}
+                  <p className="mt-2 text-xs text-white/40">
+                    Select your main Steam folder (e.g. C:/Program Files/Steam). Metadata will be fetched via RAWG.
+                  </p>
                 </div>
               </div>
 

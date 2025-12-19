@@ -13,4 +13,16 @@ export function registerDialogHandlers(): void {
       return result.filePaths[0]
     }
   })
+
+  ipcMain.handle('open-folder-dialog', async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    })
+
+    if (result.canceled) {
+      return null
+    } else {
+      return result.filePaths[0]
+    }
+  })
 }
