@@ -102,17 +102,18 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
           </p>
           <div className="h-[1px] w-20 bg-orange-500/50" />
         </div>
+      </motion.div>
 
-        {/* Resume Hint */}
-        <motion.div
-          animate={{ opacity: [0, 0.4, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-12 flex flex-col items-center gap-2"
-        >
-          <span className="text-xs font-bold tracking-[0.5em] uppercase text-white/40">
-            Press any key to resume
-          </span>
-        </motion.div>
+      {/* Resume Hint - Anchored to Screen Bottom */}
+      <motion.div
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute bottom-16 z-30 flex flex-col items-center gap-3"
+      >
+        <div className="h-10 w-[1px] bg-gradient-to-b from-transparent to-white/50 mb-2"></div>
+        <span className="text-sm font-bold tracking-[0.4em] uppercase text-white/60 drop-shadow-md">
+          Press any key to resume
+        </span>
       </motion.div>
     </motion.div>
   )
