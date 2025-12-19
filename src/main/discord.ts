@@ -3,19 +3,22 @@ import { DISCORD_CONFIG } from './config'
 
 let rpcClient: DiscordRPC.Client | null = null
 let retryCount = 0
+let isReady = false
 
 /**
  * Initializes the Discord RPC client and attempts to log in.
  */
-export function initDiscordRPC(): void {
-  attemptConnection()
+export async function initDiscordRPC(): Promise<void> {
+  await attemptConnection()
 }
 
-function attemptConnection(): void {
+async function attemptConnection(): Promise<void> {
+  isReady = false // Reset state
+
   // cleanup previous instance if any
   if (rpcClient) {
     try {
-      rpcClient.destroy()
+      await rpcClient.destroy()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       // ignore
@@ -23,15 +26,28 @@ function attemptConnection(): void {
     rpcClient = null
   }
 
+  // Small delay to ensure socket closes
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   rpcClient = new DiscordRPC.Client({ transport: 'ipc' })
 
   rpcClient.on('ready', () => {
     console.log('[Discord RPC] Connected and Ready')
+    isReady = true
     setDiscordActivity('Browsing Library', 'In Menu')
     retryCount = 0 // Reset retry count on success
   })
 
+  // Register the app (sometimes required for detection)
+  try {
+    DiscordRPC.register(DISCORD_CONFIG.clientId)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (e) {
+    // console.warn('[Discord RPC] Register failed (non-fatal):', e)
+  }
+
   rpcClient.login({ clientId: DISCORD_CONFIG.clientId }).catch((err) => {
+    isReady = false
     console.warn(`[Discord RPC] Connection failed: ${err.message}`)
 
     if (retryCount < DISCORD_CONFIG.maxRetries) {
@@ -56,7 +72,7 @@ function attemptConnection(): void {
  * @param startTimestamp - Optional Date object to show the "Elapsed" timer.
  */
 export function setDiscordActivity(details: string, state: string, startTimestamp?: Date): void {
-  if (!rpcClient) return
+  if (!rpcClient || !isReady) return
 
   rpcClient
     .setActivity({
@@ -70,6 +86,7 @@ export function setDiscordActivity(details: string, state: string, startTimestam
     .catch((err) => {
       // If setting activity fails, it might mean the connection died.
       console.warn('[Discord RPC] Failed to set activity:', err.message)
+      isReady = false // Mark as failed
     })
 }
 
@@ -78,6 +95,6 @@ export function setDiscordActivity(details: string, state: string, startTimestam
  * Useful when the app is closing or the user disables the feature.
  */
 export function clearDiscordActivity(): void {
-  if (!rpcClient) return
+  if (!rpcClient || !isReady) return
   rpcClient.clearActivity().catch(console.error)
 }

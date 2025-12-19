@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import WeatherWidget from '@/features/navigation/components/WeatherWidget'
 
 // Features
 import { GameList, InfoPanel, AddGameModal } from '@/features/library'
@@ -217,8 +218,19 @@ function App(): React.JSX.Element {
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
           onOpenPower={() => setIsPowerModalOpen(true)}
-          weatherSettings={settings.weather}
         />
+
+        {/* Dashboard Widgets Area */}
+        {settings?.weather?.latitude && (
+          <div className="absolute top-24 right-16 z-10 pointer-events-none select-none">
+            <WeatherWidget
+              lat={settings.weather.latitude}
+              lng={settings.weather.longitude}
+              city={settings.weather.city}
+              variant="large"
+            />
+          </div>
+        )}
 
         <main className="flex flex-grow flex-col justify-end gap-4">
           {selectedGame && (
