@@ -25,7 +25,7 @@ const createSignature = (title: string, path: string): string => {
   return `${title.trim().toLowerCase()}|${path.trim().toLowerCase()}`
 }
 
-const sortGames = (list: Game[]): Game[] => {
+export const sortGames = (list: Game[]): Game[] => {
   return [...list].sort((a, b) => {
     // 1. Favorites First
     if (a.isFavorite && !b.isFavorite) return -1
