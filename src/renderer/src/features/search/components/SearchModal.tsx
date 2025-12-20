@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaSearch, FaGamepad } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'
 import { Game } from '@/features/library/types'
+import { useTranslation } from 'react-i18next'
 
 interface SearchModalProps {
   isOpen: boolean
@@ -16,6 +17,7 @@ export default function SearchModal({
   games,
   onSelectGame
 }: SearchModalProps): React.JSX.Element {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -57,7 +59,7 @@ export default function SearchModal({
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search games..."
+                placeholder={t('search.placeholder')}
                 className="flex-1 bg-transparent text-xl font-medium text-white placeholder-white/30 focus:outline-none"
               />
               <button onClick={onClose} className="text-white/50 hover:text-white">
@@ -92,7 +94,7 @@ export default function SearchModal({
                 </div>
               ) : (
                 <div className="py-8 text-center text-white/40">
-                  No games found matching &quot;{query}&quot;
+                  {t('search.no_results')} &quot;{query}&quot;
                 </div>
               )}
             </div>

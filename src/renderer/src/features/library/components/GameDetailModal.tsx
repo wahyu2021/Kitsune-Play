@@ -4,6 +4,7 @@ import { FaTimes, FaClock, FaCalendarAlt, FaGamepad, FaTerminal, FaFolder } from
 import { Game } from '@/features/library/types'
 import { logger } from '@/utils/logger'
 import LazyImage from '@/components/ui/LazyImage'
+import { useTranslation } from 'react-i18next'
 
 interface GameDetailModalProps {
   isOpen: boolean
@@ -16,6 +17,8 @@ export default function GameDetailModal({
   onClose,
   game
 }: GameDetailModalProps): React.JSX.Element {
+  const { t, i18n } = useTranslation()
+
   useEffect(() => {
     if (isOpen) logger.debug('UI', `GameDetailModal opened for: ${game.title}`)
   }, [isOpen, game])
@@ -27,7 +30,7 @@ export default function GameDetailModal({
 
   // Format last played
   const lastPlayedStr = game.lastPlayed
-    ? new Date(game.lastPlayed).toLocaleDateString('en-GB', {
+    ? new Date(game.lastPlayed).toLocaleDateString(i18n.language, {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -35,7 +38,7 @@ export default function GameDetailModal({
         hour: '2-digit',
         minute: '2-digit'
       })
-    : 'Never'
+    : t('library.never')
 
   return (
     <AnimatePresence>
@@ -116,13 +119,13 @@ export default function GameDetailModal({
                 <div className="mb-8 grid grid-cols-2 gap-4">
                   <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm">
                     <div className="mb-1 flex items-center gap-2 text-sm font-medium text-white/50">
-                      <FaClock className="text-orange-400" /> Playtime
+                      <FaClock className="text-orange-400" /> {t('game_detail.playtime')}
                     </div>
                     <div className="text-xl font-bold text-white">{timeString}</div>
                   </div>
                   <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm">
                     <div className="mb-1 flex items-center gap-2 text-sm font-medium text-white/50">
-                      <FaCalendarAlt className="text-blue-400" /> Last Played
+                      <FaCalendarAlt className="text-blue-400" /> {t('game_detail.last_played')}
                     </div>
                     <div className="text-lg font-bold text-white">{lastPlayedStr}</div>
                   </div>
@@ -134,7 +137,7 @@ export default function GameDetailModal({
                     <FaFolder className="flex-shrink-0 text-white/40" />
                     <div className="flex flex-col overflow-hidden">
                       <span className="text-xs font-bold uppercase text-white/40">
-                        Executable Path
+                        {t('game_detail.path')}
                       </span>
                       <span
                         className="truncate font-mono text-sm text-white/70"
@@ -150,7 +153,7 @@ export default function GameDetailModal({
                       <FaTerminal className="flex-shrink-0 text-white/40" />
                       <div className="flex flex-col overflow-hidden">
                         <span className="text-xs font-bold uppercase text-white/40">
-                          Launch Args
+                          {t('game_detail.args')}
                         </span>
                         <span className="truncate font-mono text-sm text-white/70">
                           {game.launchArgs}
@@ -164,7 +167,7 @@ export default function GameDetailModal({
                       <FaGamepad className="flex-shrink-0 text-white/40" />
                       <div className="flex flex-col overflow-hidden">
                         <span className="text-xs font-bold uppercase text-white/40">
-                          Target Process
+                          {t('game_detail.process')}
                         </span>
                         <span className="truncate font-mono text-sm text-white/70">
                           {game.executableName}
@@ -177,10 +180,10 @@ export default function GameDetailModal({
                 {/* Description */}
                 <div className="mt-8 space-y-2">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-white/50">
-                    About
+                    {t('game_detail.about')}
                   </h3>
                   <p className="whitespace-pre-wrap text-lg leading-relaxed text-white/90">
-                    {game.description || 'No description available.'}
+                    {game.description || t('game_detail.no_desc')}
                   </p>
                 </div>
               </div>

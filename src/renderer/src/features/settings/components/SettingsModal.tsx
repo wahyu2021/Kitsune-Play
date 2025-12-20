@@ -3,8 +3,10 @@ import { FaTimes, FaInfoCircle } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { Game } from '@/features/library/types'
 import { Modal, ModalType } from '@/components/ui'
+import { useTranslation } from 'react-i18next'
 
 // Sections
+import SettingsGeneral from './sections/SettingsGeneral'
 import SettingsAudio from './sections/SettingsAudio'
 import SettingsImport from './sections/SettingsImport'
 import SettingsWeather from './sections/SettingsWeather'
@@ -50,6 +52,7 @@ export default function SettingsModal({
   onImportGames,
   games
 }: SettingsModalProps): React.JSX.Element {
+  const { t } = useTranslation()
   const [version, setVersion] = useState<string>('')
 
   // Custom Modal State (for alerts/confirmations triggered by children)
@@ -97,13 +100,15 @@ export default function SettingsModal({
               className="w-full max-w-md rounded-2xl border border-white/10 bg-[#1a1a1a] p-8 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-white">Settings</h2>
+                <h2 className="text-2xl font-bold text-white">{t('settings.title')}</h2>
                 <button onClick={onClose} className="text-white/50 hover:text-white">
                   <FaTimes className="text-xl" />
                 </button>
               </div>
 
               <div className="flex flex-col gap-6">
+                <SettingsGeneral />
+
                 <SettingsAudio
                   bgMusicVolume={bgMusicVolume}
                   sfxVolume={sfxVolume}
@@ -123,7 +128,10 @@ export default function SettingsModal({
                   apiKey={apiKey}
                 />
 
-                <SettingsWeather weatherCity={weatherCity} onSaveWeatherCity={onSaveWeatherCity} />
+                <SettingsWeather
+                  weatherCity={weatherCity}
+                  onSaveWeatherCity={onSaveWeatherCity}
+                />
 
                 <SettingsMetadata apiKey={apiKey} onSaveApiKey={onSaveApiKey} />
 

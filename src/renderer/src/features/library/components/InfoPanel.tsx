@@ -11,6 +11,7 @@ import {
   FaStar,
   FaRegStar
 } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 import GameDetailModal from './GameDetailModal'
 
 interface InfoPanelProps {
@@ -28,6 +29,7 @@ export default function InfoPanel({
   onDelete,
   onToggleFavorite
 }: InfoPanelProps): React.JSX.Element {
+  const { t } = useTranslation()
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   // Format playtime
@@ -38,7 +40,7 @@ export default function InfoPanel({
   // Format last played
   const lastPlayedStr = game.lastPlayed
     ? new Date(game.lastPlayed).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-    : 'Never'
+    : t('library.never')
   const genreList = (game.genre || 'Game').split(',')
   return (
     <>
@@ -75,11 +77,17 @@ export default function InfoPanel({
           {/* Stats with Glass Background */}
           <div className="flex items-center gap-4 rounded-lg border border-white/5 bg-black/40 px-3 py-1 backdrop-blur-md">
             <div className="flex items-center gap-2">
-              <FaClock className="text-orange-400" /> <span>{timeString} Played</span>
+              <FaClock className="text-orange-400" />{' '}
+              <span>
+                {timeString} {t('library.played')}
+              </span>
             </div>
             <div className="h-3 w-[1px] bg-white/20"></div>
             <div className="flex items-center gap-2">
-              <FaCalendarAlt className="text-blue-400" /> <span>Last: {lastPlayedStr}</span>
+              <FaCalendarAlt className="text-blue-400" />{' '}
+              <span>
+                {t('library.last_played')}: {lastPlayedStr}
+              </span>
             </div>
           </div>
         </motion.div>
@@ -103,7 +111,7 @@ export default function InfoPanel({
             onClick={onPlay}
             className="flex items-center gap-3 rounded-full bg-white px-8 py-3 text-xl font-bold text-black transition-transform hover:scale-105"
           >
-            <FaPlay /> Play Game
+            <FaPlay /> {t('library.play')}
           </motion.button>
 
           <motion.button
@@ -135,7 +143,7 @@ export default function InfoPanel({
             whileTap={{ scale: 0.9 }}
             onClick={onEdit}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors"
-            title="Edit Game"
+            title={t('add_game.title_edit')}
           >
             <FaPen />
           </motion.button>
@@ -145,7 +153,7 @@ export default function InfoPanel({
             whileTap={{ scale: 0.9 }}
             onClick={onDelete}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:text-white"
-            title="Delete Game"
+            title={t('actions.delete')}
           >
             <FaTrash />
           </motion.button>

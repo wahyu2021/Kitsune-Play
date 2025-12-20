@@ -1,0 +1,173 @@
+{
+  "navigation": {
+    "games": "Permainan",
+    "media": "Media",
+    "search": "Cari",
+    "settings": "Pengaturan",
+    "power": "Daya"
+  },
+  "library": {
+    "play": "Mainkan",
+    "played": "Dimainkan",
+    "last_played": "Terakhir",
+    "never": "Belum Pernah",
+    "empty_title": "Perpustakaan kosong",
+    "empty_desc": "Klik tombol + untuk menambah konten"
+  },
+  "add_game": {
+    "title_add": "Tambah Game Baru",
+    "title_edit": "Edit Detail Game",
+    "field_title": "Judul",
+    "field_genre": "Genre",
+    "field_path": "Lokasi File Executable (.exe)",
+    "field_args": "Argumen Peluncuran (Opsional)",
+    "field_process": "Nama Proses Target (Untuk Tracking Steam/Epic)",
+    "field_desc": "Deskripsi",
+    "field_cover": "Gambar Cover",
+    "field_bg": "Gambar Latar",
+    "field_video": "Video Latar (Wallpaper Hidup)",
+    "btn_save": "Simpan ke Perpustakaan",
+    "btn_update": "Perbarui Game",
+    "placeholder_desc": "Deskripsi singkat...",
+    "placeholder_genre": "Aksi, RPG",
+    "placeholder_path": "C:\\Games\\GameSaya\\game.exe",
+    "placeholder_args": "misal, -windowed -skipintro",
+    "placeholder_process": "misal, dota2.exe",
+    "placeholder_url": "Jalur atau URL...",
+    "placeholder_video": "Jalur ke video .mp4 atau .webm...",
+    "tooltip_autofill": "Isi otomatis dari RAWG",
+    "tooltip_browse_cover": "Cari Cover",
+    "tooltip_browse_bg": "Cari Latar Belakang"
+  },
+  "game_detail": {
+    "playtime": "Waktu Main",
+    "last_played": "Terakhir Main",
+    "path": "Jalur Eksekusi",
+    "args": "Argumen",
+    "process": "Proses Target",
+    "about": "Tentang",
+    "no_desc": "Tidak ada deskripsi tersedia."
+  },
+  "profile": {
+    "title": "Pengaturan Profil",
+    "display_name": "Nama Tampilan",
+    "placeholder_name": "Masukkan nama Anda",
+    "coming_soon": "Pengeditan avatar segera hadir",
+    "btn_save": "Simpan Profil"
+  },
+  "power_menu": {
+    "title": "Opsi Daya",
+    "sleep": "Tidur",
+    "sleep_sub": "Tunda",
+    "restart": "Mulai Ulang",
+    "restart_sub": "Reboot",
+    "shutdown": "Matikan",
+    "shutdown_sub": "Shutdown",
+    "exit": "Keluar App",
+    "exit_sub": "Desktop"
+  },
+  "screensaver": {
+    "resume": "Tekan tombol apa saja untuk melanjutkan"
+  },
+  "splash": {
+    "subtitle": "Peluncur Generasi Berikutnya",
+    "press_key": "TEKAN TOMBOL APA SAJA",
+    "system_ready": "SISTEM SIAP"
+  },
+  "search": {
+    "placeholder": "Cari game...",
+    "no_results": "Tidak ditemukan game yang cocok dengan"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "language": "Bahasa",
+    "audio": {
+      "title": "Audio",
+      "controls": "Kontrol Suara",
+      "mute_all": "BISUKAN",
+      "muted": "SENYAP",
+      "music": "Musik",
+      "sfx": "SFX (Navigasi)",
+      "bg_music": "Musik Latar",
+      "reset": "Reset",
+      "default_theme": "Tema Bawaan"
+    },
+    "import": {
+      "title": "Impor Perpustakaan",
+      "steam": "Impor Steam",
+      "scan_btn": "Pindai Library Steam",
+      "scanning": "Memindai...",
+      "desc": "Pilih folder utama Steam (misal: C:/Program Files/Steam)."
+    },
+    "weather": {
+      "title": "Widget Cuaca",
+      "location": "Lokasi",
+      "placeholder": "Masukkan kota (misal: Jakarta)",
+      "desc": "Menampilkan info cuaca di Bar Atas."
+    },
+    "metadata": {
+      "title": "Penyedia Metadata",
+      "key_label": "Kunci API RAWG",
+      "get_key": "Dapatkan Kunci",
+      "placeholder": "Tempel kunci API Anda di sini...",
+      "desc": "Digunakan untuk mengambil cover dan deskripsi game secara otomatis."
+    },
+    "danger": {
+      "title": "Zona Bahaya",
+      "reset_btn": "Reset Perpustakaan ke Awal",
+      "confirm_title": "Reset Perpustakaan",
+      "confirm_msg": "Apakah Anda yakin ingin mereset perpustakaan?\n\nIni akan menghapus semua game dan pengaturan. Tindakan ini tidak dapat dibatalkan."
+    }
+  },
+  "actions": {
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "confirm": "Konfirmasi",
+    "browse": "Telusuri"
+  },
+  "launcher": {
+    "launching": "Meluncurkan {{title}}...",
+    "played": "Bermain selama {{duration}} mnt",
+    "failed": "Gagal: {{msg}}"
+  },
+  "import_status": {
+    "selecting": "Memilih folder Steam...",
+    "scanning": "Memindai perpustakaan...",
+    "found_filtering": "Ditemukan {{count}} game. Menyaring duplikat...",
+    "found_fetching": "Ditemukan {{count}} game baru ({{skipped}} dilewati). Mengambil metadata...",
+    "importing_batch": "Mengimpor {{current}} / {{total}} (Dilewati {{skipped}} duplikat)..."
+  },
+  "alerts": {
+    "no_games_title": "Tidak Ada Game Ditemukan",
+    "no_games_msg": "Tidak ada game Steam ditemukan di folder yang dipilih.\nPastikan Anda memilih folder root Steam (misal: C:/Program Files/Steam).",
+    "import_complete_title": "Impor Selesai",
+    "import_complete_msg": "Ditemukan {{count}} game, tetapi semuanya sudah ada di perpustakaan Anda.\n\nDilewati {{skipped}} duplikat.",
+    "import_success_title": "Impor Berhasil",
+    "import_success_msg": "Berhasil mengimpor {{count}} game baru!\n\n{{skipped}} duplikat dilewati.",
+    "import_failed_title": "Impor Gagal",
+    "import_failed_msg": "{{msg}}. Coba mulai ulang aplikasi."
+  },
+  "weather_errors": {
+    "city_not_found": "Kota tidak ditemukan. Coba nama lain.",
+    "connect_error": "Gagal terhubung ke layanan cuaca."
+  },
+  "weather_desc": {
+    "clear": "Cerah",
+    "mainly_clear": "Sebagian Cerah",
+    "partly_cloudy": "Berawan Sebagian",
+    "overcast": "Mendung",
+    "fog": "Kabut",
+    "drizzle": "Gerimis",
+    "freezing_drizzle": "Gerimis Beku",
+    "rain": "Hujan",
+    "freezing_rain": "Hujan Beku",
+    "snow": "Salju",
+    "snow_grains": "Butiran Salju",
+    "showers": "Hujan Deras",
+    "snow_showers": "Hujan Salju",
+    "thunderstorm": "Badai Petir",
+    "storm_hail": "Badai & Hujan Es",
+    "unknown": "Tidak Diketahui"
+  }
+}

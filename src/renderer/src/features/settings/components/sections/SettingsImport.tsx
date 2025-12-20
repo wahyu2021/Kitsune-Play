@@ -3,6 +3,7 @@ import { FaSteam } from 'react-icons/fa'
 import { Game, SteamGame } from '@/features/library/types'
 import { fetchGameMetadata, GameMetadata } from '@/services/rawg'
 import { ModalType } from '@/components/ui'
+import { useTranslation } from 'react-i18next'
 
 interface SettingsImportProps {
   onImportGames: (games: Game[]) => void
@@ -19,13 +20,14 @@ export default function SettingsImport({
   onCloseParent,
   apiKey
 }: SettingsImportProps): React.JSX.Element {
+  const { t } = useTranslation()
   const [isImporting, setIsImporting] = useState(false)
   const [importStatus, setImportStatus] = useState('')
 
   const handleImportSteam = async (): Promise<void> => {
     if (!window.api) return
     setIsImporting(true)
-    setImportStatus('Selecting Steam folder...')
+    setImportStatus(t('import_status.selecting'))
 
     try {
       const steamPath = await window.api.selectFolder()
@@ -35,13 +37,13 @@ export default function SettingsImport({
         return
       }
 
-      setImportStatus('Scanning library...')
+      setImportStatus(t('import_status.scanning'))
       const foundGames = (await window.api.scanSteamLibrary(steamPath)) as SteamGame[]
 
       if (foundGames.length === 0) {
         onShowAlert(
-          'No Games Found',
-          'No Steam games found in the selected folder.\nEnsure you selected the root Steam folder (e.g., C:/Program Files/Steam).',
+          t('alerts.no_games_title'),
+          t('alerts.no_games_msg'),
           'warning'
         )
         setIsImporting(false)
@@ -49,7 +51,7 @@ export default function SettingsImport({
         return
       }
 
-      setImportStatus(`Found ${foundGames.length} games. Filtering duplicates...`)
+      setImportStatus(t('import_status.found_filtering', { count: foundGames.length }))
 
       // Helper for duplicate detection
       const createSignature = (title: string, path: string): string =>
@@ -68,8 +70,8 @@ export default function SettingsImport({
 
       if (uniqueSteamGames.length === 0) {
         onShowAlert(
-          'Import Complete',
-          `Found ${foundGames.length} games, but they are all already in your library.\n\nSkipped ${duplicateCount} duplicates.`,
+          t('alerts.import_complete_title'),
+          t('alerts.import_complete_msg', { count: foundGames.length, skipped: duplicateCount }),
           'info'
         )
         setIsImporting(false)
@@ -78,7 +80,7 @@ export default function SettingsImport({
       }
 
       setImportStatus(
-        `Found ${uniqueSteamGames.length} new games (${duplicateCount} skipped). Fetching metadata...`
+        t('import_status.found_fetching', { count: uniqueSteamGames.length, skipped: duplicateCount })
       )
 
       const newGames: Game[] = []
@@ -88,7 +90,7 @@ export default function SettingsImport({
       for (let i = 0; i < uniqueSteamGames.length; i += BATCH_SIZE) {
         const batch = uniqueSteamGames.slice(i, i + BATCH_SIZE)
         setImportStatus(
-          `Importing ${i + 1} / ${uniqueSteamGames.length} (Skipped ${duplicateCount} dupe)...`
+          t('import_status.importing_batch', { current: i + 1, total: uniqueSteamGames.length, skipped: duplicateCount })
         )
 
         await Promise.all(
@@ -124,15 +126,15 @@ export default function SettingsImport({
 
       onImportGames(newGames)
       onShowAlert(
-        'Import Successful',
-        `Imported ${newGames.length} new games!\n\n${duplicateCount} duplicates were skipped.`,
+        t('alerts.import_success_title'),
+        t('alerts.import_success_msg', { count: newGames.length, skipped: duplicateCount }),
         'success'
       )
       onCloseParent()
     } catch (error: unknown) {
       console.error(error)
       const msg = error instanceof Error ? error.message : 'Unknown error'
-      onShowAlert('Import Failed', `${msg}. Try restarting the app.`, 'error')
+      onShowAlert(t('alerts.import_failed_title'), t('alerts.import_failed_msg', { msg }), 'error')
     } finally {
       setIsImporting(false)
       setImportStatus('')
@@ -142,12 +144,12 @@ export default function SettingsImport({
   return (
     <div>
       <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-green-400">
-        Library Import
+        {t('settings.import.title')}
       </h3>
       <div className="rounded-lg bg-white/5 p-4">
         <div className="flex items-center justify-between mb-3">
           <label className="flex items-center gap-2 text-sm font-bold text-white">
-            <FaSteam className="text-white/60" /> Steam Import
+            <FaSteam className="text-white/60" /> {t('settings.import.steam')}
           </label>
         </div>
         <button
@@ -156,15 +158,12 @@ export default function SettingsImport({
           className="flex w-full items-center justify-center gap-2 rounded bg-white/10 py-2 text-sm font-bold text-white hover:bg-green-600 transition-colors disabled:opacity-50"
         >
           {isImporting ? <span className="animate-spin">⟳</span> : <FaSteam />}
-          {isImporting ? 'Scanning...' : 'Scan Steam Library'}
+          {isImporting ? t('settings.import.scanning') : t('settings.import.scan_btn')}
         </button>
         {importStatus && (
           <p className="mt-2 text-xs text-green-400 text-center animate-pulse">{importStatus}</p>
         )}
-        <p className="mt-2 text-xs text-white/40">
-          Select your main Steam folder (e.g. C:/Program Files/Steam). Metadata will be fetched via
-          RAWG.
-        </p>
+        <p className="mt-2 text-xs text-white/40">{t('settings.import.desc')}</p>
       </div>
     </div>
   )

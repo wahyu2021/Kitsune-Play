@@ -13,6 +13,7 @@ import {
 } from 'react-icons/wi'
 import { getCurrentWeather, WeatherData, getWeatherDescription } from '@/services/weather'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface WeatherWidgetProps {
   lat: number
@@ -27,6 +28,7 @@ export default function WeatherWidget({
   city,
   variant = 'small'
 }: WeatherWidgetProps): React.JSX.Element | null {
+  const { t } = useTranslation()
   const [weather, setWeather] = useState<WeatherData | null>(null)
 
   const fetchWeather = useCallback(async (): Promise<void> => {
@@ -85,7 +87,7 @@ export default function WeatherWidget({
             </span>
           )}
           <span className="text-xs font-bold text-blue-200 tracking-widest opacity-80 mt-1 uppercase max-w-[120px] truncate">
-            {getWeatherDescription(weather.weatherCode)}
+            {t(getWeatherDescription(weather.weatherCode))}
           </span>
         </div>
 

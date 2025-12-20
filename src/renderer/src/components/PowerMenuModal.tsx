@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaPowerOff, FaRedo, FaMoon, FaDoorOpen } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 
 interface PowerMenuModalProps {
   isOpen: boolean
@@ -10,6 +11,8 @@ export default function PowerMenuModal({
   isOpen,
   onClose
 }: PowerMenuModalProps): React.JSX.Element {
+  const { t } = useTranslation()
+
   const handleAction = (action: 'shutdown' | 'restart' | 'sleep' | 'quit'): void => {
     if (window.api) {
       switch (action) {
@@ -64,7 +67,7 @@ export default function PowerMenuModal({
               variants={itemVariants}
               className="mb-12 text-3xl font-light text-white tracking-widest uppercase"
             >
-              Power Options
+              {t('power_menu.title')}
             </motion.h2>
 
             <div className="flex flex-wrap items-center justify-center gap-8">
@@ -81,10 +84,10 @@ export default function PowerMenuModal({
                 </div>
                 <div className="space-y-1">
                   <span className="block text-lg font-medium text-white group-hover:text-blue-400">
-                    Sleep
+                    {t('power_menu.sleep')}
                   </span>
                   <span className="block text-xs text-white/40 uppercase tracking-wider">
-                    Suspend
+                    {t('power_menu.sleep_sub')}
                   </span>
                 </div>
               </motion.button>
@@ -102,10 +105,10 @@ export default function PowerMenuModal({
                 </div>
                 <div className="space-y-1">
                   <span className="block text-lg font-medium text-white group-hover:text-orange-400">
-                    Restart
+                    {t('power_menu.restart')}
                   </span>
                   <span className="block text-xs text-white/40 uppercase tracking-wider">
-                    Reboot
+                    {t('power_menu.restart_sub')}
                   </span>
                 </div>
               </motion.button>
@@ -123,10 +126,10 @@ export default function PowerMenuModal({
                 </div>
                 <div className="space-y-1">
                   <span className="block text-lg font-medium text-white group-hover:text-red-400">
-                    Turn Off
+                    {t('power_menu.shutdown')}
                   </span>
                   <span className="block text-xs text-white/40 uppercase tracking-wider">
-                    Shutdown
+                    {t('power_menu.shutdown_sub')}
                   </span>
                 </div>
               </motion.button>
@@ -144,10 +147,10 @@ export default function PowerMenuModal({
                 </div>
                 <div className="space-y-1">
                   <span className="block text-lg font-medium text-white group-hover:text-gray-400">
-                    Exit App
+                    {t('power_menu.exit')}
                   </span>
                   <span className="block text-xs text-white/40 uppercase tracking-wider">
-                    Desktop
+                    {t('power_menu.exit_sub')}
                   </span>
                 </div>
               </motion.button>
@@ -158,7 +161,7 @@ export default function PowerMenuModal({
               onClick={onClose}
               className="mt-16 rounded-full px-8 py-2 text-sm font-bold text-white/30 transition-colors hover:bg-white/10 hover:text-white"
             >
-              CANCEL
+              {t('actions.cancel').toUpperCase()}
             </motion.button>
           </motion.div>
         </div>

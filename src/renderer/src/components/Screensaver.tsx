@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
 import { DEFAULT_BANNER } from '@/config'
+import { useTranslation } from 'react-i18next'
 
 interface ScreensaverProps {
   activeGame?: Game | null
@@ -15,6 +16,7 @@ interface ScreensaverProps {
  * - Pixel-shifting clock for burn-in protection.
  */
 export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX.Element {
+  const { t, i18n } = useTranslation()
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
@@ -91,14 +93,14 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
           className="text-8xl font-thin tracking-widest text-white/80 drop-shadow-2xl font-mono"
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
-          {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {time.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}
         </motion.h1>
 
         {/* Date */}
         <div className="mt-4 flex items-center gap-4 justify-center">
           <div className="h-[1px] w-20 bg-orange-500/50" />
           <p className="text-xl font-medium tracking-[0.2em] text-orange-400 uppercase">
-            {time.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
+            {time.toLocaleDateString(i18n.language, { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
           <div className="h-[1px] w-20 bg-orange-500/50" />
         </div>
@@ -112,7 +114,7 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
       >
         <div className="h-10 w-[1px] bg-gradient-to-b from-transparent to-white/50 mb-2"></div>
         <span className="text-sm font-bold tracking-[0.4em] uppercase text-white/60 drop-shadow-md">
-          Press any key to resume
+          {t('screensaver.resume')}
         </span>
       </motion.div>
     </motion.div>

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { FaPlay } from 'react-icons/fa'
 import logoIcon from '@/assets/icon.png'
 import bannerBg from '@/assets/banner-game.png'
+import { useTranslation } from 'react-i18next'
 
 interface SplashScreenProps {
   onStart: () => void
@@ -14,6 +15,8 @@ interface SplashScreenProps {
  * @param onStart - Callback function triggered when the user clicks start.
  */
 export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.Element {
+  const { t } = useTranslation()
+
   // Handle "Press Any Key" interaction
   useEffect(() => {
     const handleKeyDown = (): void => {
@@ -85,7 +88,7 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-lg font-medium text-white/60 tracking-[0.3em] uppercase"
           >
-            Next Gen Launcher
+            {t('splash.subtitle')}
           </motion.p>
         </div>
 
@@ -109,7 +112,7 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
               transition={{ duration: 2, repeat: Infinity }}
               className="text-xs font-bold tracking-[0.2em] text-white/70 group-hover:text-white transition-colors"
             >
-              PRESS ANY KEY
+              {t('splash.press_key')}
             </motion.span>
           </div>
         </motion.div>
@@ -119,7 +122,7 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
       <div className="absolute bottom-8 flex flex-col items-center gap-1">
         <div className="h-[1px] w-24 bg-white/20 mb-2"></div>
         <div className="text-[10px] font-mono text-white/30 tracking-widest">
-          v1.1.0 • SYSTEM READY
+          v1.1.0 • {t('splash.system_ready')}
         </div>
       </div>
     </motion.div>

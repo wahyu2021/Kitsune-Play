@@ -152,49 +152,49 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
 export function getWeatherDescription(code: number): string {
   switch (code) {
     case 0:
-      return 'Clear'
+      return 'weather_desc.clear'
     case 1:
-      return 'Mainly Clear'
+      return 'weather_desc.mainly_clear'
     case 2:
-      return 'Partly Cloudy'
+      return 'weather_desc.partly_cloudy'
     case 3:
-      return 'Overcast'
+      return 'weather_desc.overcast'
     case 45:
     case 48:
-      return 'Fog'
+      return 'weather_desc.fog'
     case 51:
     case 53:
     case 55:
-      return 'Drizzle'
+      return 'weather_desc.drizzle'
     case 56:
     case 57:
-      return 'Freezing Drizzle'
+      return 'weather_desc.freezing_drizzle'
     case 61:
     case 63:
     case 65:
-      return 'Rain'
+      return 'weather_desc.rain'
     case 66:
     case 67:
-      return 'Freezing Rain'
+      return 'weather_desc.freezing_rain'
     case 71:
     case 73:
     case 75:
-      return 'Snow'
+      return 'weather_desc.snow'
     case 77:
-      return 'Snow Grains'
+      return 'weather_desc.snow_grains'
     case 80:
     case 81:
     case 82:
-      return 'Showers'
+      return 'weather_desc.showers'
     case 85:
     case 86:
-      return 'Snow Showers'
+      return 'weather_desc.snow_showers'
     case 95:
-      return 'Thunderstorm'
+      return 'weather_desc.thunderstorm'
     case 96:
     case 99:
-      return 'Storm & Hail'
+      return 'weather_desc.storm_hail'
     default:
-      return 'Unknown'
+      return 'weather_desc.unknown'
   }
 }

@@ -10,6 +10,7 @@ import {
   FaMinus
 } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface TopBarProps {
   userName: string
@@ -32,6 +33,7 @@ export default function TopBar({
   onOpenSearch,
   onOpenPower
 }: TopBarProps): React.JSX.Element {
+  const { t, i18n } = useTranslation()
   const [time, setTime] = useState<string>('')
   const [dateStr, setDateStr] = useState<string>('')
 
@@ -40,7 +42,7 @@ export default function TopBar({
       const now = new Date()
       // Time: 20:45
       setTime(
-        now.toLocaleTimeString('en-US', {
+        now.toLocaleTimeString(i18n.language, {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false
@@ -48,7 +50,7 @@ export default function TopBar({
       )
       // Date: Sun 07/12
       setDateStr(
-        now.toLocaleDateString('en-GB', {
+        now.toLocaleDateString(i18n.language, {
           weekday: 'short',
           day: '2-digit',
           month: '2-digit'
@@ -58,7 +60,7 @@ export default function TopBar({
     updateTime()
     const interval = setInterval(updateTime, 30000) // Update every 30s
     return () => clearInterval(interval)
-  }, [])
+  }, [i18n.language]) // Update when language changes
 
   return (
     <header className="flex w-full items-center justify-between drop-shadow-lg px-2">
@@ -70,7 +72,7 @@ export default function TopBar({
           className={`relative flex cursor-pointer items-center gap-3 pb-2 transition-colors ${activeTab === 'games' ? 'text-white' : 'text-white/50 hover:text-white/80'}`}
         >
           <FaGamepad className="text-xl" />
-          <span className="text-lg font-semibold tracking-wide">Games</span>
+          <span className="text-lg font-semibold tracking-wide">{t('navigation.games')}</span>
           {activeTab === 'games' && (
             <motion.div
               layoutId="activeTab"
@@ -85,7 +87,7 @@ export default function TopBar({
           className={`relative flex cursor-pointer items-center gap-3 pb-2 transition-colors ${activeTab === 'media' ? 'text-white' : 'text-white/50 hover:text-white/80'}`}
         >
           <FaTv className="text-xl" />
-          <span className="text-lg font-medium tracking-wide">Media</span>
+          <span className="text-lg font-medium tracking-wide">{t('navigation.media')}</span>
           {activeTab === 'media' && (
             <motion.div
               layoutId="activeTab"
@@ -101,7 +103,7 @@ export default function TopBar({
         <div
           onClick={onOpenAddGame}
           className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 transition-all hover:bg-white hover:text-black"
-          title="Add Game"
+          title={t('add_game.title_add')}
         >
           <FaPlus className="text-sm" />
         </div>
@@ -109,6 +111,7 @@ export default function TopBar({
         <div
           onClick={onOpenSearch}
           className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-bg hover:bg-white/10"
+          title={t('navigation.search')}
         >
           <FaSearch className="text-xl opacity-70 hover:opacity-100" />
         </div>
@@ -116,6 +119,7 @@ export default function TopBar({
         <div
           onClick={onOpenSettings}
           className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-bg hover:bg-white/10"
+          title={t('navigation.settings')}
         >
           <FaCog className="text-xl opacity-70 hover:opacity-100" />
         </div>
@@ -148,6 +152,7 @@ export default function TopBar({
         <div
           onClick={onOpenPower}
           className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-red-400 hover:bg-red-500/20 hover:text-red-500"
+          title={t('navigation.power')}
         >
           <FaPowerOff />
         </div>

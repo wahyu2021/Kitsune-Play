@@ -1,4 +1,5 @@
 import { FaVolumeUp, FaVolumeMute, FaMusic, FaFolderOpen, FaUndo } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 
 interface SettingsAudioProps {
   bgMusicVolume: number
@@ -21,6 +22,8 @@ export default function SettingsAudio({
   customBgMusicPath,
   onSaveCustomBgMusic
 }: SettingsAudioProps): React.JSX.Element {
+  const { t } = useTranslation()
+
   const handleSelectMusic = async (): Promise<void> => {
     if (!window.api) return
     const file = await window.api.selectFile([{ name: 'Audio Files', extensions: ['mp3'] }])
@@ -31,25 +34,27 @@ export default function SettingsAudio({
 
   return (
     <div>
-      <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-400">Audio</h3>
+      <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-400">
+        {t('settings.audio.title')}
+      </h3>
       <div className="rounded-lg bg-white/5 p-4">
         <div className="flex items-center justify-between mb-4">
           <label className="flex items-center gap-2 text-sm font-bold text-white">
             {isMuted ? <FaVolumeMute className="text-red-400" /> : <FaVolumeUp />}
-            Sound Controls
+            {t('settings.audio.controls')}
           </label>
           <button
             onClick={() => onMuteToggle(!isMuted)}
             className={`text-xs font-bold px-2 py-1 rounded ${isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
           >
-            {isMuted ? 'MUTED' : 'MUTE ALL'}
+            {isMuted ? t('settings.audio.muted') : t('settings.audio.mute_all')}
           </button>
         </div>
 
         {/* Music Slider */}
         <div className="mb-3">
           <div className="flex justify-between text-xs text-white/60 mb-1">
-            <span>Music</span>
+            <span>{t('settings.audio.music')}</span>
             <span>{Math.round(bgMusicVolume * 100)}%</span>
           </div>
           <input
@@ -67,7 +72,7 @@ export default function SettingsAudio({
         {/* SFX Slider */}
         <div className="mb-4">
           <div className="flex justify-between text-xs text-white/60 mb-1">
-            <span>SFX (Navigation)</span>
+            <span>{t('settings.audio.sfx')}</span>
             <span>{Math.round(sfxVolume * 100)}%</span>
           </div>
           <input
@@ -86,23 +91,25 @@ export default function SettingsAudio({
         <div className="border-t border-white/10 pt-4">
           <div className="flex items-center justify-between text-xs text-white/60 mb-2">
             <span className="flex items-center gap-2">
-              <FaMusic className="text-blue-400" /> Background Music
+              <FaMusic className="text-blue-400" /> {t('settings.audio.bg_music')}
             </span>
             {customBgMusicPath && (
               <button
                 onClick={() => onSaveCustomBgMusic(undefined)}
                 className="flex items-center gap-1 text-white/50 hover:text-white"
               >
-                <FaUndo className="text-[10px]" /> Reset
+                <FaUndo className="text-[10px]" /> {t('settings.audio.reset')}
               </button>
             )}
           </div>
           <div className="flex gap-2">
             <div
               className="flex-1 truncate rounded bg-black/20 px-3 py-2 text-sm text-white border border-white/10 opacity-70"
-              title={customBgMusicPath || 'Default Theme'}
+              title={customBgMusicPath || t('settings.audio.default_theme')}
             >
-              {customBgMusicPath ? customBgMusicPath.split(/[\/]/).pop() : 'Default Theme'}
+              {customBgMusicPath
+                ? customBgMusicPath.split(/[\/]/).pop()
+                : t('settings.audio.default_theme')}
             </div>
             <button
               onClick={handleSelectMusic}

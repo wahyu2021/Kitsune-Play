@@ -1,0 +1,173 @@
+{
+  "navigation": {
+    "games": "Games",
+    "media": "Media",
+    "search": "Search",
+    "settings": "Settings",
+    "power": "Power"
+  },
+  "library": {
+    "play": "Play Game",
+    "played": "Played",
+    "last_played": "Last",
+    "never": "Never",
+    "empty_title": "Library is empty",
+    "empty_desc": "Click the + button to add content"
+  },
+  "add_game": {
+    "title_add": "Add New Game",
+    "title_edit": "Edit Game Details",
+    "field_title": "Title",
+    "field_genre": "Genre",
+    "field_path": "Executable Path (.exe)",
+    "field_args": "Launch Arguments (Optional)",
+    "field_process": "Target Process Name (For Steam/Epic Tracking)",
+    "field_desc": "Description",
+    "field_cover": "Cover Image",
+    "field_bg": "Background Image",
+    "field_video": "Background Video (Live Wallpaper)",
+    "btn_save": "Save to Library",
+    "btn_update": "Update Game",
+    "placeholder_desc": "Brief description...",
+    "placeholder_genre": "Action, RPG",
+    "placeholder_path": "C:\\Games\\MyGame\\game.exe",
+    "placeholder_args": "e.g., -windowed -skipintro",
+    "placeholder_process": "e.g., dota2.exe",
+    "placeholder_url": "Path or URL...",
+    "placeholder_video": "Path to .mp4 or .webm video...",
+    "tooltip_autofill": "Auto-fill details from RAWG",
+    "tooltip_browse_cover": "Browse Cover",
+    "tooltip_browse_bg": "Browse Background"
+  },
+  "game_detail": {
+    "playtime": "Playtime",
+    "last_played": "Last Played",
+    "path": "Executable Path",
+    "args": "Launch Args",
+    "process": "Target Process",
+    "about": "About",
+    "no_desc": "No description available."
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "display_name": "Display Name",
+    "placeholder_name": "Enter your name",
+    "coming_soon": "Avatar editing coming soon",
+    "btn_save": "Save Profile"
+  },
+  "power_menu": {
+    "title": "Power Options",
+    "sleep": "Sleep",
+    "sleep_sub": "Suspend",
+    "restart": "Restart",
+    "restart_sub": "Reboot",
+    "shutdown": "Turn Off",
+    "shutdown_sub": "Shutdown",
+    "exit": "Exit App",
+    "exit_sub": "Desktop"
+  },
+  "screensaver": {
+    "resume": "Press any key to resume"
+  },
+  "splash": {
+    "subtitle": "Next Gen Launcher",
+    "press_key": "PRESS ANY KEY",
+    "system_ready": "SYSTEM READY"
+  },
+  "search": {
+    "placeholder": "Search games...",
+    "no_results": "No games found matching"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "audio": {
+      "title": "Audio",
+      "controls": "Sound Controls",
+      "mute_all": "MUTE ALL",
+      "muted": "MUTED",
+      "music": "Music",
+      "sfx": "SFX (Navigation)",
+      "bg_music": "Background Music",
+      "reset": "Reset",
+      "default_theme": "Default Theme"
+    },
+    "import": {
+      "title": "Library Import",
+      "steam": "Steam Import",
+      "scan_btn": "Scan Steam Library",
+      "scanning": "Scanning...",
+      "desc": "Select your main Steam folder (e.g. C:/Program Files/Steam)."
+    },
+    "weather": {
+      "title": "Weather Widget",
+      "location": "Location",
+      "placeholder": "Enter city (e.g. Tokyo)",
+      "desc": "Shows weather info in the Top Bar."
+    },
+    "metadata": {
+      "title": "Metadata Provider",
+      "key_label": "RAWG API Key",
+      "get_key": "Get Key",
+      "placeholder": "Paste your API key here...",
+      "desc": "Used to auto-fetch game covers and descriptions."
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "reset_btn": "Reset Library to Defaults",
+      "confirm_title": "Reset Library",
+      "confirm_msg": "Are you sure you want to reset your library?\n\nThis will remove all games and settings. This action cannot be undone."
+    }
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "browse": "Browse"
+  },
+  "launcher": {
+    "launching": "Launching {{title}}...",
+    "played": "Played for {{duration}} mins",
+    "failed": "Failed: {{msg}}"
+  },
+  "import_status": {
+    "selecting": "Selecting Steam folder...",
+    "scanning": "Scanning library...",
+    "found_filtering": "Found {{count}} games. Filtering duplicates...",
+    "found_fetching": "Found {{count}} new games ({{skipped}} skipped). Fetching metadata...",
+    "importing_batch": "Importing {{current}} / {{total}} (Skipped {{skipped}} dupe)..."
+  },
+  "alerts": {
+    "no_games_title": "No Games Found",
+    "no_games_msg": "No Steam games found in the selected folder.\nEnsure you selected the root Steam folder (e.g., C:/Program Files/Steam).",
+    "import_complete_title": "Import Complete",
+    "import_complete_msg": "Found {{count}} games, but they are all already in your library.\n\nSkipped {{skipped}} duplicates.",
+    "import_success_title": "Import Successful",
+    "import_success_msg": "Imported {{count}} new games!\n\n{{skipped}} duplicates were skipped.",
+    "import_failed_title": "Import Failed",
+    "import_failed_msg": "{{msg}}. Try restarting the app."
+  },
+  "weather_errors": {
+    "city_not_found": "City not found. Try a different name.",
+    "connect_error": "Error connecting to weather service."
+  },
+  "weather_desc": {
+    "clear": "Clear",
+    "mainly_clear": "Mainly Clear",
+    "partly_cloudy": "Partly Cloudy",
+    "overcast": "Overcast",
+    "fog": "Fog",
+    "drizzle": "Drizzle",
+    "freezing_drizzle": "Freezing Drizzle",
+    "rain": "Rain",
+    "freezing_rain": "Freezing Rain",
+    "snow": "Snow",
+    "snow_grains": "Snow Grains",
+    "showers": "Showers",
+    "snow_showers": "Snow Showers",
+    "thunderstorm": "Thunderstorm",
+    "storm_hail": "Storm & Hail",
+    "unknown": "Unknown"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Game } from '@/features/library/types'
 import { logger } from '@/utils/logger'
 import { ToastType } from '@/components/ui/Toast'
@@ -12,12 +13,13 @@ export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLaunch
   isPlaying: boolean
   launchGame: (game: Game) => Promise<void>
 } {
+  const { t } = useTranslation()
   const [isPlaying, setIsPlaying] = useState(false)
 
   const launchGame = useCallback(
     async (game: Game) => {
       logger.info('Game', `Launching: ${game.title}`)
-      showToast(`Launching ${game.title}...`, 'success')
+      showToast(t('launcher.launching', { title: game.title }), 'success')
       setIsPlaying(true)
 
       try {
@@ -33,16 +35,16 @@ export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLaunch
         updateGamePlaytime(game.id, duration)
 
         if (duration > 0) {
-          showToast(`Played for ${duration} mins`, 'info')
+          showToast(t('launcher.played', { duration }), 'info')
         }
       } catch (err) {
         logger.error('Game', 'Failed to launch game', err)
         setIsPlaying(false)
         const msg = err instanceof Error ? err.message : String(err)
-        showToast(`Failed: ${msg}`, 'error')
+        showToast(t('launcher.failed', { msg }), 'error')
       }
     },
-    [updateGamePlaytime, showToast]
+    [updateGamePlaytime, showToast, t]
   )
 
   return { isPlaying, launchGame }
