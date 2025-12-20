@@ -113,7 +113,7 @@ export function useAddGameForm({
     e.preventDefault()
     if (formData.title && formData.path_to_exe) {
       const newGame: Game = {
-        id: editGame ? editGame.id : Date.now().toString(),
+        id: editGame ? editGame.id : crypto.randomUUID(),
         title: formData.title || 'Untitled',
         description: formData.description || '',
         genre: formData.genre || 'Unknown',

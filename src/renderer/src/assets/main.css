@@ -35,18 +35,25 @@
 
   /* Custom Scrollbar for PS5 Theme */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px; /* Vertical width */
+    height: 8px; /* Horizontal height */
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
+    margin: 8px; /* Spacing from edges */
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 100vh;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    border: 2px solid transparent; /* Trick for padding */
+    background-clip: content-box; /* Makes the border invisible acting as margin */
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  /* Corner fix */
+  .custom-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

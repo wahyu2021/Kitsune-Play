@@ -152,8 +152,8 @@ export default function AddGameModal({
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows={2}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none"
+                  rows={4}
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-white/30 focus:outline-none custom-scrollbar resize-none"
                   placeholder="Brief description..."
                 />
               </div>

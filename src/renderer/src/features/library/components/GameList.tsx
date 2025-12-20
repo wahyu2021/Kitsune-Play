@@ -35,7 +35,10 @@ export default function GameList({
 
   return (
     <div>
-      <div className="no-scrollbar flex gap-8 overflow-x-auto px-10 py-10" ref={containerRef}>
+      <div
+        className="custom-scrollbar flex gap-8 overflow-x-auto px-10 pt-10 pb-6"
+        ref={containerRef}
+      >
         {games.map((game) => (
           <GameCard
             key={game.id}
