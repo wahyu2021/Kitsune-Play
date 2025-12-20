@@ -1,15 +1,8 @@
 import { useState } from 'react'
 import { FaSteam } from 'react-icons/fa'
-import { Game } from '@/features/library/types'
+import { Game, SteamGame } from '@/features/library/types'
 import { fetchGameMetadata, GameMetadata } from '@/services/rawg'
 import { ModalType } from '@/components/ui'
-
-interface SteamGame {
-  appId: string
-  name: string
-  installDir: string
-  executablePath?: string
-}
 
 interface SettingsImportProps {
   onImportGames: (games: Game[]) => void

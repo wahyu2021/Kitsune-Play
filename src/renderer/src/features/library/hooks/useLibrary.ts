@@ -20,6 +20,21 @@ interface UseLibraryReturn {
   isLoaded: boolean
 }
 
+// Helper Functions
+const createSignature = (title: string, path: string): string => {
+  return `${title.trim().toLowerCase()}|${path.trim().toLowerCase()}`
+}
+
+const sortGames = (list: Game[]): Game[] => {
+  return [...list].sort((a, b) => {
+    // 1. Favorites First
+    if (a.isFavorite && !b.isFavorite) return -1
+    if (!a.isFavorite && b.isFavorite) return 1
+    // 2. Alphabetical
+    return a.title.localeCompare(b.title)
+  })
+}
+
 /**
  * Custom hook to manage the application's data library.
  * Logic for persistence is delegated to usePersistence hook.
@@ -52,25 +67,8 @@ export function useLibrary(): UseLibraryReturn {
     setSettings
   })
 
-  // Computed: Sorted Views
-  const sortGames = (list: Game[]): Game[] => {
-    return [...list].sort((a, b) => {
-      // 1. Favorites First
-      if (a.isFavorite && !b.isFavorite) return -1
-      if (!a.isFavorite && b.isFavorite) return 1
-      // 2. Alphabetical
-      return a.title.localeCompare(b.title)
-    })
-  }
-
   const sortedGames = useMemo(() => sortGames(games), [games])
   const sortedMediaApps = useMemo(() => sortGames(mediaApps), [mediaApps])
-
-  // Actions
-  // Helper for duplicate detection
-  const createSignature = (title: string, path: string): string => {
-    return `${title.trim().toLowerCase()}|${path.trim().toLowerCase()}`
-  }
 
   const addGame = (newGame: Game, isMedia: boolean): void => {
     const gameWithDefaults = {

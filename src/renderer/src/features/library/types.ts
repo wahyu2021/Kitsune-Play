@@ -38,3 +38,13 @@ export interface AppData {
   userName: string
   settings: AppSettings
 }
+
+/**
+ * Raw data structure returned by the Steam Scanner (Main Process).
+ */
+export interface SteamGame {
+  appId: string
+  name: string
+  installDir: string
+  executablePath?: string
+}
