@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Weather API service using Open-Meteo.
+ * Includes geocoding and caching for rate limit protection.
+ * @module renderer/services/weather
+ */
+
 export interface WeatherData {
   temperature: number
   weatherCode: number
@@ -15,7 +21,9 @@ const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast'
 const GEOCODING_API_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 
 /**
- * Fetch coordinates for a given city name.
+ * Fetches coordinates for a city name.
+ * @param city - City name to geocode
+ * @returns Location data or null if not found
  */
 export async function getCoordinates(city: string): Promise<GeoLocation | null> {
   try {
@@ -41,15 +49,17 @@ export async function getCoordinates(city: string): Promise<GeoLocation | null> 
   }
 }
 
-/**
- * Fetch current weather for specific coordinates.
- */
 let lastFetchTime = 0
 let lastFetchData: WeatherData | null = null
 
+/**
+ * Fetches current weather for given coordinates.
+ * Implements in-memory and localStorage caching.
+ * @param lat - Latitude
+ * @param lng - Longitude
+ * @returns Weather data or fallback values
+ */
 export async function getCurrentWeather(lat: number, lng: number): Promise<WeatherData | null> {
-  // 0. In-Memory Debounce (1 minute)
-  // If we fetched recently (success or fail), don't spam.
   if (Date.now() - lastFetchTime < 60000 && lastFetchData) {
     return lastFetchData
   }
@@ -57,9 +67,8 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
   lastFetchTime = Date.now()
 
   const CACHE_KEY = `weather_data_${lat}_${lng}`
-  const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes
+  const CACHE_DURATION = 30 * 60 * 1000
 
-  // 1. Try LocalStorage Cache
   try {
     const cached = localStorage.getItem(CACHE_KEY)
     if (cached) {
@@ -75,7 +84,6 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
     console.warn('WeatherService: Cache read error', e)
   }
 
-  // 2. Fetch API
   try {
     const res = await fetch(
       `${WEATHER_API_URL}?latitude=${lat}&longitude=${lng}&current=temperature_2m,is_day,weather_code&timezone=auto`
@@ -110,7 +118,6 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
         isDay: data.current.is_day === 1
       }
 
-      // 3. Save Cache
       localStorage.setItem(
         CACHE_KEY,
         JSON.stringify({
@@ -133,10 +140,8 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
       return data
     }
 
-    // If we have in-memory data from previous run, return it
     if (lastFetchData) return lastFetchData
 
-    // Final fallback if everything fails
     return {
       temperature: 28,
       weatherCode: 3,
@@ -146,8 +151,9 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
 }
 
 /**
- * Get icon name/class based on WMO Weather Code
- * https://open-meteo.com/en/docs
+ * Converts WMO weather code to i18n translation key.
+ * @param code - WMO weather code
+ * @returns Translation key for weather description
  */
 export function getWeatherDescription(code: number): string {
   switch (code) {

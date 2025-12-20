@@ -1,4 +1,9 @@
-import { useState, useCallback } from 'react'
+/**
+ * @fileoverview Modal state management hook.
+ * @module renderer/hooks/useAppModals
+ */
+
+import React, { useState, useCallback } from 'react'
 import { Game } from '@/features/library/types'
 import { ModalType } from '@/components/ui'
 
@@ -10,7 +15,29 @@ export interface ModalConfig {
   onConfirm?: () => void
 }
 
-export function useAppModals() {
+interface UseAppModalsReturn {
+  isAddModalOpen: boolean
+  setIsAddModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isProfileModalOpen: boolean
+  setIsProfileModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isSearchModalOpen: boolean
+  setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isSettingsModalOpen: boolean
+  setIsSettingsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isPowerModalOpen: boolean
+  setIsPowerModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  gameToEdit: Game | null
+  setGameToEdit: React.Dispatch<React.SetStateAction<Game | null>>
+  modalConfig: ModalConfig
+  setModalConfig: React.Dispatch<React.SetStateAction<ModalConfig>>
+  showConfirm: (title: string, message: string, onConfirm: () => void) => void
+  closeAllModals: () => void
+  openAddGameModal: (game: Game | null) => void
+  isAnyModalOpen: boolean
+}
+
+/** Centralized modal state management for the application. */
+export function useAppModals(): UseAppModalsReturn {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)

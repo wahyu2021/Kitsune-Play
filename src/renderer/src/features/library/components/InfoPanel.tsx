@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Game information panel with action buttons.
+ * @module renderer/features/library/components/InfoPanel
+ */
+
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
@@ -32,12 +37,10 @@ export default function InfoPanel({
   const { t } = useTranslation()
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
-  // Format playtime
   const hours = Math.floor((game.playtime || 0) / 60)
   const mins = (game.playtime || 0) % 60
   const timeString = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
 
-  // Format last played
   const lastPlayedStr = game.lastPlayed
     ? new Date(game.lastPlayed).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
     : t('library.never')

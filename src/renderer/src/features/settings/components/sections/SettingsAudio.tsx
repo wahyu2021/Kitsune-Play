@@ -108,7 +108,7 @@ export default function SettingsAudio({
               title={customBgMusicPath || t('settings.audio.default_theme')}
             >
               {customBgMusicPath
-                ? customBgMusicPath.split(/[\/]/).pop()
+                ? customBgMusicPath.split(/[/\\]/).pop()
                 : t('settings.audio.default_theme')}
             </div>
             <button

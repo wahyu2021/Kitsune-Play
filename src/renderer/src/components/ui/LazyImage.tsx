@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Lazy-loading image component with skeleton placeholder.
+ * @module renderer/components/ui/LazyImage
+ */
+
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { DEFAULT_BANNER } from '@/config'
@@ -9,6 +14,7 @@ interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallback?: string
 }
 
+/** Image component with loading skeleton and error fallback. */
 export default function LazyImage({
   src,
   alt,
@@ -20,7 +26,6 @@ export default function LazyImage({
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {/* Loading Skeleton / Placeholder */}
       {!isLoaded && !hasError && (
         <motion.div
           initial={{ opacity: 0.5 }}
@@ -30,7 +35,6 @@ export default function LazyImage({
         />
       )}
 
-      {/* Actual Image */}
       <motion.img
         src={hasError ? fallback : src}
         alt={alt}

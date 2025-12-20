@@ -1,22 +1,25 @@
+/**
+ * @fileoverview Root application component.
+ * Manages global state, modals, navigation, and audio playback.
+ * @module renderer/App
+ */
+
 import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import WeatherWidget from '@/features/navigation/components/WeatherWidget'
 
-// Features
 import { GameList, InfoPanel, AddGameModal } from '@/features/library'
 import { TopBar, BottomBar } from '@/features/navigation'
 import { ProfileModal } from '@/features/profile'
 import { SearchModal } from '@/features/search'
 import { SettingsModal } from '@/features/settings'
 
-// Shared UI
 import { Toast, ToastType, Modal } from '@/components/ui'
 import SplashScreen from '@/components/SplashScreen'
 import Screensaver from '@/components/Screensaver'
 import AppBackground from '@/components/AppBackground'
 import PowerMenuModal from '@/components/PowerMenuModal'
 
-// Logic & Config
 import { Game, useLibrary } from '@/features/library'
 import { useNavigation } from '@/features/navigation'
 import { useIdleTimer } from '@/hooks/useIdleTimer'
@@ -26,19 +29,10 @@ import { useGameLauncher } from '@/hooks/useGameLauncher'
 import { useAppModals } from '@/hooks/useAppModals'
 import MainLayout from '@/layouts/MainLayout'
 
-/**
- * Main application component responsible for rendering the game launcher UI.
- * Manages global state, audio playback, splash screen, and user interactions.
- */
+/** Main application component. */
 function App(): React.JSX.Element {
-  /**
-   * State for controlling the splash screen visibility.
-   */
   const [showSplash, setShowSplash] = useState(true)
 
-  /**
-   * Core business logic hooks.
-   */
   const {
     games,
     mediaApps,
@@ -56,9 +50,6 @@ function App(): React.JSX.Element {
   } = useLibrary()
   const isIdle = useIdleTimer(30000)
 
-  /**
-   * Modal State Management
-   */
   const {
     isAddModalOpen,
     setIsAddModalOpen,
@@ -80,9 +71,6 @@ function App(): React.JSX.Element {
     isAnyModalOpen
   } = useAppModals()
 
-  /**
-   * Audio hooks for background music and sound effects.
-   */
   const { startAudio, playHover, playSelect, playBack } = useAppSounds(
     showSplash,
     settings?.bgMusicVolume ?? 0.3,
@@ -91,9 +79,6 @@ function App(): React.JSX.Element {
     settings?.customBgMusicPath
   )
 
-  /**
-   * Local UI state management.
-   */
   const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
   const [selectedGameId, setSelectedGameId] = useState<string>('')
 
@@ -105,18 +90,11 @@ function App(): React.JSX.Element {
 
   const { isPlaying, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
 
-  /**
-   * Derived state based on active tab.
-   * Sorted: Favorites first, then Alphabetical.
-   */
   const currentContent = activeTab === 'games' ? games : mediaApps
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
 
-  /**
-   * Discord RPC: Handle Idle State
-   */
   useEffect(() => {
-    if (isPlaying) return // Don't override status if game is running
+    if (isPlaying) return
 
     if (window.api) {
       if (isIdle) {
@@ -127,9 +105,6 @@ function App(): React.JSX.Element {
     }
   }, [isIdle, isPlaying])
 
-  /**
-   * UI Event Handlers.
-   */
   const handleStart = useCallback(() => {
     startAudio()
     setShowSplash(false)
@@ -165,7 +140,6 @@ function App(): React.JSX.Element {
   const handleToggleFavoriteAction = useCallback((): void => {
     if (selectedGame) {
       toggleFavorite(selectedGame.id, activeTab === 'media')
-      // No toast needed, visual feedback is immediate
     }
   }, [selectedGame, activeTab, toggleFavorite])
 
@@ -180,9 +154,6 @@ function App(): React.JSX.Element {
     showToast('Library reset to defaults.', 'info')
   }, [resetLibrary])
 
-  /**
-   * Effect to select the first game by default when content loads.
-   */
   useEffect(() => {
     if (isLoaded && currentContent.length > 0 && !selectedGame) {
       setSelectedGameId(currentContent[0].id)
@@ -230,7 +201,6 @@ function App(): React.JSX.Element {
           onOpenPower={() => setIsPowerModalOpen(true)}
         />
 
-        {/* Dashboard Widgets Area */}
         {settings?.weather?.latitude && (
           <div className="absolute top-24 right-16 z-10 pointer-events-none select-none">
             <WeatherWidget
@@ -326,7 +296,6 @@ function App(): React.JSX.Element {
         }}
         onImportGames={(newGames) => {
           addGames(newGames, activeTab === 'media')
-          // Modal handles the specific summary alert now
         }}
         games={[...games, ...mediaApps]}
       />

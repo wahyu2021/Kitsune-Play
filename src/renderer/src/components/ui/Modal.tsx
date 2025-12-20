@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Generic modal component for alerts and confirmations.
+ * @module renderer/components/ui/Modal
+ */
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaTimes } from 'react-icons/fa'
 
@@ -14,6 +19,7 @@ interface ModalProps {
   cancelLabel?: string
 }
 
+/** Multi-purpose modal for alerts, warnings, and confirmations. */
 export default function Modal({
   isOpen,
   onClose,
@@ -24,7 +30,6 @@ export default function Modal({
   confirmLabel = 'OK',
   cancelLabel = 'Cancel'
 }: ModalProps): React.JSX.Element {
-  // Determine icon and color based on type
   const getIcon = (): React.JSX.Element => {
     switch (type) {
       case 'warning':

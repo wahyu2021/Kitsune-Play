@@ -1,3 +1,9 @@
+/**
+ * @fileoverview System power menu modal component.
+ * Provides shutdown, restart, sleep, and quit options.
+ * @module renderer/components/PowerMenuModal
+ */
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaPowerOff, FaRedo, FaMoon, FaDoorOpen } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
@@ -55,7 +61,7 @@ export default function PowerMenuModal({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md">
-          <div className="absolute inset-0" onClick={onClose} /> {/* Click outside to close */}
+          <div className="absolute inset-0" onClick={onClose} />
           <motion.div
             variants={containerVariants}
             initial="hidden"

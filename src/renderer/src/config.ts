@@ -1,17 +1,19 @@
+/**
+ * @fileoverview Application configuration and asset mapping.
+ * @module renderer/config
+ */
+
 import { Game } from '@/features/library/types'
 
-// Default Assets
 import gofBanner from '@/assets/games/gof-banner.jpg'
 import gofCover from '@/assets/games/god-cover.jpg'
 import spiderManBanner from '@/assets/games/spiderman-miles-morales.jpg'
 import spiderManCover from '@/assets/games/spiderman-miles-morales-cover.jpg'
 import defaultBanner from '@/assets/games/default-banner.jpg'
 
-import gamesConfig from './games.json' // Keep relative for JSON adjacent file
+import gamesConfig from './games.json'
 
-/**
- * Mapping of filename strings (from JSON) to actual Vite imported assets.
- */
+/** Mapping of filenames to imported Vite assets. */
 export const localAssets: Record<string, string> = {
   'gof-banner.jpg': gofBanner,
   'god-cover.jpg': gofCover,
@@ -20,15 +22,10 @@ export const localAssets: Record<string, string> = {
   'default-banner.jpg': defaultBanner
 }
 
-/**
- * The default banner image to use when a game has no background.
- */
+/** Default banner image for games without backgrounds. */
 export const DEFAULT_BANNER = defaultBanner
 
-/**
- * Processes the raw JSON data and attaches local asset paths.
- * Returns the initial state for the application.
- */
+/** Processes JSON config and attaches local asset paths. */
 export const getInitialGamesData = (): Game[] => {
   return gamesConfig.map((game) => ({
     ...game,

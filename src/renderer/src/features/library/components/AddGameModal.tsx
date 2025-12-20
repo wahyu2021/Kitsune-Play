@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Modal for adding or editing game entries.
+ * @module renderer/features/library/components/AddGameModal
+ */
+
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaSave, FaFolderOpen, FaImage, FaMagic, FaSpinner, FaVideo } from 'react-icons/fa'
@@ -14,10 +19,7 @@ interface AddGameModalProps {
   apiKey?: string
 }
 
-/**
- * Modal component for adding or editing game details.
- * Logic is encapsulated in useAddGameForm hook.
- */
+/** Modal dialog for adding new games or editing existing entries. */
 export default function AddGameModal({
   isOpen,
   onClose,
@@ -27,7 +29,6 @@ export default function AddGameModal({
 }: AddGameModalProps): React.JSX.Element {
   const { t } = useTranslation()
 
-  // Debug API Key
   useEffect(() => {
     if (isOpen) logger.debug('UI', `AddGameModal opened. API Key present: ${!!apiKey}`)
   }, [isOpen, apiKey])

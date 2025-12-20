@@ -1,3 +1,8 @@
+/**
+ * @fileoverview RAWG.io API service for game metadata.
+ * @module renderer/services/rawg
+ */
+
 import { logger } from '@/utils/logger'
 
 const RAWG_BASE_URL = import.meta.env.VITE_RAWG_BASE_URL || 'https://api.rawg.io/api'
@@ -9,8 +14,6 @@ export interface GameMetadata {
   bg_image: string
   release_date: string
 }
-
-// --- RAWG API Response Interfaces ---
 
 interface RawgGenre {
   id: number
@@ -40,9 +43,6 @@ interface RawgGameDetail {
   genres: RawgGenre[]
 }
 
-/**
- * Generic fetch wrapper for RAWG API
- */
 async function rawgFetch<T>(url: string): Promise<T> {
   const res = await fetch(url)
   if (!res.ok) {
@@ -52,10 +52,10 @@ async function rawgFetch<T>(url: string): Promise<T> {
 }
 
 /**
- * Fetches game metadata from RAWG.io
- * @param title The game title to search for
- * @param apiKey The user's RAWG API Key
- * @returns Metadata object or null if not found/error
+ * Fetches game metadata from RAWG.io.
+ * @param title - Game title to search
+ * @param apiKey - RAWG API key
+ * @returns Game metadata or null if not found
  */
 export const fetchGameMetadata = async (
   title: string,
@@ -69,7 +69,6 @@ export const fetchGameMetadata = async (
   try {
     logger.info('System', `Fetching metadata for: ${title}`)
 
-    // 1. Search for the game
     const searchUrl = `${RAWG_BASE_URL}/games?key=${apiKey}&search=${encodeURIComponent(title)}&page_size=1`
     const searchData = await rawgFetch<RawgSearchResponse>(searchUrl)
 
@@ -80,14 +79,13 @@ export const fetchGameMetadata = async (
 
     const gameId = searchData.results[0].id
 
-    // 2. Get detailed info
     const detailUrl = `${RAWG_BASE_URL}/games/${gameId}?key=${apiKey}`
     const detailData = await rawgFetch<RawgGameDetail>(detailUrl)
 
     return {
       description: detailData.description_raw || detailData.description || '',
       genre: detailData.genres?.map((g) => g.name).join(', ') || 'Unknown',
-      cover_image: detailData.background_image || '', // RAWG uses bg as cover often
+      cover_image: detailData.background_image || '',
       bg_image: detailData.background_image_additional || detailData.background_image || '',
       release_date: detailData.released || ''
     }

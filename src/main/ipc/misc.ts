@@ -1,7 +1,13 @@
+/**
+ * @fileoverview IPC handlers for miscellaneous system operations.
+ * @module main/ipc/misc
+ */
+
 import { ipcMain, app } from 'electron'
 import { exec } from 'child_process'
 import { setDiscordActivity } from '../discord'
 
+/** Registers IPC handlers for app version and system power controls. */
 export function registerMiscHandlers(): void {
   ipcMain.removeHandler('get-app-version')
   ipcMain.handle('get-app-version', () => {
@@ -10,8 +16,6 @@ export function registerMiscHandlers(): void {
 
   ipcMain.removeHandler('discord-update-status')
   ipcMain.handle('discord-update-status', (_, status: string) => {
-    // We assume the details are fixed or managed elsewhere, or we could pass them too.
-    // For now, matching the logic: Browsing Library (details) - [Status] (state)
     setDiscordActivity('Browsing Library', status)
   })
 
@@ -27,7 +31,6 @@ export function registerMiscHandlers(): void {
 
   ipcMain.removeHandler('system-sleep')
   ipcMain.handle('system-sleep', () => {
-    // Windows Sleep command (Hibernate off recommended for true sleep, but strictly this triggers suspend)
     exec('rundll32.exe powrprof.dll,SetSuspendState 0,1,0')
   })
 }

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Main layout wrapper component.
+ * @module renderer/layouts/MainLayout
+ */
+
 import { ReactNode, ReactElement } from 'react'
 
 interface MainLayoutProps {
@@ -5,6 +10,7 @@ interface MainLayoutProps {
   className?: string
 }
 
+/** Full-screen layout wrapper with base styling. */
 export default function MainLayout({ children, className = '' }: MainLayoutProps): ReactElement {
   return (
     <div

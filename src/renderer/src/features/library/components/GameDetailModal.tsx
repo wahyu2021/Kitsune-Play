@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Detailed game information modal.
+ * @module renderer/features/library/components/GameDetailModal
+ */
+
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaClock, FaCalendarAlt, FaGamepad, FaTerminal, FaFolder } from 'react-icons/fa'
@@ -23,12 +28,10 @@ export default function GameDetailModal({
     if (isOpen) logger.debug('UI', `GameDetailModal opened for: ${game.title}`)
   }, [isOpen, game])
 
-  // Format playtime
   const hours = Math.floor((game.playtime || 0) / 60)
   const mins = (game.playtime || 0) % 60
   const timeString = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
 
-  // Format last played
   const lastPlayedStr = game.lastPlayed
     ? new Date(game.lastPlayed).toLocaleDateString(i18n.language, {
         weekday: 'long',
@@ -50,7 +53,6 @@ export default function GameDetailModal({
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="relative flex h-[80vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-black/80 shadow-2xl"
           >
-            {/* Background Image (Blurred) */}
             <div className="absolute inset-0 z-0 opacity-20">
               <LazyImage
                 src={game.bg_image}
@@ -60,9 +62,7 @@ export default function GameDetailModal({
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
             </div>
 
-            {/* Content Container */}
             <div className="relative z-10 flex h-full w-full flex-col p-8 md:flex-row gap-8">
-              {/* Left Column: Cover Image */}
               <div className="flex-shrink-0 w-64 md:w-80">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -78,7 +78,6 @@ export default function GameDetailModal({
                 </motion.div>
               </div>
 
-              {/* Right Column: Details */}
               <div className="flex flex-1 flex-col overflow-y-auto pr-2 pt-1 custom-scrollbar">
                 <div className="mb-6 flex items-start justify-between">
                   <motion.h2
@@ -98,7 +97,6 @@ export default function GameDetailModal({
                   </motion.button>
                 </div>
 
-                {/* Genre Badge */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -115,7 +113,6 @@ export default function GameDetailModal({
                   ))}
                 </motion.div>
 
-                {/* Stats Grid */}
                 <div className="mb-8 grid grid-cols-2 gap-4">
                   <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm">
                     <div className="mb-1 flex items-center gap-2 text-sm font-medium text-white/50">
@@ -131,7 +128,6 @@ export default function GameDetailModal({
                   </div>
                 </div>
 
-                {/* Technical Details */}
                 <div className="space-y-4 rounded-xl border border-white/5 bg-black/20 p-4">
                   <div className="flex items-center gap-3 overflow-hidden">
                     <FaFolder className="flex-shrink-0 text-white/40" />
@@ -177,7 +173,6 @@ export default function GameDetailModal({
                   )}
                 </div>
 
-                {/* Description */}
                 <div className="mt-8 space-y-2">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-white/50">
                     {t('game_detail.about')}

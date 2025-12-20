@@ -1,10 +1,14 @@
+/**
+ * @fileoverview User inactivity detection hook.
+ * @module renderer/hooks/useIdleTimer
+ */
+
 import { useState, useEffect, useRef } from 'react'
 
 /**
- * Custom hook to track user inactivity.
- *
- * @param timeoutMs - Time in milliseconds before considering the user idle (default: 8000ms).
- * @returns boolean - True if the user is idle, false otherwise.
+ * Tracks user inactivity based on mouse, keyboard, and click events.
+ * @param timeoutMs - Idle timeout in milliseconds (default: 8000)
+ * @returns Whether the user is currently idle
  */
 export function useIdleTimer(timeoutMs: number = 8000): boolean {
   const [isIdle, setIsIdle] = useState(false)
@@ -17,15 +21,12 @@ export function useIdleTimer(timeoutMs: number = 8000): boolean {
       idleTimerRef.current = setTimeout(() => setIsIdle(true), timeoutMs)
     }
 
-    // Attach listeners to detect activity
     window.addEventListener('mousemove', resetIdleTimer)
     window.addEventListener('keydown', resetIdleTimer)
     window.addEventListener('click', resetIdleTimer)
 
-    // Start the timer initially
     resetIdleTimer()
 
-    // Cleanup listeners on unmount
     return () => {
       window.removeEventListener('mousemove', resetIdleTimer)
       window.removeEventListener('keydown', resetIdleTimer)

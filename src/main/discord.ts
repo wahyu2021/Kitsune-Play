@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Discord Rich Presence integration for the application.
+ * Handles connection, retry logic, and activity updates.
+ * @module main/discord
+ */
+
 import DiscordRPC from 'discord-rpc'
 import { DISCORD_CONFIG } from './config'
 
@@ -5,28 +11,27 @@ let rpcClient: DiscordRPC.Client | null = null
 let retryCount = 0
 let isReady = false
 
-/**
- * Initializes the Discord RPC client and attempts to log in.
- */
+/** Initializes the Discord RPC client and attempts to connect. */
 export async function initDiscordRPC(): Promise<void> {
   await attemptConnection()
 }
 
+/**
+ * Attempts to establish connection with Discord RPC.
+ * Implements retry logic with configurable delays.
+ */
 async function attemptConnection(): Promise<void> {
-  isReady = false // Reset state
+  isReady = false
 
-  // cleanup previous instance if any
   if (rpcClient) {
     try {
       await rpcClient.destroy()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      // ignore
+    } catch {
+      // Silently ignore cleanup errors
     }
     rpcClient = null
   }
 
-  // Small delay to ensure socket closes
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   rpcClient = new DiscordRPC.Client({ transport: 'ipc' })
@@ -35,15 +40,13 @@ async function attemptConnection(): Promise<void> {
     console.log('[Discord RPC] Connected and Ready')
     isReady = true
     setDiscordActivity('Browsing Library', 'In Menu')
-    retryCount = 0 // Reset retry count on success
+    retryCount = 0
   })
 
-  // Register the app (sometimes required for detection)
   try {
     DiscordRPC.register(DISCORD_CONFIG.clientId)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    // console.warn('[Discord RPC] Register failed (non-fatal):', e)
+  } catch {
+    // Non-fatal registration error
   }
 
   rpcClient.login({ clientId: DISCORD_CONFIG.clientId }).catch((err) => {
@@ -84,15 +87,13 @@ export function setDiscordActivity(details: string, state: string, startTimestam
       instance: false
     })
     .catch((err) => {
-      // If setting activity fails, it might mean the connection died.
       console.warn('[Discord RPC] Failed to set activity:', err.message)
-      isReady = false // Mark as failed
+      isReady = false
     })
 }
 
 /**
  * Clears the current Rich Presence activity.
- * Useful when the app is closing or the user disables the feature.
  */
 export function clearDiscordActivity(): void {
   if (!rpcClient || !isReady) return

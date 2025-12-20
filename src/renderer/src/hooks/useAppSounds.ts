@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Audio management hook for background music and SFX.
+ * Handles initialization, volume control, and focus-based auto-mute.
+ * @module renderer/hooks/useAppSounds
+ */
+
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { logger } from '@/utils/logger'
 
@@ -16,9 +22,12 @@ interface UseAppSoundsReturn {
 }
 
 /**
- * Custom hook to manage application background sounds and UI sound effects.
- * Handles initialization, looping, and cleanup to prevent memory leaks and double-playing.
- * Use optimized playback (rewind instead of cloning) for better performance.
+ * Manages application audio including background music and UI sound effects.
+ * @param isSplashShowing - Whether splash screen is visible
+ * @param bgMusicVolume - Background music volume (0-1)
+ * @param sfxVolume - Sound effects volume (0-1)
+ * @param isMuted - Global mute state
+ * @param customBgMusicPath - Optional custom background music path
  */
 export function useAppSounds(
   isSplashShowing: boolean,
@@ -41,7 +50,6 @@ export function useAppSounds(
 
   const [isAudioBlocked, setIsAudioBlocked] = useState(false)
 
-  // --- Update Volumes & Mute State ---
   useEffect(() => {
     const bgVol = isMuted ? 0 : bgMusicVolume
     const sfxVol = isMuted ? 0 : sfxVolume
@@ -55,21 +63,14 @@ export function useAppSounds(
     if (backAudioRef.current) backAudioRef.current.volume = sfxVol
   }, [bgMusicVolume, sfxVolume, isMuted])
 
-  // --- Handle Custom BG Music Change ---
   useEffect(() => {
     if (!bgAudioRef.current || !hasInitializedRef.current) return
 
     const currentSrc = bgAudioRef.current.src
-    // Normalize path for comparison if needed, but simple check is enough
-    // Determine desired source
-    // Note: 'bgMusicFile' is a URL/Path from Vite import.
-    // 'customBgMusicPath' is a raw OS path.
     const targetSrc = customBgMusicPath
       ? `file://${customBgMusicPath.replace(/\\/g, '/')}`
       : bgMusicFile
 
-    // Only update if different (avoid restarting song if no change)
-    // We check if currentSrc ends with the target to avoid full URL matching issues
     if (
       !currentSrc.includes(customBgMusicPath ? customBgMusicPath.replace(/\\/g, '/') : bgMusicFile)
     ) {
@@ -81,7 +82,6 @@ export function useAppSounds(
     }
   }, [customBgMusicPath])
 
-  // --- Window Focus/Blur Handler (Auto-Mute) ---
   useEffect(() => {
     const handleBlur = (): void => {
       if (bgAudioRef.current && !bgAudioRef.current.paused) {
@@ -106,7 +106,6 @@ export function useAppSounds(
     }
   }, [isSplashShowing])
 
-  // --- Manual Start Audio ---
   const startAudio = useCallback(() => {
     if (welcomeAudioRef.current) {
       welcomeAudioRef.current.play().catch((e) => logger.warn('Audio', 'Welcome play failed', e))
@@ -159,7 +158,6 @@ export function useAppSounds(
 
   const playSfx = useCallback((audioRef: React.MutableRefObject<HTMLAudioElement | null>) => {
     if (!audioRef.current) return
-    // Optimized: Rewind and play instead of cloning (saves memory & CPU)
     audioRef.current.currentTime = 0
     audioRef.current.play().catch(() => {})
   }, [])

@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Application entry point.
+ * Initializes React root and wraps App with providers.
+ * @module renderer/main
+ */
+
 import './assets/main.css'
 import './i18n'
 

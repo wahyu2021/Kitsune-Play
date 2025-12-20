@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Data persistence hook for saving/loading application state.
+ * @module renderer/hooks/usePersistence
+ */
+
 import { useState, useEffect, useRef } from 'react'
 import { Game, AppData } from '@/features/library/types'
 import { AppSettings } from '@/features/settings/types'
@@ -15,6 +20,7 @@ interface UsePersistenceProps {
   setSettings: (settings: AppSettings) => void
 }
 
+/** Handles loading and auto-saving application data to persistent storage. */
 export function usePersistence({
   games,
   mediaApps,
@@ -28,7 +34,6 @@ export function usePersistence({
   const isLoaded = useRef(false)
   const [hasLoadedInitial, setHasLoadedInitial] = useState(false)
 
-  // Load Data
   useEffect(() => {
     const initData = async (): Promise<void> => {
       const initialDefaults = getInitialGamesData()
@@ -79,9 +84,8 @@ export function usePersistence({
       setHasLoadedInitial(true)
     }
     initData()
-  }, [setGames, setMediaApps, setUserName, setSettings]) // Empty dependency array = run once on mount
+  }, [setGames, setMediaApps, setUserName, setSettings])
 
-  // Save Data
   useEffect(() => {
     if (!isLoaded.current) return
 

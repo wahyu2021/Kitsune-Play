@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Library state management hook.
+ * @module renderer/features/library/hooks/useLibrary
+ */
+
 import { useState, useMemo } from 'react'
 import { Game } from '@/features/library/types'
 import { AppSettings } from '@/features/settings/types'
@@ -20,25 +25,20 @@ interface UseLibraryReturn {
   isLoaded: boolean
 }
 
-// Helper Functions
 const createSignature = (title: string, path: string): string => {
   return `${title.trim().toLowerCase()}|${path.trim().toLowerCase()}`
 }
 
+/** Sorts games with favorites first, then alphabetically. */
 export const sortGames = (list: Game[]): Game[] => {
   return [...list].sort((a, b) => {
-    // 1. Favorites First
     if (a.isFavorite && !b.isFavorite) return -1
     if (!a.isFavorite && b.isFavorite) return 1
-    // 2. Alphabetical
     return a.title.localeCompare(b.title)
   })
 }
 
-/**
- * Custom hook to manage the application's data library.
- * Logic for persistence is delegated to usePersistence hook.
- */
+/** Manages game library state with persistence. */
 export function useLibrary(): UseLibraryReturn {
   const [games, setGames] = useState<Game[]>([])
   const [mediaApps, setMediaApps] = useState<Game[]>([])
@@ -77,13 +77,10 @@ export function useLibrary(): UseLibraryReturn {
     }
 
     const updateList = (list: Game[]): Game[] => {
-      // Check for strict duplicate (same title AND same path)
-      // Normalize to handle case sensitivity (Windows paths)
       const newSig = createSignature(gameWithDefaults.title, gameWithDefaults.path_to_exe)
       const isDuplicate = list.some((g) => createSignature(g.title, g.path_to_exe) === newSig)
 
       if (isDuplicate) {
-        // If ID matches, we update (edit mode).
         const idMatch = list.some((g) => g.id === gameWithDefaults.id)
         if (idMatch) {
           return list.map((g) => (g.id === gameWithDefaults.id ? gameWithDefaults : g))
@@ -92,7 +89,6 @@ export function useLibrary(): UseLibraryReturn {
         return list
       }
 
-      // Allow editing existing ID
       const existsId = list.some((g) => g.id === gameWithDefaults.id)
       if (existsId) {
         return list.map((g) => (g.id === gameWithDefaults.id ? gameWithDefaults : g))
@@ -115,15 +111,12 @@ export function useLibrary(): UseLibraryReturn {
     }))
 
     const updateList = (list: Game[]): Game[] => {
-      // Filter out existing ones to avoid duplicates or overwrite?
-      // For bulk import, check if title+path already exists in the CURRENT list
       const existingSignatures = new Set(list.map((g) => createSignature(g.title, g.path_to_exe)))
 
       const uniqueNewGames = gamesWithDefaults.filter((g) => {
         const signature = createSignature(g.title, g.path_to_exe)
         if (existingSignatures.has(signature)) return false
 
-        // Also ensure no duplicates within the IMPORT batch itself
         existingSignatures.add(signature)
         return true
       })

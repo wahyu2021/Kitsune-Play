@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Toast notification component with auto-dismiss.
+ * @module renderer/components/ui/Toast
+ */
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaInfoCircle, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
 
@@ -9,8 +14,8 @@ interface ToastProps {
   onClose: () => void
 }
 
+/** Auto-dismissing toast notification. */
 export default function Toast({ message, type, onClose }: ToastProps): React.JSX.Element {
-  // Auto close after 3 seconds
   if (message) {
     setTimeout(onClose, 3000)
   }

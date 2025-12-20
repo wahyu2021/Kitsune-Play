@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Form logic hook for add/edit game modal.
+ * @module renderer/features/library/hooks/useAddGameForm
+ */
+
 import { useState, useEffect } from 'react'
 import { Game } from '@/features/library/types'
 import { fetchGameMetadata } from '@/services/rawg'
@@ -19,6 +24,7 @@ interface UseAddGameFormReturn {
   resetForm: () => void
 }
 
+/** Manages form state and actions for the add/edit game modal. */
 export function useAddGameForm({
   editGame,
   onAddGame,
@@ -53,7 +59,6 @@ export function useAddGameForm({
     })
   }
 
-  // Populate form when Edit Mode is active or Reset when Add Mode
   useEffect(() => {
     if (editGame) {
       setFormData(editGame)
@@ -98,9 +103,8 @@ export function useAddGameForm({
         setFormData((prev) => {
           const updates: Partial<Game> = { [field]: finalPath }
 
-          // Auto-fill executableName if browsing for exe and field is empty
           if (field === 'path_to_exe' && !prev.executableName) {
-            const fileName = filePath.split(/[/\\]/).pop() // Extract 'Game.exe'
+            const fileName = filePath.split(/[/\\]/).pop()
             if (fileName) {
               updates.executableName = fileName
             }

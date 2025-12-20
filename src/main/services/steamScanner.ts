@@ -1,14 +1,22 @@
+/**
+ * @fileoverview Steam library scanner service.
+ * Parses Steam app manifests (ACF files) and detects game executables.
+ * @module main/services/steamScanner
+ */
+
 import fs from 'fs'
 import path from 'path'
 
+/** Represents a detected Steam game with metadata. */
 export interface SteamGame {
   appId: string
   name: string
   installDir: string
-  libraryPath: string // Track where we found it
-  executablePath?: string // Path to the main .exe
+  libraryPath: string
+  executablePath?: string
 }
 
+/** Folders to skip during executable search. */
 const IGNORED_FOLDERS = [
   'support',
   'commonredist',
@@ -22,6 +30,7 @@ const IGNORED_FOLDERS = [
   'bonus'
 ]
 
+/** Executable names to exclude from detection. */
 const IGNORED_EXECUTABLES = [
   'unins',
   'setup',
@@ -45,17 +54,15 @@ function isIgnoredExecutable(name: string): boolean {
 }
 
 /**
- * Simple VDF/ACF parser for Steam manifests.
- * Extracts "appid", "name", and "installdir".
+ * Parses Steam ACF/VDF manifest files.
+ * @param content - Raw file content
+ * @returns Parsed game data or null if invalid
  */
 function parseAcf(content: string): Partial<SteamGame> | null {
   try {
-    // Regex: case insensitive, handles tabs/spaces/quotes
     const appIdMatch = content.match(/"appid"\s+"?(\d+)"?/i)
-    // eslint-disable-next-line no-useless-escape
-    const nameMatch = content.match(/"name"\s+"?([^\"]+)"?/i)
-    // eslint-disable-next-line no-useless-escape
-    const installDirMatch = content.match(/"installdir"\s+"?([^\"]+)"?/i)
+    const nameMatch = content.match(/"name"\s+"?([^"]+)"?/i)
+    const installDirMatch = content.match(/"installdir"\s+"?([^"]+)"?/i)
 
     if (appIdMatch && nameMatch) {
       return {
@@ -72,6 +79,11 @@ function parseAcf(content: string): Partial<SteamGame> | null {
 
 /**
  * Heuristically finds the main executable of a game.
+ * Uses scoring based on file size and name matching.
+ * @param installDir - Game installation directory
+ * @param gameName - Display name of the game
+ * @param folderName - Installation folder name
+ * @returns Path to the best candidate executable
  */
 async function findGameExecutable(
   installDir: string,
@@ -84,11 +96,9 @@ async function findGameExecutable(
   }
 
   try {
-    // 1. Recursive search for .exe files (limit depth to avoid taking too long)
     const candidates: { path: string; size: number; name: string }[] = []
 
     async function scanDir(dir: string, depth: number): Promise<void> {
-      // Increased depth to 4 to handle Unreal Engine games (Root -> GameName -> Binaries -> Win64 -> Exe)
       if (depth > 4) return
 
       const entries = await fs.promises.readdir(dir, { withFileTypes: true })
@@ -128,8 +138,6 @@ async function findGameExecutable(
         .toLowerCase()
       let score = 0
 
-      // Rule 1: Exact match with Folder Name (Strongest signal usually)
-      // e.g. Folder: "P5R", Exe: "P5R.exe"
       if (sanitizedExeName === sanitizedFolderName) {
         score += 1000
       } else if (
@@ -139,7 +147,6 @@ async function findGameExecutable(
         score += 100
       }
 
-      // Rule 2: Similarity to Game Name
       if (
         sanitizedGameName.includes(sanitizedExeName) ||
         sanitizedExeName.includes(sanitizedGameName)
@@ -147,10 +154,8 @@ async function findGameExecutable(
         score += 50
       }
 
-      // Rule 3: File Size (Larger is better)
-      score += c.size / 1024 / 1024 // +1 point per MB
+      score += c.size / 1024 / 1024
 
-      // Rule 4: "Launcher" penalty (unless it's the only one)
       if (sanitizedExeName.includes('launcher')) {
         score -= 20
       }
@@ -172,30 +177,28 @@ async function findGameExecutable(
   }
 }
 
+/**
+ * Scans a Steam library path for installed games.
+ * @param inputPath - Path to Steam installation or library folder
+ * @returns Array of detected Steam games with metadata
+ */
 export async function scanSteamLibrary(inputPath: string): Promise<SteamGame[]> {
   console.log(`[SteamScanner] Scanning input: ${inputPath}`)
   const allGames: SteamGame[] = []
   const pathsToScan: Set<string> = new Set()
 
-  // 1. Intelligent Path Detection
-  // Check the input path itself
   pathsToScan.add(inputPath)
-
-  // Check 'steamapps' subdirectory (Standard structure)
   pathsToScan.add(path.join(inputPath, 'steamapps'))
 
-  // Check parent (if user selected 'steamapps')
   if (path.basename(inputPath).toLowerCase() === 'steamapps') {
     pathsToScan.add(path.dirname(inputPath))
   }
-  // Check parent's parent (if user selected 'common')
   if (path.basename(inputPath).toLowerCase() === 'common') {
     pathsToScan.add(path.join(inputPath, '../../'))
     pathsToScan.add(path.join(inputPath, '../'))
   }
 
-  // 2. Try to find other library folders from libraryfolders.vdf
-  // This usually only lives in the MAIN Steam folder (e.g. C:\Program Files\Steam\steamapps)
+  // Parse libraryfolders.vdf for additional library paths
   const vdfLocations = [
     path.join(inputPath, 'steamapps', 'libraryfolders.vdf'),
     path.join(inputPath, 'libraryfolders.vdf'),
@@ -207,15 +210,10 @@ export async function scanSteamLibrary(inputPath: string): Promise<SteamGame[]> 
       try {
         console.log(`[SteamScanner] Found VDF at: ${vdfPath}`)
         const vdfContent = await fs.promises.readFile(vdfPath, 'utf-8')
-        // Regex to find "path" "C:\\Path\\To\\Lib"
-        // eslint-disable-next-line no-useless-escape
-        const matches = vdfContent.matchAll(/"path"\s+"([^\"]+)"/g)
+        const matches = vdfContent.matchAll(/"path"\s+"([^"]+)"/g)
         for (const match of matches) {
-          // Unescape double backslashes
-          // Fix: Replace double backslashes with single backslash
           const libPath = match[1].replace(/\\\\/g, '\\')
           if (fs.existsSync(libPath)) {
-            // Add the library path AND its steamapps subdir
             pathsToScan.add(libPath)
             pathsToScan.add(path.join(libPath, 'steamapps'))
           }
@@ -226,7 +224,6 @@ export async function scanSteamLibrary(inputPath: string): Promise<SteamGame[]> 
     }
   }
 
-  // 3. Scan ALL identified paths for .ACF files
   console.log(`[SteamScanner] Final scan list:`, Array.from(pathsToScan))
 
   for (const scanDir of pathsToScan) {
@@ -246,26 +243,18 @@ export async function scanSteamLibrary(inputPath: string): Promise<SteamGame[]> 
         const gameData = parseAcf(content)
 
         if (gameData && gameData.appId && gameData.name) {
-          // Skip Steamworks tools
           if (
             gameData.name === 'Steamworks Common Redistributables' ||
             gameData.name.includes('Steamworks')
           )
             continue
 
-          // Deduplicate
           if (!allGames.some((g) => g.appId === gameData.appId)) {
-            // Try to resolve full path to executable
             let fullInstallDir = ''
             let executablePath = ''
 
             if (gameData.installDir) {
-              // The game folder is inside 'common' which is inside 'steamapps' (scanDir)
               fullInstallDir = path.join(scanDir, 'common', gameData.installDir)
-
-              // Double check if 'common' exists, sometimes scanDir is not steamapps but just a folder with ACFs?
-              // Standard: .../SteamLibrary/steamapps/*.acf
-              // Games: .../SteamLibrary/steamapps/common/GameName
 
               if (fs.existsSync(fullInstallDir)) {
                 executablePath =

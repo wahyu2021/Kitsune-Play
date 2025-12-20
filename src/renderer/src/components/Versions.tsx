@@ -1,5 +1,11 @@
+/**
+ * @fileoverview Electron version display component.
+ * @module renderer/components/Versions
+ */
+
 import { useState } from 'react'
 
+/** Displays Electron, Chromium, and Node.js versions. */
 function Versions(): React.JSX.Element {
   const [versions] = useState(window.electron.process.versions)
 

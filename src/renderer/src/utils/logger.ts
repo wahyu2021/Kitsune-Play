@@ -1,12 +1,13 @@
 /**
- * Simple structured logger for the renderer process.
- * Hides debug logs in production builds.
+ * @fileoverview Structured logger for the renderer process.
+ * @module renderer/utils/logger
  */
 
 const isDev = import.meta.env.DEV
 
 type LogScope = 'Audio' | 'System' | 'Game' | 'UI'
 
+/** Scoped logger with colored output for different log levels. */
 export const logger = {
   info: (scope: LogScope, message: string): void => {
     console.info(

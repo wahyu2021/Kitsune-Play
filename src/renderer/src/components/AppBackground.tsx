@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Application background component with video/image support.
+ * @module renderer/components/AppBackground
+ */
+
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Game } from '@/features/library/types'
@@ -9,13 +14,16 @@ interface AppBackgroundProps {
   showVideoDelay?: number
 }
 
+/**
+ * Renders dynamic background based on selected game.
+ * Supports video backgrounds with delayed activation.
+ */
 export default function AppBackground({
   selectedGame,
   showVideoDelay = 5000
 }: AppBackgroundProps): React.JSX.Element {
   const [showVideo, setShowVideo] = useState(false)
 
-  // Reset video state when game changes
   useEffect(() => {
     setShowVideo(false)
     const timer = setTimeout(() => {
@@ -27,7 +35,6 @@ export default function AppBackground({
 
   return (
     <>
-      {/* Layer 0: Background */}
       <div className="fixed inset-0 z-0">
         <AnimatePresence mode="wait">
           {selectedGame?.bg_video && showVideo ? (

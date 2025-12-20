@@ -1,15 +1,13 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+/**
+ * @fileoverview Input method detection provider component.
+ * Tracks whether user is using mouse, keyboard, or gamepad.
+ * @module renderer/context/InputContext
+ */
 
-export type InputMethod = 'mouse' | 'keyboard' | 'gamepad'
+import React, { useEffect, useState, useCallback } from 'react'
+import { InputContext, InputMethod } from './inputTypes'
 
-interface InputContextType {
-  inputMethod: InputMethod
-  setInputMethod: (method: InputMethod) => void
-  isFocusVisible: boolean
-}
-
-const InputContext = createContext<InputContextType | undefined>(undefined)
-
+/** Provider for tracking current input method across the application. */
 export function InputProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [inputMethod, setInputMethod] = useState<InputMethod>('mouse')
 
@@ -24,9 +22,6 @@ export function InputProvider({ children }: { children: React.ReactNode }): Reac
       setInputMethod('keyboard')
     }
   }, [inputMethod])
-
-  // Gamepad activation is handled manually by the consumer (useGamepad hook)
-  // to avoid polling logic duplication here.
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove)
@@ -49,12 +44,4 @@ export function InputProvider({ children }: { children: React.ReactNode }): Reac
       {children}
     </InputContext.Provider>
   )
-}
-
-export function useInput(): InputContextType {
-  const context = useContext(InputContext)
-  if (context === undefined) {
-    throw new Error('useInput must be used within an InputProvider')
-  }
-  return context
 }

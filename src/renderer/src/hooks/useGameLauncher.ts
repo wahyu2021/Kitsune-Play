@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Game launcher hook with playtime tracking.
+ * @module renderer/hooks/useGameLauncher
+ */
+
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Game } from '@/features/library/types'
@@ -9,6 +14,7 @@ interface UseGameLauncherProps {
   showToast: (message: string, type: ToastType) => void
 }
 
+/** Handles game launching and session duration tracking. */
 export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLauncherProps): {
   isPlaying: boolean
   launchGame: (game: Game) => Promise<void>

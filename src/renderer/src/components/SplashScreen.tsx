@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Animated splash screen component.
+ * Requires user interaction to proceed (unlocks audio context).
+ * @module renderer/components/SplashScreen
+ */
+
 import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaPlay } from 'react-icons/fa'
@@ -9,11 +15,7 @@ interface SplashScreenProps {
   onStart: () => void
 }
 
-/**
- * Renders an animated splash screen for the application startup.
- * Requires user interaction to proceed, ensuring audio context is unlocked.
- * @param onStart - Callback function triggered when the user clicks start.
- */
+/** Animated splash screen displayed on application launch. */
 export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.Element {
   const { t } = useTranslation()
 
@@ -34,7 +36,6 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black text-white cursor-pointer overflow-hidden"
       onClick={onStart}
     >
-      {/* Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 z-0">
         <motion.div
           initial={{ scale: 1 }}
@@ -44,21 +45,17 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
         >
           <img src={bannerBg} alt="Background" className="h-full w-full object-cover opacity-60" />
         </motion.div>
-        {/* Cinematic Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80" />
         <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
       </div>
 
-      {/* Main Content Container */}
       <div className="relative z-10 flex flex-col items-center gap-10">
-        {/* Logo Section */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="relative"
         >
-          {/* Pulsing Glow behind logo */}
           <motion.div
             animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 3, repeat: Infinity }}
@@ -72,7 +69,6 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
           />
         </motion.div>
 
-        {/* Text Section */}
         <div className="text-center space-y-2">
           <motion.h1
             initial={{ y: 20, opacity: 0 }}
@@ -92,7 +88,6 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
           </motion.p>
         </div>
 
-        {/* Interactive Button Indicator */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -118,7 +113,6 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
         </motion.div>
       </div>
 
-      {/* Footer Version */}
       <div className="absolute bottom-8 flex flex-col items-center gap-1">
         <div className="h-[1px] w-24 bg-white/20 mb-2"></div>
         <div className="text-[10px] font-mono text-white/30 tracking-widest">

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Screensaver component with Ken Burns effect.
+ * Displays clock and active game info during idle state.
+ * Features pixel-shifting for burn-in protection.
+ * @module renderer/components/Screensaver
+ */
+
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
@@ -8,13 +15,7 @@ interface ScreensaverProps {
   activeGame?: Game | null
 }
 
-/**
- * Screensaver component displayed when the application is idle.
- * Features:
- * - Ken Burns effect (slow zoom) on background.
- * - Cinematic vignette overlay.
- * - Pixel-shifting clock for burn-in protection.
- */
+/** Idle screensaver with clock and game title display. */
 export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX.Element {
   const { t, i18n } = useTranslation()
   const [time, setTime] = useState(new Date())
@@ -32,7 +33,6 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
       transition={{ duration: 1.5, ease: 'easeInOut' }}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black text-white overflow-hidden"
     >
-      {/* Layer 1: Animated Background (Ken Burns Effect) */}
       <div className="absolute inset-0 z-0">
         <motion.div
           animate={{ scale: [1, 1.15, 1] }}
@@ -58,11 +58,9 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
         </motion.div>
       </div>
 
-      {/* Layer 2: Vignette & Gradient Overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/20 to-black opacity-80" />
       <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
 
-      {/* Layer 3: Content with Pixel Shift */}
       <motion.div
         className="z-20 flex flex-col items-center text-center px-8 max-w-5xl antialiased"
         style={{ willChange: 'transform', backfaceVisibility: 'hidden' }}
@@ -76,7 +74,6 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
           ease: 'linear'
         }}
       >
-        {/* Game Title - THE HERO ELEMENT */}
         {activeGame && (
           <motion.h2
             initial={{ opacity: 0, scale: 0.9 }}
@@ -88,7 +85,6 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
           </motion.h2>
         )}
 
-        {/* Digital Clock - Secondary Element */}
         <motion.h1
           className="text-8xl font-thin tracking-widest text-white/80 drop-shadow-2xl font-mono"
           style={{ fontVariantNumeric: 'tabular-nums' }}
@@ -96,7 +92,6 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
           {time.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}
         </motion.h1>
 
-        {/* Date */}
         <div className="mt-4 flex items-center gap-4 justify-center">
           <div className="h-[1px] w-20 bg-orange-500/50" />
           <p className="text-xl font-medium tracking-[0.2em] text-orange-400 uppercase">
@@ -110,7 +105,6 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
         </div>
       </motion.div>
 
-      {/* Resume Hint - Anchored to Screen Bottom */}
       <motion.div
         animate={{ opacity: [0.3, 1, 0.3] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}

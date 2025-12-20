@@ -1,10 +1,15 @@
+/**
+ * @fileoverview IPC handlers for persistent data storage.
+ * @module main/ipc/storage
+ */
+
 import { ipcMain, app } from 'electron'
 import fs from 'fs/promises'
 import { join } from 'path'
 
+/** Registers IPC handlers for application data persistence. */
 export function registerStorageHandlers(): void {
   const dataPath = join(app.getPath('userData'), 'library.json')
-  console.log('Data Path:', dataPath)
 
   ipcMain.handle('get-app-data', async () => {
     try {
@@ -18,7 +23,6 @@ export function registerStorageHandlers(): void {
 
   ipcMain.handle('save-app-data', async (_, data: string) => {
     try {
-      console.log(`[Main] Saving data to: ${dataPath}`)
       await fs.writeFile(dataPath, data, 'utf-8')
       return true
     } catch (error) {

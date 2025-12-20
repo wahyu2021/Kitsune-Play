@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Horizontal scrollable game list component.
+ * @module renderer/features/library/components/GameList
+ */
+
 import { useRef } from 'react'
 import { Game } from '@/features/library/types'
 import GameCard from './GameCard'
@@ -5,18 +10,12 @@ import { FaGhost } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 
 interface GameListProps {
-  /** Array of games to display. */
   games: Game[]
-  /** ID of the currently selected game. */
   selectedGameId: string
-  /** Callback triggered when a game is clicked. */
   onSelectGame: (id: string) => void
 }
 
-/**
- * Horizontal scrollable list of games.
- * Handles empty state and renders `GameCard` components.
- */
+/** Horizontal scrollable list displaying game cards. */
 export default function GameList({
   games,
   selectedGameId,

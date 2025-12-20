@@ -1,7 +1,13 @@
+/**
+ * @fileoverview Preload script exposing secure API to renderer process.
+ * Uses contextBridge for secure IPC communication.
+ * @module preload
+ */
+
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Custom APIs for renderer
+/** Custom APIs exposed to the renderer process. */
 const api = {
   launchGame: (
     path: string,
@@ -26,9 +32,6 @@ const api = {
   quit: (): void => ipcRenderer.send('app-quit')
 }
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)

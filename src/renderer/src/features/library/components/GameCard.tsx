@@ -1,8 +1,13 @@
+/**
+ * @fileoverview Game card component for library display.
+ * @module renderer/features/library/components/GameCard
+ */
+
 import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
 import { useRef, useEffect } from 'react'
 import LazyImage from '@/components/ui/LazyImage'
-import { useInput } from '@/context/InputContext'
+import { useInput } from '@/context/useInput'
 import { FaStar } from 'react-icons/fa'
 
 interface GameCardProps {
@@ -11,14 +16,12 @@ interface GameCardProps {
   onClick: () => void
 }
 
+/** Interactive game card with cover image and selection state. */
 function GameCard({ game, isActive, onClick }: GameCardProps): React.JSX.Element {
   const { isFocusVisible } = useInput()
-  // Using a ref to scroll this element into view when active
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Only scroll into view if focus is visible (keyboard/gamepad) or if it's strictly active
-    // We keep it scrolling for mouse too because usually clicking a card centers it, which is nice.
     if (isActive && cardRef.current) {
       cardRef.current.scrollIntoView({
         behavior: 'smooth',
