@@ -9,6 +9,41 @@ export interface SteamGame {
   executablePath?: string // Path to the main .exe
 }
 
+const IGNORED_FOLDERS = [
+  'support',
+  'commonredist',
+  'directx',
+  'dotnep',
+  'installers',
+  'prerequisites',
+  'redist',
+  'artbook',
+  'soundtrack',
+  'bonus'
+]
+
+const IGNORED_EXECUTABLES = [
+  'unins',
+  'setup',
+  'crash',
+  'update',
+  'helper',
+  'redist',
+  'dxwebsetup',
+  'vcredist',
+  'unitycrashhandler',
+  'ue4prereq'
+]
+
+function isIgnoredFolder(name: string): boolean {
+  return IGNORED_FOLDERS.includes(name.toLowerCase())
+}
+
+function isIgnoredExecutable(name: string): boolean {
+  const lowerName = name.toLowerCase()
+  return IGNORED_EXECUTABLES.some((ignored) => lowerName.includes(ignored))
+}
+
 /**
  * Simple VDF/ACF parser for Steam manifests.
  * Extracts "appid", "name", and "installdir".
@@ -61,39 +96,11 @@ async function findGameExecutable(
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name)
         if (entry.isDirectory()) {
-          // Skip common junk folders
-          const lower = entry.name.toLowerCase()
-          if (
-            ![
-              'support',
-              'commonredist',
-              'directx',
-              'dotnep',
-              'installers',
-              'prerequisites',
-              'redist',
-              'artbook',
-              'soundtrack',
-              'bonus'
-            ].includes(lower)
-          ) {
+          if (!isIgnoredFolder(entry.name)) {
             await scanDir(fullPath, depth + 1)
           }
         } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.exe')) {
-          // Filter out junk exes
-          const lowerName = entry.name.toLowerCase()
-          if (
-            lowerName.includes('unins') ||
-            lowerName.includes('setup') ||
-            lowerName.includes('crash') ||
-            lowerName.includes('update') ||
-            lowerName.includes('helper') ||
-            lowerName.includes('redist') ||
-            lowerName.includes('dxwebsetup') ||
-            lowerName.includes('vcredist') ||
-            lowerName.includes('unitycrashhandler') ||
-            lowerName.includes('ue4prereq')
-          ) {
+          if (isIgnoredExecutable(entry.name)) {
             continue
           }
 

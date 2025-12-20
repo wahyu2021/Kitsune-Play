@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   WiDaySunny,
   WiNightClear,
@@ -29,18 +29,17 @@ export default function WeatherWidget({
 }: WeatherWidgetProps): React.JSX.Element | null {
   const [weather, setWeather] = useState<WeatherData | null>(null)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchWeather = async (): Promise<void> => {
+  const fetchWeather = useCallback(async (): Promise<void> => {
     if (!lat || !lng) return
     const data = await getCurrentWeather(lat, lng)
     setWeather(data)
-  }
+  }, [lat, lng])
 
   useEffect(() => {
     fetchWeather()
     const interval = setInterval(fetchWeather, 1800000) // 30 mins
     return () => clearInterval(interval)
-  }, [fetchWeather, lat, lng])
+  }, [fetchWeather])
 
   if (!weather) return null
 

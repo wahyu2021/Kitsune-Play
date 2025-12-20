@@ -10,7 +10,7 @@ import { SearchModal } from '@/features/search'
 import { SettingsModal } from '@/features/settings'
 
 // Shared UI
-import { Toast, ToastType, Modal, ModalType } from '@/components/ui'
+import { Toast, ToastType, Modal } from '@/components/ui'
 import SplashScreen from '@/components/SplashScreen'
 import Screensaver from '@/components/Screensaver'
 import AppBackground from '@/components/AppBackground'
@@ -23,6 +23,7 @@ import { useIdleTimer } from '@/hooks/useIdleTimer'
 import { useAppSounds } from '@/hooks/useAppSounds'
 import { logger } from '@/utils/logger'
 import { useGameLauncher } from '@/hooks/useGameLauncher'
+import { useAppModals } from '@/hooks/useAppModals'
 import MainLayout from '@/layouts/MainLayout'
 
 /**
@@ -55,6 +56,30 @@ function App(): React.JSX.Element {
   const isIdle = useIdleTimer(30000)
 
   /**
+   * Modal State Management
+   */
+  const {
+    isAddModalOpen,
+    setIsAddModalOpen,
+    isProfileModalOpen,
+    setIsProfileModalOpen,
+    isSearchModalOpen,
+    setIsSearchModalOpen,
+    isSettingsModalOpen,
+    setIsSettingsModalOpen,
+    isPowerModalOpen,
+    setIsPowerModalOpen,
+    gameToEdit,
+    setGameToEdit,
+    modalConfig,
+    setModalConfig,
+    showConfirm,
+    closeAllModals,
+    openAddGameModal,
+    isAnyModalOpen
+  } = useAppModals()
+
+  /**
    * Audio hooks for background music and sound effects.
    */
   const { startAudio, playHover, playSelect, playBack } = useAppSounds(
@@ -69,36 +94,12 @@ function App(): React.JSX.Element {
    */
   const [activeTab, setActiveTab] = useState<'games' | 'media'>('games')
   const [selectedGameId, setSelectedGameId] = useState<string>('')
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [isPowerModalOpen, setIsPowerModalOpen] = useState(false)
-  const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
 
   const [toast, setToast] = useState<{ message: string | null; type: ToastType }>({
     message: null,
     type: 'info'
   })
   const showToast = (message: string, type: ToastType): void => setToast({ message, type })
-
-  // Custom Modal State
-  const [modalConfig, setModalConfig] = useState<{
-    isOpen: boolean
-    title: string
-    message: string
-    type: ModalType
-    onConfirm?: () => void
-  }>({
-    isOpen: false,
-    title: '',
-    message: '',
-    type: 'info'
-  })
-
-  const showConfirm = (title: string, message: string, onConfirm: () => void): void => {
-    setModalConfig({ isOpen: true, title, message, type: 'confirm', onConfirm })
-  }
 
   const { isPlaying, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
 
@@ -142,11 +143,11 @@ function App(): React.JSX.Element {
   const handleSaveGame = useCallback(
     (gameData: Game): void => {
       addGame(gameData, activeTab === 'media')
-      const isEdit = gameToEdit !== null
+      const isEdit = !!gameToEdit
       showToast(`${gameData.title} ${isEdit ? 'updated' : 'added'}!`, 'success')
       setGameToEdit(null)
     },
-    [addGame, activeTab, gameToEdit]
+    [addGame, activeTab, gameToEdit, setGameToEdit]
   )
 
   const handleDeleteAction = useCallback((): void => {
@@ -156,14 +157,13 @@ function App(): React.JSX.Element {
       deleteGame(selectedGameId, activeTab === 'media')
       showToast('Item deleted.', 'info')
     })
-  }, [selectedGame, selectedGameId, activeTab, deleteGame])
+  }, [selectedGame, selectedGameId, activeTab, deleteGame, showConfirm])
 
   const handleOpenEdit = useCallback((): void => {
     if (selectedGame) {
-      setGameToEdit(selectedGame)
-      setIsAddModalOpen(true)
+      openAddGameModal(selectedGame)
     }
-  }, [selectedGame])
+  }, [selectedGame, openAddGameModal])
 
   const handleResetLibraryAction = useCallback((): void => {
     resetLibrary()
@@ -178,24 +178,6 @@ function App(): React.JSX.Element {
       setSelectedGameId(currentContent[0].id)
     }
   }, [isLoaded, currentContent, selectedGame])
-
-  const isAnyModalOpen =
-    isAddModalOpen ||
-    isProfileModalOpen ||
-    isSearchModalOpen ||
-    isSettingsModalOpen ||
-    isPowerModalOpen ||
-    modalConfig.isOpen
-
-  const closeAllModals = useCallback(() => {
-    setIsSearchModalOpen(false)
-    setIsSettingsModalOpen(false)
-    setIsAddModalOpen(false)
-    setIsProfileModalOpen(false)
-    setIsPowerModalOpen(false)
-    setModalConfig((prev) => ({ ...prev, isOpen: false }))
-    setGameToEdit(null)
-  }, [])
 
   useNavigation({
     currentContent,
@@ -231,10 +213,7 @@ function App(): React.JSX.Element {
           userName={userName}
           activeTab={activeTab}
           onTabChange={handleTabChange}
-          onOpenAddGame={() => {
-            setGameToEdit(null)
-            setIsAddModalOpen(true)
-          }}
+          onOpenAddGame={() => openAddGameModal(null)}
           onOpenProfile={() => setIsProfileModalOpen(true)}
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
