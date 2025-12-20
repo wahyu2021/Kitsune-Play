@@ -20,9 +20,8 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 # Kitsune Play - Riwayat Fitur (v1.3 - Belum Selesai)
 
 [x] Hybrid Input Navigation (Controller + Keyboard/Mouse)
-[] Favorites & Pin System
+[x] Favorites & Pin System
 [] Custom Audio & Theming
-
 
 ---
 
@@ -31,14 +30,17 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 ## 1. Hybrid Input Navigation (Controller + Keyboard/Mouse)
 
 ### 📝 Deskripsi
+
 Implementasi sistem navigasi yang mendukung Controller (Xbox/PlayStation), Keyboard, dan Mouse secara bersamaan (seamless). Launcher akan mendeteksi input terakhir yang digunakan dan menyesuaikan indikator visual (fokus) secara otomatis tanpa perlu mengubah mode manual.
 
 ### 🎯 Nilai Tambah
+
 - **Fleksibilitas Total:** Pengguna bisa menggunakan mouse untuk setup cepat, lalu pindah ke sofa dengan controller untuk bermain.
 - **Aksesibilitas:** Tidak membatasi pengguna hanya pada satu jenis input.
 - **Seamless Experience:** Transisi halus antara mode desktop (mouse) dan mode console (controller).
 
 ### 💻 Konsep Implementasi Teknis
+
 - **Input Detection:** Hook global untuk mendeteksi `mousemove`, `keydown`, dan `gamepadconnected`.
 - **Focus Management:**
   - Saat Mouse bergerak: Hilangkan highlight fokus virtual (kembali ke kursor standar).
@@ -50,28 +52,34 @@ Implementasi sistem navigasi yang mendukung Controller (Xbox/PlayStation), Keybo
 ## 2. Favorites & Pin System
 
 ### 📝 Deskripsi
+
 Fitur untuk menandai game tertentu sebagai "Favorit" agar selalu muncul di urutan paling depan atau di tab khusus, terlepas dari urutan abjad atau terakhir dimainkan.
 
 ### 🎯 Nilai Tambah
+
 - **Personalisasi:** Pengguna dapat dengan cepat mengakses game yang sedang rutin dimainkan.
 - **Organisasi:** Mencegah game favorit tenggelam di library yang besar.
 
 ### 💻 Konsep Implementasi Teknis
+
 - **Data Model:** Menambahkan field `isFavorite: boolean` pada interface `Game`.
 - **UI:** Ikon "Bintang" atau "Pin" pada kartu game atau context menu.
 - **Sorting Logic:** Memprioritaskan `isFavorite === true` saat render list.
 
 ---
 
-## 3. Custom Audio & Theming
+## 3. Custom Background Music
 
 ### 📝 Deskripsi
-Memungkinkan pengguna mengganti Background Music (BGM) dan efek suara UI (Hover, Select) langsung dari menu Settings tanpa mengganti file aset secara manual.
+
+Memungkinkan pengguna mengganti Background Music (BGM) default dengan file audio pilihan mereka sendiri (.mp3) melalui menu Settings. Efek suara (SFX) tetap menggunakan default.
 
 ### 🎯 Nilai Tambah
-- **Kustomisasi:** Memberikan kebebasan pengguna untuk mengatur "vibe" launcher mereka (misal: Tema Cyberpunk, Retro, atau Relaxing).
+
+- **Personalisasi:** Memberikan kebebasan pengguna untuk mengatur "mood" launcher mereka dengan lagu favorit.
 
 ### 💻 Konsep Implementasi Teknis
+
 - **Settings:** Input file picker untuk memilih file `.mp3` lokal.
-- **Storage:** Menyimpan path file audio kustom di `AppSettings`.
-- **Audio Context:** Hook `useAppSounds` diperbarui untuk memuat file dari path user jika ada, fallback ke default jika tidak.
+- **Storage:** Menyimpan path file audio kustom di `AppSettings` (misal: `customBgMusicPath`).
+- **Audio Logic:** Hook `useAppSounds` diperbarui untuk mengecek apakah ada `customBgMusicPath` yang valid sebelum memuat default BGM.

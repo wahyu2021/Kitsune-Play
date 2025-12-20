@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import WeatherWidget from '@/features/navigation/components/WeatherWidget'
 
@@ -87,7 +87,8 @@ function App(): React.JSX.Element {
     showSplash,
     settings?.bgMusicVolume ?? 0.3,
     settings?.sfxVolume ?? 0.8,
-    settings?.isMuted ?? false
+    settings?.isMuted ?? false,
+    settings?.customBgMusicPath
   )
 
   /**
@@ -108,17 +109,7 @@ function App(): React.JSX.Element {
    * Derived state based on active tab.
    * Sorted: Favorites first, then Alphabetical.
    */
-  const currentContent = useMemo(() => {
-    const list = activeTab === 'games' ? games : mediaApps
-    return [...list].sort((a, b) => {
-      // 1. Favorites First
-      if (a.isFavorite && !b.isFavorite) return -1
-      if (!a.isFavorite && b.isFavorite) return 1
-      // 2. Alphabetical
-      return a.title.localeCompare(b.title)
-    })
-  }, [activeTab, games, mediaApps])
-
+  const currentContent = activeTab === 'games' ? games : mediaApps
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
 
   /**
@@ -320,6 +311,11 @@ function App(): React.JSX.Element {
         onBgMusicVolumeChange={(vol) => setSettings({ ...settings, bgMusicVolume: vol })}
         onSfxVolumeChange={(vol) => setSettings({ ...settings, sfxVolume: vol })}
         onMuteToggle={(muted) => setSettings({ ...settings, isMuted: muted })}
+        customBgMusicPath={settings?.customBgMusicPath}
+        onSaveCustomBgMusic={(path) => {
+          setSettings({ ...settings, customBgMusicPath: path })
+          showToast(path ? 'Background music updated!' : 'Background music reset.', 'success')
+        }}
         weatherCity={settings?.weather?.city || ''}
         onSaveWeatherCity={(city, lat, lng) => {
           setSettings({

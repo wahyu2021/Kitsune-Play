@@ -24,7 +24,8 @@ export function useAppSounds(
   isSplashShowing: boolean,
   bgMusicVolume: number = 0.3,
   sfxVolume: number = 0.8,
-  isMuted: boolean = false
+  isMuted: boolean = false,
+  customBgMusicPath?: string
 ): UseAppSoundsReturn {
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
   const welcomeAudioRef = useRef<HTMLAudioElement | null>(null)
@@ -53,6 +54,32 @@ export function useAppSounds(
     if (selectAudioRef.current) selectAudioRef.current.volume = sfxVol
     if (backAudioRef.current) backAudioRef.current.volume = sfxVol
   }, [bgMusicVolume, sfxVolume, isMuted])
+
+  // --- Handle Custom BG Music Change ---
+  useEffect(() => {
+    if (!bgAudioRef.current || !hasInitializedRef.current) return
+
+    const currentSrc = bgAudioRef.current.src
+    // Normalize path for comparison if needed, but simple check is enough
+    // Determine desired source
+    // Note: 'bgMusicFile' is a URL/Path from Vite import.
+    // 'customBgMusicPath' is a raw OS path.
+    const targetSrc = customBgMusicPath
+      ? `file://${customBgMusicPath.replace(/\\/g, '/')}`
+      : bgMusicFile
+
+    // Only update if different (avoid restarting song if no change)
+    // We check if currentSrc ends with the target to avoid full URL matching issues
+    if (
+      !currentSrc.includes(customBgMusicPath ? customBgMusicPath.replace(/\\/g, '/') : bgMusicFile)
+    ) {
+      const wasPlaying = !bgAudioRef.current.paused
+      bgAudioRef.current.src = targetSrc
+      if (wasPlaying) {
+        bgAudioRef.current.play().catch(() => {})
+      }
+    }
+  }, [customBgMusicPath])
 
   // --- Window Focus/Blur Handler (Auto-Mute) ---
   useEffect(() => {

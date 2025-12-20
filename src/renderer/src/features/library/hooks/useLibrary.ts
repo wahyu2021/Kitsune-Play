@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Game } from '@/features/library/types'
 import { AppSettings } from '@/features/settings/types'
 import { getInitialGamesData, DEFAULT_BANNER } from '@/config'
@@ -51,6 +51,20 @@ export function useLibrary(): UseLibraryReturn {
     setUserName,
     setSettings
   })
+
+  // Computed: Sorted Views
+  const sortGames = (list: Game[]): Game[] => {
+    return [...list].sort((a, b) => {
+      // 1. Favorites First
+      if (a.isFavorite && !b.isFavorite) return -1
+      if (!a.isFavorite && b.isFavorite) return 1
+      // 2. Alphabetical
+      return a.title.localeCompare(b.title)
+    })
+  }
+
+  const sortedGames = useMemo(() => sortGames(games), [games])
+  const sortedMediaApps = useMemo(() => sortGames(mediaApps), [mediaApps])
 
   // Actions
   // Helper for duplicate detection
@@ -168,8 +182,8 @@ export function useLibrary(): UseLibraryReturn {
   }
 
   return {
-    games,
-    mediaApps,
+    games: sortedGames,
+    mediaApps: sortedMediaApps,
     userName,
     settings,
     setUserName,
