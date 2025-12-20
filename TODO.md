@@ -19,58 +19,52 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 
 ---
 
-# Kitsune Play - Rencana Fitur Mendatang (v1.2)
+# Kitsune Play - Rencana Fitur Mendatang (v1.3)
 
-## 1. System Power Menu (Shutdown/Restart)
+## 1. Hybrid Input Navigation (Controller + Keyboard/Mouse)
 
 ### 📝 Deskripsi
-
-Menambahkan menu pop-up atau tombol khusus di antarmuka (biasanya di pojok kanan atas atau menu profil) yang memungkinkan pengguna untuk mematikan (Shutdown), memulai ulang (Restart), atau menidurkan (Sleep) komputer langsung dari launcher.
+Implementasi sistem navigasi yang mendukung Controller (Xbox/PlayStation), Keyboard, dan Mouse secara bersamaan (seamless). Launcher akan mendeteksi input terakhir yang digunakan dan menyesuaikan indikator visual (fokus) secara otomatis tanpa perlu mengubah mode manual.
 
 ### 🎯 Nilai Tambah
-
-- **Console Experience:** Memungkinkan pengoperasian "tanpa keyboard/mouse". Sangat vital untuk setup HTPC dimana pengguna duduk jauh di sofa dengan controller.
-- **Kenyamanan:** Pengguna tidak perlu keluar (Alt+F4) dari launcher hanya untuk mematikan PC.
+- **Fleksibilitas Total:** Pengguna bisa menggunakan mouse untuk setup cepat, lalu pindah ke sofa dengan controller untuk bermain.
+- **Aksesibilitas:** Tidak membatasi pengguna hanya pada satu jenis input.
+- **Seamless Experience:** Transisi halus antara mode desktop (mouse) dan mode console (controller).
 
 ### 💻 Konsep Implementasi Teknis
-
-- **UI:** Tombol ikon "Power" di `TopBar`. Saat diklik, muncul Modal konfirmasi.
-- **Backend:** Menggunakan perintah shell native via Node.js `exec`:
-  - Windows: `shutdown /s /t 0` (Mati), `shutdown /r /t 0` (Restart).
-  - Konfirmasi dua langkah untuk mencegah salah pencet.
+- **Input Detection:** Hook global untuk mendeteksi `mousemove`, `keydown`, dan `gamepadconnected`.
+- **Focus Management:**
+  - Saat Mouse bergerak: Hilangkan highlight fokus virtual (kembali ke kursor standar).
+  - Saat Tombol Controller/Keyboard ditekan: Munculkan highlight fokus pada elemen UI.
+- **Navigasi Grid:** Logika untuk memindahkan fokus antar kartu game dan menu menggunakan D-Pad/Arrow Keys.
 
 ---
 
-## 2. Auto-Scan & Import Games (Steam/Epic)
+## 2. Favorites & Pin System
 
 ### 📝 Deskripsi
-
-Fitur cerdas untuk memindai direktori instalasi standar (seperti `C:\Program Files (x86)\Steam\steamapps\common`) dan secara otomatis menambahkan game yang terdeteksi ke dalam library Kitsune Play.
+Fitur untuk menandai game tertentu sebagai "Favorit" agar selalu muncul di urutan paling depan atau di tab khusus, terlepas dari urutan abjad atau terakhir dimainkan.
 
 ### 🎯 Nilai Tambah
-
-- **Efisiensi:** Menghemat waktu pengguna secara drastis dibandingkan menambahkan game satu per satu secara manual.
-- **User Friendly:** Menurunkan hambatan bagi pengguna baru untuk mulai menggunakan launcher.
+- **Personalisasi:** Pengguna dapat dengan cepat mengakses game yang sedang rutin dimainkan.
+- **Organisasi:** Mencegah game favorit tenggelam di library yang besar.
 
 ### 💻 Konsep Implementasi Teknis
-
-- **Scanner:** Fungsi backend yang melakukan _recursive scanning_ untuk file `.exe` atau membaca file manifest library (misal: `libraryfolders.vdf` milik Steam).
-- **Metadata Fetching:** Menggunakan nama folder/file yang ditemukan untuk otomatis mencari gambar cover dan background dari API RAWG, sehingga game yang diimpor langsung terlihat cantik.
+- **Data Model:** Menambahkan field `isFavorite: boolean` pada interface `Game`.
+- **UI:** Ikon "Bintang" atau "Pin" pada kartu game atau context menu.
+- **Sorting Logic:** Memprioritaskan `isFavorite === true` saat render list.
 
 ---
 
-## 3. Weather Widget (Cuaca)
+## 3. Custom Audio & Theming
 
 ### 📝 Deskripsi
-
-Menampilkan informasi cuaca sederhana (ikon cuaca + suhu) di sebelah jam pada bagian atas layar (`TopBar`).
+Memungkinkan pengguna mengganti Background Music (BGM) dan efek suara UI (Hover, Select) langsung dari menu Settings tanpa mengganti file aset secara manual.
 
 ### 🎯 Nilai Tambah
-
-- **Estetika Premium:** Memberikan sentuhan "Smart Dashboard" modern ala PS5.
-- **Live Info:** Membuat tampilan launcher terasa dinamis dan terhubung, tidak statis.
+- **Kustomisasi:** Memberikan kebebasan pengguna untuk mengatur "vibe" launcher mereka (misal: Tema Cyberpunk, Retro, atau Relaxing).
 
 ### 💻 Konsep Implementasi Teknis
-
-- **API:** Menggunakan Open-Meteo API (gratis, tanpa API Key) berdasarkan perkiraan lokasi IP pengguna atau input kota manual di Settings.
-- **Component:** Widget kecil yang memperbarui data setiap 30-60 menit.
+- **Settings:** Input file picker untuk memilih file `.mp3` lokal.
+- **Storage:** Menyimpan path file audio kustom di `AppSettings`.
+- **Audio Context:** Hook `useAppSounds` diperbarui untuk memuat file dari path user jika ada, fallback ke default jika tidak.
