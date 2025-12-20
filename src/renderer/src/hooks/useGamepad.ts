@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { logger } from '@/utils/logger'
+import { useInput } from '@/context/InputContext'
 
 interface GamepadHandlers {
   onNavigateLeft: () => void
@@ -27,6 +28,8 @@ interface GamepadHandlers {
  * @param isEnabled - Boolean to globally enable/disable input (e.g., when window is blurred).
  */
 export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true): void {
+  const { setInputMethod } = useInput()
+
   // Refs to track input timing for throttling (cooldown)
   const lastInputTime = useRef<number>(0)
   const lastButtonState = useRef<Record<number, boolean>>({})
@@ -49,6 +52,7 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
       if (gp) {
         const now = Date.now()
         const timeSinceLastInput = now - lastInputTime.current
+        let hasInput = false
 
         // --- Navigation (Left/Right) - Throttled ---
         if (timeSinceLastInput > COOLDOWN_NAV) {
@@ -59,9 +63,11 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
           if (axisX < -THRESHOLD_STICK || dpadLeft) {
             handlers.onNavigateLeft()
             lastInputTime.current = now
+            hasInput = true
           } else if (axisX > THRESHOLD_STICK || dpadRight) {
             handlers.onNavigateRight()
             lastInputTime.current = now
+            hasInput = true
           }
         }
 
@@ -75,6 +81,7 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
           if (isPressed && !wasPressed && now - lastInputTime.current > COOLDOWN_ACTION) {
             callback()
             lastInputTime.current = now
+            hasInput = true
           }
 
           lastButtonState.current[index] = isPressed
@@ -85,6 +92,10 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
         checkButton(3, handlers.onSearch) // Y / Triangle
         checkButton(4, handlers.onTabSwitch) // L1 (Bumper Left)
         checkButton(5, handlers.onTabSwitch) // R1 (Bumper Right)
+
+        if (hasInput) {
+          setInputMethod('gamepad')
+        }
       }
 
       animationFrameId = requestAnimationFrame(scanGamepad)
@@ -95,7 +106,7 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
 
     // Cleanup
     return () => cancelAnimationFrame(animationFrameId)
-  }, [handlers, isEnabled])
+  }, [handlers, isEnabled, setInputMethod])
 
   // Log connection events
   useEffect(() => {

@@ -17,6 +17,13 @@ This document tracks the progress of the **Kitsune Play** PS5-style game launche
 [x] Auto-Scan & Import Games (Steam/Epic)
 [x] Weather Widget (Cuaca)
 
+# Kitsune Play - Riwayat Fitur (v1.2 - Selesai)
+
+[x] Hybrid Input Navigation (Controller + Keyboard/Mouse)
+[] Favorites & Pin System
+[] Custom Audio & Theming
+
+
 ---
 
 # Kitsune Play - Rencana Fitur Mendatang (v1.3)
