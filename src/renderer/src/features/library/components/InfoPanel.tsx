@@ -1,7 +1,16 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
-import { FaPlay, FaPen, FaTrash, FaClock, FaCalendarAlt, FaInfoCircle } from 'react-icons/fa'
+import {
+  FaPlay,
+  FaPen,
+  FaTrash,
+  FaClock,
+  FaCalendarAlt,
+  FaInfoCircle,
+  FaStar,
+  FaRegStar
+} from 'react-icons/fa'
 import GameDetailModal from './GameDetailModal'
 
 interface InfoPanelProps {
@@ -9,13 +18,15 @@ interface InfoPanelProps {
   onPlay: () => void
   onEdit: () => void
   onDelete: () => void
+  onToggleFavorite: () => void
 }
 
 export default function InfoPanel({
   game,
   onPlay,
   onEdit,
-  onDelete
+  onDelete,
+  onToggleFavorite
 }: InfoPanelProps): React.JSX.Element {
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
@@ -93,6 +104,20 @@ export default function InfoPanel({
             className="flex items-center gap-3 rounded-full bg-white px-8 py-3 text-xl font-bold text-black transition-transform hover:scale-105"
           >
             <FaPlay /> Play Game
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,0.2)' }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onToggleFavorite}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors"
+            title="Toggle Favorite"
+          >
+            {game.isFavorite ? (
+              <FaStar className="text-yellow-400" />
+            ) : (
+              <FaRegStar className="text-white/80" />
+            )}
           </motion.button>
 
           <motion.button

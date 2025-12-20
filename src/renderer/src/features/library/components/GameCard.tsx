@@ -3,6 +3,7 @@ import { Game } from '@/features/library/types'
 import { useRef, useEffect } from 'react'
 import LazyImage from '@/components/ui/LazyImage'
 import { useInput } from '@/context/InputContext'
+import { FaStar } from 'react-icons/fa'
 
 interface GameCardProps {
   game: Game
@@ -43,6 +44,11 @@ function GameCard({ game, isActive, onClick }: GameCardProps): React.JSX.Element
       whileHover={{ scale: 1.05 }}
     >
       <LazyImage src={game.cover_image} alt={game.title} className="h-full w-full rounded-lg" />
+      {game.isFavorite && (
+        <div className="absolute top-2 right-2 rounded-full bg-black/50 p-2 backdrop-blur-sm">
+          <FaStar className="text-yellow-400 text-lg" />
+        </div>
+      )}
     </motion.div>
   )
 }

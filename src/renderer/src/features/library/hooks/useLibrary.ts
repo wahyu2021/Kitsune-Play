@@ -14,6 +14,7 @@ interface UseLibraryReturn {
   addGame: (game: Game, isMedia: boolean) => void
   addGames: (games: Game[], isMedia: boolean) => void
   deleteGame: (id: string, isMedia: boolean) => void
+  toggleFavorite: (id: string, isMedia: boolean) => void
   updateGamePlaytime: (id: string, sessionMinutes: number) => void
   resetLibrary: () => void
   isLoaded: boolean
@@ -133,6 +134,17 @@ export function useLibrary(): UseLibraryReturn {
     }
   }
 
+  const toggleFavorite = (id: string, isMedia: boolean): void => {
+    const updater = (prev: Game[]): Game[] =>
+      prev.map((g) => (g.id === id ? { ...g, isFavorite: !g.isFavorite } : g))
+
+    if (!isMedia) {
+      setGames(updater)
+    } else {
+      setMediaApps(updater)
+    }
+  }
+
   const resetLibrary = (): void => {
     const defaults = getInitialGamesData()
     setGames(defaults)
@@ -165,6 +177,7 @@ export function useLibrary(): UseLibraryReturn {
     addGame,
     addGames,
     deleteGame,
+    toggleFavorite,
     updateGamePlaytime,
     resetLibrary,
     isLoaded

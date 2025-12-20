@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import WeatherWidget from '@/features/navigation/components/WeatherWidget'
 
@@ -49,6 +49,7 @@ function App(): React.JSX.Element {
     addGame,
     addGames,
     deleteGame,
+    toggleFavorite,
     updateGamePlaytime,
     resetLibrary,
     isLoaded
@@ -105,8 +106,19 @@ function App(): React.JSX.Element {
 
   /**
    * Derived state based on active tab.
+   * Sorted: Favorites first, then Alphabetical.
    */
-  const currentContent = activeTab === 'games' ? games : mediaApps
+  const currentContent = useMemo(() => {
+    const list = activeTab === 'games' ? games : mediaApps
+    return [...list].sort((a, b) => {
+      // 1. Favorites First
+      if (a.isFavorite && !b.isFavorite) return -1
+      if (!a.isFavorite && b.isFavorite) return 1
+      // 2. Alphabetical
+      return a.title.localeCompare(b.title)
+    })
+  }, [activeTab, games, mediaApps])
+
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
 
   /**
@@ -158,6 +170,13 @@ function App(): React.JSX.Element {
       showToast('Item deleted.', 'info')
     })
   }, [selectedGame, selectedGameId, activeTab, deleteGame, showConfirm])
+
+  const handleToggleFavoriteAction = useCallback((): void => {
+    if (selectedGame) {
+      toggleFavorite(selectedGame.id, activeTab === 'media')
+      // No toast needed, visual feedback is immediate
+    }
+  }, [selectedGame, activeTab, toggleFavorite])
 
   const handleOpenEdit = useCallback((): void => {
     if (selectedGame) {
@@ -239,6 +258,7 @@ function App(): React.JSX.Element {
               onPlay={handlePlay}
               onEdit={handleOpenEdit}
               onDelete={handleDeleteAction}
+              onToggleFavorite={handleToggleFavoriteAction}
             />
           )}
 

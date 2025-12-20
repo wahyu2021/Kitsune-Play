@@ -28,6 +28,8 @@ export interface Game {
   playtime?: number
   /** ISO timestamp of the last time the game was played. */
   lastPlayed?: string
+  /** Whether the game is pinned/favorited by the user. */
+  isFavorite?: boolean
 }
 
 export interface AppData {
