@@ -4,7 +4,7 @@
  * @module renderer/components/SplashScreen
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaPlay } from 'react-icons/fa'
 import logoIcon from '@/assets/icon.png'
@@ -18,6 +18,13 @@ interface SplashScreenProps {
 /** Animated splash screen displayed on application launch. */
 export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.Element {
   const { t } = useTranslation()
+  const [version, setVersion] = useState<string>('1.0.0')
+
+  useEffect(() => {
+    if (window.api) {
+      window.api.getAppVersion().then(setVersion)
+    }
+  }, [])
 
   // Handle "Press Any Key" interaction
   useEffect(() => {
@@ -116,7 +123,7 @@ export default function SplashScreen({ onStart }: SplashScreenProps): React.JSX.
       <div className="absolute bottom-8 flex flex-col items-center gap-1">
         <div className="h-[1px] w-24 bg-white/20 mb-2"></div>
         <div className="text-[10px] font-mono text-white/30 tracking-widest">
-          v1.1.0 • {t('splash.system_ready')}
+          v{version} • {t('splash.system_ready')}
         </div>
       </div>
     </motion.div>
