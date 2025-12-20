@@ -100,7 +100,11 @@ export default function Screensaver({ activeGame }: ScreensaverProps): React.JSX
         <div className="mt-4 flex items-center gap-4 justify-center">
           <div className="h-[1px] w-20 bg-orange-500/50" />
           <p className="text-xl font-medium tracking-[0.2em] text-orange-400 uppercase">
-            {time.toLocaleDateString(i18n.language, { weekday: 'long', month: 'long', day: 'numeric' })}
+            {time.toLocaleDateString(i18n.language, {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric'
+            })}
           </p>
           <div className="h-[1px] w-20 bg-orange-500/50" />
         </div>

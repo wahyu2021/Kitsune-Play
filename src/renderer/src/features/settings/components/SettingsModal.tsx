@@ -128,10 +128,7 @@ export default function SettingsModal({
                   apiKey={apiKey}
                 />
 
-                <SettingsWeather
-                  weatherCity={weatherCity}
-                  onSaveWeatherCity={onSaveWeatherCity}
-                />
+                <SettingsWeather weatherCity={weatherCity} onSaveWeatherCity={onSaveWeatherCity} />
 
                 <SettingsMetadata apiKey={apiKey} onSaveApiKey={onSaveApiKey} />
 

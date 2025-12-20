@@ -41,11 +41,7 @@ export default function SettingsImport({
       const foundGames = (await window.api.scanSteamLibrary(steamPath)) as SteamGame[]
 
       if (foundGames.length === 0) {
-        onShowAlert(
-          t('alerts.no_games_title'),
-          t('alerts.no_games_msg'),
-          'warning'
-        )
+        onShowAlert(t('alerts.no_games_title'), t('alerts.no_games_msg'), 'warning')
         setIsImporting(false)
         setImportStatus('')
         return
@@ -80,7 +76,10 @@ export default function SettingsImport({
       }
 
       setImportStatus(
-        t('import_status.found_fetching', { count: uniqueSteamGames.length, skipped: duplicateCount })
+        t('import_status.found_fetching', {
+          count: uniqueSteamGames.length,
+          skipped: duplicateCount
+        })
       )
 
       const newGames: Game[] = []
@@ -90,7 +89,11 @@ export default function SettingsImport({
       for (let i = 0; i < uniqueSteamGames.length; i += BATCH_SIZE) {
         const batch = uniqueSteamGames.slice(i, i + BATCH_SIZE)
         setImportStatus(
-          t('import_status.importing_batch', { current: i + 1, total: uniqueSteamGames.length, skipped: duplicateCount })
+          t('import_status.importing_batch', {
+            current: i + 1,
+            total: uniqueSteamGames.length,
+            skipped: duplicateCount
+          })
         )
 
         await Promise.all(

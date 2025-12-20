@@ -32,11 +32,18 @@ export default function AddGameModal({
     if (isOpen) logger.debug('UI', `AddGameModal opened. API Key present: ${!!apiKey}`)
   }, [isOpen, apiKey])
 
-  const { formData, isFetching, handleChange, handleAutoFill, handleBrowse, handleSubmit } =
-    useAddGameForm({ editGame, onAddGame, onClose, apiKey })
+  const {
+    formData,
+    isFetching,
+    handleChange,
+    handleAutoFill,
+    handleBrowse,
+    handleSubmit,
+    resetForm
+  } = useAddGameForm({ editGame, onAddGame, onClose, apiKey })
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={resetForm}>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <motion.div

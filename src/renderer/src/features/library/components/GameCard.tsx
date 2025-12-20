@@ -37,7 +37,7 @@ function GameCard({ game, isActive, onClick }: GameCardProps): React.JSX.Element
         showFocusRing
           ? 'z-10 scale-110 ring-4 ring-white ring-offset-4 ring-offset-black opacity-100'
           : isActive
-            ? 'opacity-100 hover:scale-105' // Active but mouse mode: just full opacity
+            ? 'opacity-100 hover:scale-105'
             : 'opacity-60 hover:opacity-100'
       }`}
       onClick={onClick}

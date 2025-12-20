@@ -16,6 +16,7 @@ interface UseAddGameFormReturn {
   handleAutoFill: () => Promise<void>
   handleBrowse: (field: keyof Game, extensions: string[]) => Promise<void>
   handleSubmit: (e: React.FormEvent) => void
+  resetForm: () => void
 }
 
 export function useAddGameForm({
@@ -38,22 +39,26 @@ export function useAddGameForm({
     executableName: ''
   })
 
+  const resetForm = (): void => {
+    setFormData({
+      title: '',
+      description: '',
+      genre: '',
+      path_to_exe: '',
+      cover_image: '',
+      bg_image: '',
+      bg_video: '',
+      launchArgs: '',
+      executableName: ''
+    })
+  }
+
   // Populate form when Edit Mode is active or Reset when Add Mode
   useEffect(() => {
     if (editGame) {
       setFormData(editGame)
     } else {
-      setFormData({
-        title: '',
-        description: '',
-        genre: '',
-        path_to_exe: '',
-        cover_image: '',
-        bg_image: '',
-        bg_video: '',
-        launchArgs: '',
-        executableName: ''
-      })
+      resetForm()
     }
   }, [editGame])
 
@@ -135,6 +140,7 @@ export function useAddGameForm({
     handleChange,
     handleAutoFill,
     handleBrowse,
-    handleSubmit
+    handleSubmit,
+    resetForm
   }
 }
