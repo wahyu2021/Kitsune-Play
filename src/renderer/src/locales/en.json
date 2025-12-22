@@ -12,7 +12,17 @@
     "last_played": "Last",
     "never": "Never",
     "empty_title": "Library is empty",
-    "empty_desc": "Click the + button to add content"
+    "empty_desc": "Click the + button to add content",
+    "sort_by": "Sort By",
+    "sort_name": "Name",
+    "sort_last_played": "Recently Played",
+    "sort_playtime": "Most Played",
+    "sort_genre": "Genre",
+    "show_hidden": "Show Hidden",
+    "hidden_visible": "Hidden Visible",
+    "hidden_masked": "Hidden",
+    "action_hide": "Hide Game",
+    "action_unhide": "Unhide Game"
   },
   "add_game": {
     "title_add": "Add New Game",

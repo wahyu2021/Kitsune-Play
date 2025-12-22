@@ -12,7 +12,17 @@
     "last_played": "Terakhir",
     "never": "Belum Pernah",
     "empty_title": "Perpustakaan kosong",
-    "empty_desc": "Klik tombol + untuk menambah konten"
+    "empty_desc": "Klik tombol + untuk menambah konten",
+    "sort_by": "Urutkan",
+    "sort_name": "Nama",
+    "sort_last_played": "Baru Dimainkan",
+    "sort_playtime": "Sering Dimainkan",
+    "sort_genre": "Genre",
+    "show_hidden": "Tampilkan Sembunyi",
+    "hidden_visible": "Tersembunyi Aktif",
+    "hidden_masked": "Tersembunyi",
+    "action_hide": "Sembunyikan",
+    "action_unhide": "Tampilkan"
   },
   "add_game": {
     "title_add": "Tambah Game Baru",

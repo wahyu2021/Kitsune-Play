@@ -12,7 +12,17 @@
     "last_played": "最終プレイ",
     "never": "未プレイ",
     "empty_title": "ライブラリは空です",
-    "empty_desc": "＋ボタンを押してゲームを追加してください"
+    "empty_desc": "＋ボタンを押してゲームを追加してください",
+    "sort_by": "並び替え",
+    "sort_name": "名前順",
+    "sort_last_played": "最近プレイ",
+    "sort_playtime": "プレイ時間順",
+    "sort_genre": "ジャンル順",
+    "show_hidden": "非表示を表示",
+    "hidden_visible": "非表示中も表示",
+    "hidden_masked": "非表示",
+    "action_hide": "非表示にする",
+    "action_unhide": "再表示する"
   },
   "add_game": {
     "title_add": "ゲームを追加",

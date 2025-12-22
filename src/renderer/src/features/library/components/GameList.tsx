@@ -26,7 +26,7 @@ export default function GameList({
 
   if (games.length === 0) {
     return (
-      <div className="flex h-64 w-full flex-col items-center justify-center gap-4 text-white/30">
+      <div className="flex h-[29rem] w-full flex-col items-center justify-center gap-4 text-white/30">
         <FaGhost className="text-6xl" />
         <p className="text-xl font-medium">{t('library.empty_title')}</p>
         <p className="text-sm">{t('library.empty_desc')}</p>
@@ -35,9 +35,9 @@ export default function GameList({
   }
 
   return (
-    <div>
+    <div className="h-[29rem] w-full">
       <div
-        className="custom-scrollbar flex gap-8 overflow-x-auto px-10 pt-10 pb-6"
+        className="custom-scrollbar flex h-full w-full gap-8 overflow-x-auto overflow-y-hidden px-10 pt-4 pb-2 items-start"
         ref={containerRef}
       >
         {games.map((game) => (

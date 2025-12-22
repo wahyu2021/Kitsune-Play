@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sortGames } from './useLibrary'
+import { processGames } from './useLibrary'
 import { Game } from '@/features/library/types'
 
 // Mock Data
@@ -11,14 +11,19 @@ const mockGames: Game[] = [
 ]
 
 describe('useLibrary Logic', () => {
-  it('sortGames should prioritize favorites then alphabetical', () => {
-    const sorted = sortGames(mockGames)
+  it('processGames should prioritize favorites then alphabetical by default', () => {
+    // Sort by name, show hidden doesn't matter here
+    const sorted = processGames(mockGames, 'name', true)
 
     // Expected order:
-    // 1. Halo (Fav, 'H' before 'M')
-    // 2. Mario (Fav)
-    // 3. Apex (Non-Fav, 'A')
-    // 4. Zelda (Non-Fav, 'Z')
+    // 1. Apex (Fav logic? Wait, logic is: Favs first. Among Favs, sort by X. Among Non-Favs, sort by X)
+    // Halo (Fav) -> H
+    // Mario (Fav) -> M
+    // Apex (Non-Fav) -> A
+    // Zelda (Non-Fav) -> Z
+    
+    // Halo comes before Mario (H < M)
+    // Apex comes before Zelda (A < Z)
 
     expect(sorted[0].title).toBe('Halo')
     expect(sorted[1].title).toBe('Mario')
@@ -26,7 +31,7 @@ describe('useLibrary Logic', () => {
     expect(sorted[3].title).toBe('Zelda')
   })
 
-  it('sortGames should handle empty list', () => {
-    expect(sortGames([])).toEqual([])
+  it('processGames should handle empty list', () => {
+    expect(processGames([], 'name', true)).toEqual([])
   })
 })

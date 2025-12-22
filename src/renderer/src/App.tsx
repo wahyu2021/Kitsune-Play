@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import WeatherWidget from '@/features/navigation/components/WeatherWidget'
 
-import { GameList, InfoPanel, AddGameModal } from '@/features/library'
+import { GameList, InfoPanel, AddGameModal, LibraryToolbar } from '@/features/library'
 import { TopBar, BottomBar } from '@/features/navigation'
 import { ProfileModal } from '@/features/profile'
 import { SearchModal } from '@/features/search'
@@ -44,9 +44,14 @@ function App(): React.JSX.Element {
     addGames,
     deleteGame,
     toggleFavorite,
+    toggleHidden,
     updateGamePlaytime,
     resetLibrary,
-    isLoaded
+    isLoaded,
+    sortOption,
+    setSortOption,
+    showHidden,
+    setShowHidden
   } = useLibrary()
   const isIdle = useIdleTimer(30000)
 
@@ -144,6 +149,12 @@ function App(): React.JSX.Element {
     }
   }, [selectedGame, activeTab, toggleFavorite])
 
+  const handleToggleHiddenAction = useCallback((): void => {
+    if (selectedGame) {
+      toggleHidden(selectedGame.id, activeTab === 'media')
+    }
+  }, [selectedGame, activeTab, toggleHidden])
+
   const handleOpenEdit = useCallback((): void => {
     if (selectedGame) {
       openAddGameModal(selectedGame)
@@ -222,8 +233,16 @@ function App(): React.JSX.Element {
               onEdit={handleOpenEdit}
               onDelete={handleDeleteAction}
               onToggleFavorite={handleToggleFavoriteAction}
+              onToggleHidden={handleToggleHiddenAction}
             />
           )}
+
+          <LibraryToolbar
+            sortOption={sortOption}
+            setSortOption={setSortOption}
+            showHidden={showHidden}
+            setShowHidden={setShowHidden}
+          />
 
           <GameList
             games={currentContent}

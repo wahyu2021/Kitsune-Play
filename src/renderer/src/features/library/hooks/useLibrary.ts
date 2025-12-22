@@ -9,17 +9,24 @@ import { AppSettings } from '@/features/settings/types'
 import { getInitialGamesData, DEFAULT_BANNER } from '@/config'
 import { usePersistence } from '@/hooks/usePersistence'
 
+export type SortOption = 'name' | 'lastPlayed' | 'playtime' | 'genre'
+
 interface UseLibraryReturn {
   games: Game[]
   mediaApps: Game[]
   userName: string
   settings: AppSettings
+  sortOption: SortOption
+  showHidden: boolean
   setUserName: (name: string) => void
   setSettings: (settings: AppSettings) => void
+  setSortOption: (opt: SortOption) => void
+  setShowHidden: (show: boolean) => void
   addGame: (game: Game, isMedia: boolean) => void
   addGames: (games: Game[], isMedia: boolean) => void
   deleteGame: (id: string, isMedia: boolean) => void
   toggleFavorite: (id: string, isMedia: boolean) => void
+  toggleHidden: (id: string, isMedia: boolean) => void
   updateGamePlaytime: (id: string, sessionMinutes: number) => void
   resetLibrary: () => void
   isLoaded: boolean
@@ -29,12 +36,36 @@ const createSignature = (title: string, path: string): string => {
   return `${title.trim().toLowerCase()}|${path.trim().toLowerCase()}`
 }
 
-/** Sorts games with favorites first, then alphabetically. */
-export const sortGames = (list: Game[]): Game[] => {
-  return [...list].sort((a, b) => {
+/** Sorts and filters games based on options. */
+export const processGames = (
+  list: Game[],
+  sort: SortOption,
+  showHidden: boolean
+): Game[] => {
+  let processed = [...list]
+
+  // Filter hidden
+  if (!showHidden) {
+    processed = processed.filter((g) => !g.isHidden)
+  }
+
+  // Sort
+  return processed.sort((a, b) => {
+    // Always Favorites First
     if (a.isFavorite && !b.isFavorite) return -1
     if (!a.isFavorite && b.isFavorite) return 1
-    return a.title.localeCompare(b.title)
+
+    switch (sort) {
+      case 'lastPlayed':
+        return (new Date(b.lastPlayed || 0).getTime()) - (new Date(a.lastPlayed || 0).getTime())
+      case 'playtime':
+        return (b.playtime || 0) - (a.playtime || 0)
+      case 'genre':
+        return (a.genre || '').localeCompare(b.genre || '')
+      case 'name':
+      default:
+        return a.title.localeCompare(b.title)
+    }
   })
 }
 
@@ -43,6 +74,8 @@ export function useLibrary(): UseLibraryReturn {
   const [games, setGames] = useState<Game[]>([])
   const [mediaApps, setMediaApps] = useState<Game[]>([])
   const [userName, setUserName] = useState('')
+  const [sortOption, setSortOption] = useState<SortOption>('name')
+  const [showHidden, setShowHidden] = useState(false)
   const [settings, setSettings] = useState<AppSettings>({
     rawgApiKey: '',
     bgMusicVolume: 0.3,
@@ -67,8 +100,14 @@ export function useLibrary(): UseLibraryReturn {
     setSettings
   })
 
-  const sortedGames = useMemo(() => sortGames(games), [games])
-  const sortedMediaApps = useMemo(() => sortGames(mediaApps), [mediaApps])
+  const sortedGames = useMemo(
+    () => processGames(games, sortOption, showHidden),
+    [games, sortOption, showHidden]
+  )
+  const sortedMediaApps = useMemo(
+    () => processGames(mediaApps, sortOption, showHidden),
+    [mediaApps, sortOption, showHidden]
+  )
 
   const addGame = (newGame: Game, isMedia: boolean): void => {
     const gameWithDefaults = {
@@ -150,6 +189,17 @@ export function useLibrary(): UseLibraryReturn {
     }
   }
 
+  const toggleHidden = (id: string, isMedia: boolean): void => {
+    const updater = (prev: Game[]): Game[] =>
+      prev.map((g) => (g.id === id ? { ...g, isHidden: !g.isHidden } : g))
+
+    if (!isMedia) {
+      setGames(updater)
+    } else {
+      setMediaApps(updater)
+    }
+  }
+
   const resetLibrary = (): void => {
     const defaults = getInitialGamesData()
     setGames(defaults)
@@ -177,12 +227,17 @@ export function useLibrary(): UseLibraryReturn {
     mediaApps: sortedMediaApps,
     userName,
     settings,
+    sortOption,
+    showHidden,
     setUserName,
     setSettings,
+    setSortOption,
+    setShowHidden,
     addGame,
     addGames,
     deleteGame,
     toggleFavorite,
+    toggleHidden,
     updateGamePlaytime,
     resetLibrary,
     isLoaded

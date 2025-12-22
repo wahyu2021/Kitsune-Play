@@ -14,7 +14,9 @@ import {
   FaCalendarAlt,
   FaInfoCircle,
   FaStar,
-  FaRegStar
+  FaRegStar,
+  FaEye,
+  FaEyeSlash
 } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import GameDetailModal from './GameDetailModal'
@@ -25,6 +27,7 @@ interface InfoPanelProps {
   onEdit: () => void
   onDelete: () => void
   onToggleFavorite: () => void
+  onToggleHidden: () => void
 }
 
 export default function InfoPanel({
@@ -32,7 +35,8 @@ export default function InfoPanel({
   onPlay,
   onEdit,
   onDelete,
-  onToggleFavorite
+  onToggleFavorite,
+  onToggleHidden
 }: InfoPanelProps): React.JSX.Element {
   const { t } = useTranslation()
   const [isDetailOpen, setIsDetailOpen] = useState(false)
@@ -54,7 +58,7 @@ export default function InfoPanel({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-6xl font-black uppercase tracking-tighter text-white drop-shadow-2xl"
+          className="text-5xl font-black uppercase tracking-tighter text-white drop-shadow-2xl line-clamp-2 overflow-hidden"
         >
           {game.title}
         </motion.h1>
@@ -128,6 +132,20 @@ export default function InfoPanel({
               <FaStar className="text-yellow-400" />
             ) : (
               <FaRegStar className="text-white/80" />
+            )}
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,0.2)' }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onToggleHidden}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors"
+            title={game.isHidden ? t('library.action_unhide') : t('library.action_hide')}
+          >
+            {game.isHidden ? (
+              <FaEye className="text-blue-400" />
+            ) : (
+              <FaEyeSlash className="text-white/80" />
             )}
           </motion.button>
 

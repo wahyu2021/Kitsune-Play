@@ -30,6 +30,8 @@ export interface Game {
   lastPlayed?: string
   /** Whether the game is pinned/favorited by the user. */
   isFavorite?: boolean
+  /** Whether the game is hidden from the main view. */
+  isHidden?: boolean
 }
 
 export interface AppData {
