@@ -21,7 +21,7 @@ describe('useLibrary Logic', () => {
     // Mario (Fav) -> M
     // Apex (Non-Fav) -> A
     // Zelda (Non-Fav) -> Z
-    
+
     // Halo comes before Mario (H < M)
     // Apex comes before Zelda (A < Z)
 

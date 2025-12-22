@@ -18,7 +18,7 @@ interface UseGameLauncherProps {
 
 /**
  * Hook to manage game execution and session tracking.
- * 
+ *
  * Handles the communication with the main process to launch executables,
  * tracks the duration of the play session, and prevents multiple games
  * from running simultaneously.

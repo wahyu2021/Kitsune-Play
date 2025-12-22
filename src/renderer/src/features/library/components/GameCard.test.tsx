@@ -20,7 +20,7 @@ describe('GameCard Component', () => {
   it('renders the game cover image', () => {
     render(
       <InputProvider>
-        <GameCard game={mockGame} isActive={false} onClick={vi.fn()} />
+        <GameCard game={mockGame} isActive={false} onSelect={vi.fn()} />
       </InputProvider>
     )
 
@@ -34,7 +34,7 @@ describe('GameCard Component', () => {
     // I didn't add a title to the star in GameCard, so checking for svg presence in the corner wrapper is best.
     const { container } = render(
       <InputProvider>
-        <GameCard game={mockGame} isActive={false} onClick={vi.fn()} />
+        <GameCard game={mockGame} isActive={false} onSelect={vi.fn()} />
       </InputProvider>
     )
 
@@ -48,7 +48,7 @@ describe('GameCard Component', () => {
     const nonFavGame = { ...mockGame, isFavorite: false }
     const { container } = render(
       <InputProvider>
-        <GameCard game={nonFavGame} isActive={false} onClick={vi.fn()} />
+        <GameCard game={nonFavGame} isActive={false} onSelect={vi.fn()} />
       </InputProvider>
     )
 

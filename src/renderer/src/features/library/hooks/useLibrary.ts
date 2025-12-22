@@ -37,11 +37,7 @@ const createSignature = (title: string, path: string): string => {
 }
 
 /** Sorts and filters games based on options. */
-export const processGames = (
-  list: Game[],
-  sort: SortOption,
-  showHidden: boolean
-): Game[] => {
+export const processGames = (list: Game[], sort: SortOption, showHidden: boolean): Game[] => {
   let processed = [...list]
 
   // Filter hidden
@@ -57,7 +53,7 @@ export const processGames = (
 
     switch (sort) {
       case 'lastPlayed':
-        return (new Date(b.lastPlayed || 0).getTime()) - (new Date(a.lastPlayed || 0).getTime())
+        return new Date(b.lastPlayed || 0).getTime() - new Date(a.lastPlayed || 0).getTime()
       case 'playtime':
         return (b.playtime || 0) - (a.playtime || 0)
       case 'genre':

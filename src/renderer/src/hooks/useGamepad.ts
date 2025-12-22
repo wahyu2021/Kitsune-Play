@@ -10,10 +10,14 @@ import { useInput } from '@/context/useInput'
 interface GamepadHandlers {
   onNavigateLeft: () => void
   onNavigateRight: () => void
+  onNavigateUp?: () => void
+  onNavigateDown?: () => void
   onSelect: () => void
   onBack: () => void
   onSearch: () => void
   onTabSwitch: () => void
+  onToggleHidden?: () => void
+  onCycleSort?: () => void
 }
 
 /**
@@ -23,8 +27,10 @@ interface GamepadHandlers {
  * - D-Pad/Left Stick: Navigation
  * - A/Cross: Select
  * - B/Circle: Back
+ * - X/Square: Cycle Sort
  * - Y/Triangle: Search
  * - L1/R1: Tab Switch
+ * - Start/Options: Toggle Hidden
  *
  * @param handlers - Callback functions for each action
  * @param isEnabled - Enable/disable input processing
@@ -55,6 +61,9 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
 
         if (timeSinceLastInput > COOLDOWN_NAV) {
           const axisX = gp.axes[0]
+          const axisY = gp.axes[1]
+          const dpadUp = gp.buttons[12]?.pressed
+          const dpadDown = gp.buttons[13]?.pressed
           const dpadLeft = gp.buttons[14]?.pressed
           const dpadRight = gp.buttons[15]?.pressed
 
@@ -66,10 +75,19 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
             handlers.onNavigateRight()
             lastInputTime.current = now
             hasInput = true
+          } else if (axisY < -THRESHOLD_STICK || dpadUp) {
+            if (handlers.onNavigateUp) handlers.onNavigateUp()
+            lastInputTime.current = now
+            hasInput = true
+          } else if (axisY > THRESHOLD_STICK || dpadDown) {
+            if (handlers.onNavigateDown) handlers.onNavigateDown()
+            lastInputTime.current = now
+            hasInput = true
           }
         }
 
-        const checkButton = (index: number, callback: () => void): void => {
+        const checkButton = (index: number, callback?: () => void): void => {
+          if (!callback) return
           const isPressed = gp.buttons[index]?.pressed
           const wasPressed = lastButtonState.current[index] || false
 
@@ -84,9 +102,11 @@ export function useGamepad(handlers: GamepadHandlers, isEnabled: boolean = true)
 
         checkButton(0, handlers.onSelect)
         checkButton(1, handlers.onBack)
+        checkButton(2, handlers.onCycleSort) // X / Square
         checkButton(3, handlers.onSearch)
         checkButton(4, handlers.onTabSwitch)
         checkButton(5, handlers.onTabSwitch)
+        checkButton(9, handlers.onToggleHidden) // Start / Options
 
         if (hasInput) {
           setInputMethod('gamepad')

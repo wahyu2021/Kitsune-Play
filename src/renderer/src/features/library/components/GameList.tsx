@@ -37,7 +37,7 @@ export default function GameList({
   return (
     <div className="h-[29rem] w-full">
       <div
-        className="custom-scrollbar flex h-full w-full gap-8 overflow-x-auto overflow-y-hidden px-10 pt-4 pb-2 items-start"
+        className="custom-scrollbar flex h-full w-full gap-8 overflow-x-auto overflow-y-hidden px-10 pt-14 pb-2 items-start"
         ref={containerRef}
       >
         {games.map((game) => (
@@ -45,7 +45,7 @@ export default function GameList({
             key={game.id}
             game={game}
             isActive={game.id === selectedGameId}
-            onClick={() => onSelectGame(game.id)}
+            onSelect={onSelectGame}
           />
         ))}
       </div>

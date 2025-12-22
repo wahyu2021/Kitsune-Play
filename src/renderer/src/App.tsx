@@ -172,7 +172,7 @@ function App(): React.JSX.Element {
     }
   }, [isLoaded, currentContent, selectedGame])
 
-  useNavigation({
+  const { navRow, navCol } = useNavigation({
     currentContent,
     selectedGameId,
     setSelectedGameId,
@@ -181,10 +181,18 @@ function App(): React.JSX.Element {
     isAnyModalOpen,
     closeAllModals,
     openSearch: () => setIsSearchModalOpen(true),
+    onOpenAddGame: () => openAddGameModal(null),
+    onOpenProfile: () => setIsProfileModalOpen(true),
+    onOpenSettings: () => setIsSettingsModalOpen(true),
+    onOpenPower: () => setIsPowerModalOpen(true),
     handlePlay,
     handleDelete: handleDeleteAction,
     audio: { playHover, playSelect, playBack },
-    showSplash
+    showSplash,
+    sortOption,
+    setSortOption,
+    showHidden,
+    setShowHidden
   })
 
   return (
@@ -212,6 +220,8 @@ function App(): React.JSX.Element {
           onOpenSearch={() => setIsSearchModalOpen(true)}
           onOpenPower={() => setIsPowerModalOpen(true)}
           playingGame={playingGame}
+          activeRow={navRow}
+          activeCol={navCol}
         />
 
         {settings?.weather?.latitude && (
@@ -242,6 +252,8 @@ function App(): React.JSX.Element {
             setSortOption={setSortOption}
             showHidden={showHidden}
             setShowHidden={setShowHidden}
+            activeRow={navRow}
+            activeCol={navCol}
           />
 
           <GameList
