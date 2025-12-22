@@ -28,7 +28,7 @@ describe('useGameLauncher Hook', () => {
     )
 
     // Initially not playing
-    expect(result.current.isPlaying).toBe(false)
+    expect(result.current.playingGame).toBeNull()
 
     // Act: Launch Game
     await act(async () => {

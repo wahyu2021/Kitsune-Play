@@ -88,7 +88,8 @@ function App(): React.JSX.Element {
   })
   const showToast = (message: string, type: ToastType): void => setToast({ message, type })
 
-  const { isPlaying, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
+  const { playingGame, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
+  const isPlaying = !!playingGame
 
   const currentContent = activeTab === 'games' ? games : mediaApps
   const selectedGame = currentContent.find((g) => g.id === selectedGameId)
@@ -199,6 +200,7 @@ function App(): React.JSX.Element {
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
           onOpenPower={() => setIsPowerModalOpen(true)}
+          playingGame={playingGame}
         />
 
         {settings?.weather?.latitude && (

@@ -126,10 +126,16 @@
     "confirm": "Konfirmasi",
     "browse": "Telusuri"
   },
+  "bottom_bar": {
+    "play": "Mainkan",
+    "navigate": "Navigasi"
+  },
   "launcher": {
     "launching": "Meluncurkan {{title}}...",
     "played": "Bermain selama {{duration}} mnt",
-    "failed": "Gagal: {{msg}}"
+    "failed": "Gagal: {{msg}}",
+    "playing_warning": "Game sedang berjalan: {{title}}. Harap tutup terlebih dahulu.",
+    "playing_indicator": "Sedang Main: {{title}}"
   },
   "import_status": {
     "selecting": "Memilih folder Steam...",

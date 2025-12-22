@@ -1,12 +1,23 @@
 import { FaGlobe } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
+import { Dropdown } from '@/components/ui'
 
+/**
+ * General settings section component.
+ * Handles language preference selection.
+ */
 export default function SettingsGeneral(): React.JSX.Element {
   const { t, i18n } = useTranslation()
 
   const changeLanguage = (lng: string): void => {
     i18n.changeLanguage(lng)
   }
+
+  const languageOptions = [
+    { label: 'English', value: 'en' },
+    { label: 'Bahasa Indonesia', value: 'id' },
+    { label: '日本語', value: 'ja' }
+  ]
 
   return (
     <div>
@@ -18,27 +29,8 @@ export default function SettingsGeneral(): React.JSX.Element {
           <label className="flex items-center gap-2 text-sm font-bold text-white">
             <FaGlobe className="text-white/60" /> {t('settings.language')}
           </label>
-          <div className="flex gap-2">
-            <button
-              onClick={() => changeLanguage('en')}
-              className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
-                i18n.language === 'en'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white/10 text-white/60 hover:bg-white/20'
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => changeLanguage('id')}
-              className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
-                i18n.language === 'id'
-                  ? 'bg-red-500 text-white' // Merah Putih logic for ID
-                  : 'bg-white/10 text-white/60 hover:bg-white/20'
-              }`}
-            >
-              Indonesia
-            </button>
+          <div className="w-48">
+            <Dropdown options={languageOptions} value={i18n.language} onChange={changeLanguage} />
           </div>
         </div>
       </div>

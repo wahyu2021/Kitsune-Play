@@ -126,10 +126,16 @@
     "confirm": "Confirm",
     "browse": "Browse"
   },
+  "bottom_bar": {
+    "play": "Play",
+    "navigate": "Navigate"
+  },
   "launcher": {
     "launching": "Launching {{title}}...",
     "played": "Played for {{duration}} mins",
-    "failed": "Failed: {{msg}}"
+    "failed": "Failed: {{msg}}",
+    "playing_warning": "Game is already running: {{title}}. Please close it first.",
+    "playing_indicator": "Playing: {{title}}"
   },
   "import_status": {
     "selecting": "Selecting Steam folder...",

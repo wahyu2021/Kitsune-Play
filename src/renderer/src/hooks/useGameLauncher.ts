@@ -10,23 +10,38 @@ import { logger } from '@/utils/logger'
 import { ToastType } from '@/components/ui/Toast'
 
 interface UseGameLauncherProps {
+  /** Function to update the playtime record in the library. */
   updateGamePlaytime: (id: string, duration: number) => void
+  /** Function to display toast notifications. */
   showToast: (message: string, type: ToastType) => void
 }
 
-/** Handles game launching and session duration tracking. */
+/**
+ * Hook to manage game execution and session tracking.
+ * 
+ * Handles the communication with the main process to launch executables,
+ * tracks the duration of the play session, and prevents multiple games
+ * from running simultaneously.
+ *
+ * @returns An object containing the currently playing game (if any) and the launch function.
+ */
 export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLauncherProps): {
-  isPlaying: boolean
+  playingGame: Game | null
   launchGame: (game: Game) => Promise<void>
 } {
   const { t } = useTranslation()
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [playingGame, setPlayingGame] = useState<Game | null>(null)
 
   const launchGame = useCallback(
     async (game: Game) => {
+      if (playingGame) {
+        showToast(t('launcher.playing_warning', { title: playingGame.title }), 'error')
+        return
+      }
+
       logger.info('Game', `Launching: ${game.title}`)
       showToast(t('launcher.launching', { title: game.title }), 'success')
-      setIsPlaying(true)
+      setPlayingGame(game)
 
       try {
         const duration = await window.api.launchGame(
@@ -37,7 +52,7 @@ export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLaunch
         )
 
         logger.info('Game', `Session ended. Duration: ${duration} mins`)
-        setIsPlaying(false)
+        setPlayingGame(null)
         updateGamePlaytime(game.id, duration)
 
         if (duration > 0) {
@@ -45,13 +60,13 @@ export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLaunch
         }
       } catch (err) {
         logger.error('Game', 'Failed to launch game', err)
-        setIsPlaying(false)
+        setPlayingGame(null)
         const msg = err instanceof Error ? err.message : String(err)
         showToast(t('launcher.failed', { msg }), 'error')
       }
     },
-    [updateGamePlaytime, showToast, t]
+    [playingGame, updateGamePlaytime, showToast, t]
   )
 
-  return { isPlaying, launchGame }
+  return { playingGame, launchGame }
 }

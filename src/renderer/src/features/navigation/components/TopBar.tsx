@@ -11,18 +11,33 @@ import {
 } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { Game } from '@/features/library'
 
 interface TopBarProps {
+  /** The current user's display name shown in the profile section. */
   userName: string
+  /** The currently active navigation tab ('games' or 'media'). */
   activeTab: 'games' | 'media'
+  /** Callback function when a tab is clicked. */
   onTabChange: (tab: 'games' | 'media') => void
+  /** Opens the "Add Game" modal. */
   onOpenAddGame: () => void
+  /** Opens the user profile modal. */
   onOpenProfile: () => void
+  /** Opens the global settings modal. */
   onOpenSettings: () => void
+  /** Opens the global search modal. */
   onOpenSearch: () => void
+  /** Opens the power menu modal (shutdown/restart options). */
   onOpenPower: () => void
+  /** The game object currently running, or null/undefined if idle. Used to display the "Playing" indicator. */
+  playingGame?: Game | null
 }
 
+/**
+ * Top navigation bar component.
+ * Displays system info, time, user profile, and main navigation tabs.
+ */
 export default function TopBar({
   userName,
   activeTab,
@@ -31,7 +46,8 @@ export default function TopBar({
   onOpenProfile,
   onOpenSettings,
   onOpenSearch,
-  onOpenPower
+  onOpenPower,
+  playingGame
 }: TopBarProps): React.JSX.Element {
   const { t, i18n } = useTranslation()
   const [time, setTime] = useState<string>('')
@@ -40,7 +56,6 @@ export default function TopBar({
   useEffect(() => {
     const updateTime = (): void => {
       const now = new Date()
-      // Time: 20:45
       setTime(
         now.toLocaleTimeString(i18n.language, {
           hour: '2-digit',
@@ -48,7 +63,6 @@ export default function TopBar({
           hour12: false
         })
       )
-      // Date: Sun 07/12
       setDateStr(
         now.toLocaleDateString(i18n.language, {
           weekday: 'short',
@@ -58,12 +72,29 @@ export default function TopBar({
       )
     }
     updateTime()
-    const interval = setInterval(updateTime, 30000) // Update every 30s
+    const interval = setInterval(updateTime, 30000)
     return () => clearInterval(interval)
-  }, [i18n.language]) // Update when language changes
+  }, [i18n.language])
 
   return (
-    <header className="flex w-full items-center justify-between drop-shadow-lg px-2">
+    <header className="relative flex w-full items-center justify-between drop-shadow-lg px-2">
+      {/* Playing Indicator */}
+      {playingGame && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute left-1/2 top-2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-orange-500/10 px-6 py-2 text-orange-400 border border-orange-500/20 backdrop-blur-md shadow-[0_0_15px_rgba(251,146,60,0.2)] z-50"
+        >
+          <div className="relative flex h-3 w-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-orange-500"></span>
+          </div>
+          <span className="text-sm font-bold uppercase tracking-widest drop-shadow-sm">
+            {t('launcher.playing_indicator', { title: playingGame.title })}
+          </span>
+        </motion.div>
+      )}
+
       {/* Left: Tabs with Sliding Animation */}
       <div className="flex items-center gap-10">
         {/* Games Tab */}

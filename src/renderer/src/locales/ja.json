@@ -1,0 +1,179 @@
+{
+  "navigation": {
+    "games": "ゲーム",
+    "media": "メディア",
+    "search": "検索",
+    "settings": "設定",
+    "power": "電源"
+  },
+  "library": {
+    "play": "プレイ",
+    "played": "プレイ済み",
+    "last_played": "最終プレイ",
+    "never": "未プレイ",
+    "empty_title": "ライブラリは空です",
+    "empty_desc": "＋ボタンを押してゲームを追加してください"
+  },
+  "add_game": {
+    "title_add": "ゲームを追加",
+    "title_edit": "ゲーム詳細を編集",
+    "field_title": "タイトル",
+    "field_genre": "ジャンル",
+    "field_path": "実行ファイルのパス (.exe)",
+    "field_args": "起動オプション (任意)",
+    "field_process": "監視プロセス名 (Steam/Epic追跡用)",
+    "field_desc": "説明",
+    "field_cover": "カバー画像",
+    "field_bg": "背景画像",
+    "field_video": "背景動画 (ライブ壁紙)",
+    "btn_save": "ライブラリに保存",
+    "btn_update": "更新する",
+    "placeholder_desc": "簡単な説明を入力...",
+    "placeholder_genre": "アクション, RPG",
+    "placeholder_path": "C:\\Games\\MyGame\\game.exe",
+    "placeholder_args": "例: -windowed -skipintro",
+    "placeholder_process": "例: dota2.exe",
+    "placeholder_url": "パスまたはURL...",
+    "placeholder_video": ".mp4 または .webm 動画のパス...",
+    "tooltip_autofill": "RAWGから情報を自動取得",
+    "tooltip_browse_cover": "カバー画像を選択",
+    "tooltip_browse_bg": "背景画像を選択"
+  },
+  "game_detail": {
+    "playtime": "プレイ時間",
+    "last_played": "最終プレイ",
+    "path": "実行パス",
+    "args": "起動オプション",
+    "process": "監視プロセス",
+    "about": "概要",
+    "no_desc": "説明はありません。"
+  },
+  "profile": {
+    "title": "プロフィール設定",
+    "display_name": "表示名",
+    "placeholder_name": "名前を入力",
+    "coming_soon": "アバター編集機能は近日公開予定",
+    "btn_save": "保存"
+  },
+  "power_menu": {
+    "title": "電源オプション",
+    "sleep": "スリープ",
+    "sleep_sub": "中断",
+    "restart": "再起動",
+    "restart_sub": "リブート",
+    "shutdown": "シャットダウン",
+    "shutdown_sub": "電源オフ",
+    "exit": "終了",
+    "exit_sub": "デスクトップへ戻る"
+  },
+  "screensaver": {
+    "resume": "キーを押して再開"
+  },
+  "splash": {
+    "subtitle": "Next Gen Launcher",
+    "press_key": "PRESS ANY KEY",
+    "system_ready": "SYSTEM READY"
+  },
+  "search": {
+    "placeholder": "ゲームを検索...",
+    "no_results": "一致するゲームがありません"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "audio": {
+      "title": "オーディオ",
+      "controls": "サウンド設定",
+      "mute_all": "すべてミュート",
+      "muted": "ミュート中",
+      "music": "音楽",
+      "sfx": "SE (操作音)",
+      "bg_music": "BGM",
+      "reset": "リセット",
+      "default_theme": "デフォルトテーマ"
+    },
+    "import": {
+      "title": "ライブラリのインポート",
+      "steam": "Steamからインポート",
+      "scan_btn": "Steamライブラリをスキャン",
+      "scanning": "スキャン中...",
+      "desc": "Steamのインストールフォルダを選択してください (例: C:/Program Files/Steam)。"
+    },
+    "weather": {
+      "title": "天気ウィジェット",
+      "location": "地域",
+      "placeholder": "都市名 (例: Tokyo)",
+      "desc": "トップバーに天気情報を表示します。"
+    },
+    "metadata": {
+      "title": "メタデータ取得",
+      "key_label": "RAWG APIキー",
+      "get_key": "キーを取得",
+      "placeholder": "APIキーを貼り付け...",
+      "desc": "ゲームのカバー画像や情報を自動取得するために使用します。"
+    },
+    "danger": {
+      "title": "デッドゾーン",
+      "reset_btn": "ライブラリを初期化",
+      "confirm_title": "ライブラリの初期化",
+      "confirm_msg": "本当にライブラリを初期化しますか？\n\nすべてのゲームと設定が削除されます。この操作は元に戻せません。"
+    }
+  },
+  "actions": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "confirm": "確認",
+    "browse": "参照"
+  },
+  "bottom_bar": {
+    "play": "決定",
+    "navigate": "移動"
+  },
+  "launcher": {
+    "launching": "{{title}} を起動中...",
+    "played": "プレイ時間: {{duration}} 分",
+    "failed": "起動失敗: {{msg}}",
+    "playing_warning": "ゲームは既に起動中です: {{title}}。先に終了してください。",
+    "playing_indicator": "プレイ中: {{title}}"
+  },
+  "import_status": {
+    "selecting": "Steamフォルダを選択中...",
+    "scanning": "スキャン中...",
+    "found_filtering": "{{count}} タイトル検出。重複を確認中...",
+    "found_fetching": "新規 {{count}} タイトル検出 (重複 {{skipped}} 件)。メタデータ取得中...",
+    "importing_batch": "インポート中 {{current}} / {{total}} (重複スキップ: {{skipped}})..."
+  },
+  "alerts": {
+    "no_games_title": "ゲームが見つかりません",
+    "no_games_msg": "選択されたフォルダにSteamゲームが見つかりませんでした。\n正しいSteamフォルダか確認してください (例: C:/Program Files/Steam)。",
+    "import_complete_title": "インポート完了",
+    "import_complete_msg": "{{count}} 個のゲームが見つかりましたが、すべてライブラリに登録済みです。\n\n{{skipped}} 件の重複をスキップしました。",
+    "import_success_title": "インポート成功",
+    "import_success_msg": "{{count}} 個の新しいゲームを追加しました！\n\n{{skipped}} 件の重複はスキップされました。",
+    "import_failed_title": "インポート失敗",
+    "import_failed_msg": "{{msg}}。アプリを再起動して試してください。"
+  },
+  "weather_errors": {
+    "city_not_found": "都市が見つかりません。名前を確認してください。",
+    "connect_error": "天気サービスに接続できませんでした。"
+  },
+  "weather_desc": {
+    "clear": "快晴",
+    "mainly_clear": "概ね晴れ",
+    "partly_cloudy": "晴れ時々曇り",
+    "overcast": "曇り",
+    "fog": "霧",
+    "drizzle": "霧雨",
+    "freezing_drizzle": "着氷性の霧雨",
+    "rain": "雨",
+    "freezing_rain": "着氷性の雨",
+    "snow": "雪",
+    "snow_grains": "霧雪",
+    "showers": "にわか雨",
+    "snow_showers": "にわか雪",
+    "thunderstorm": "雷雨",
+    "storm_hail": "雷雨・雹",
+    "unknown": "不明"
+  }
+}

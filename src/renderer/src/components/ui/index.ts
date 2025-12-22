@@ -1,5 +1,6 @@
 export { default as LazyImage } from './LazyImage'
 export { default as Toast } from './Toast'
 export { default as Modal } from './Modal'
+export { default as Dropdown } from './Dropdown'
 export * from './Toast'
 export * from './Modal'
