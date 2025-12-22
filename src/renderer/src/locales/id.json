@@ -63,7 +63,9 @@
     "display_name": "Nama Tampilan",
     "placeholder_name": "Masukkan nama Anda",
     "coming_soon": "Pengeditan avatar segera hadir",
-    "btn_save": "Simpan Profil"
+    "btn_save": "Simpan Profil",
+    "change_avatar": "Ganti Avatar",
+    "upload_hint": "Klik untuk mengunggah avatar"
   },
   "power_menu": {
     "title": "Opsi Daya",

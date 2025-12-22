@@ -24,6 +24,7 @@ const api = {
     ipcRenderer.invoke('scan-steam-library', path),
   loadData: (): Promise<string | null> => ipcRenderer.invoke('get-app-data'),
   saveData: (data: string): Promise<boolean> => ipcRenderer.invoke('save-app-data', data),
+  saveAvatar: (path: string): Promise<string | null> => ipcRenderer.invoke('save-avatar', path),
   getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
   shutdownSystem: (): Promise<void> => ipcRenderer.invoke('system-shutdown'),
   restartSystem: (): Promise<void> => ipcRenderer.invoke('system-restart'),

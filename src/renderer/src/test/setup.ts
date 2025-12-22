@@ -10,6 +10,7 @@ window.api = {
   scanSteamLibrary: vi.fn(),
   loadData: vi.fn().mockResolvedValue(null),
   saveData: vi.fn(),
+  saveAvatar: vi.fn(),
   getAppVersion: vi.fn().mockResolvedValue('1.0.0-test'),
   shutdownSystem: vi.fn(),
   restartSystem: vi.fn(),

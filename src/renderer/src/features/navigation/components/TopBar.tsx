@@ -22,6 +22,8 @@ import { Game } from '@/features/library'
 interface TopBarProps {
   /** The current user's display name shown in the profile section. */
   userName: string
+  /** The current user's avatar path. */
+  avatar?: string
   /** The currently active navigation tab ('games' or 'media'). */
   activeTab: 'games' | 'media'
   /** Callback function when a tab is clicked. */
@@ -48,6 +50,7 @@ interface TopBarProps {
  */
 export default function TopBar({
   userName,
+  avatar,
   activeTab,
   onTabChange,
   onOpenAddGame,
@@ -195,7 +198,13 @@ export default function TopBar({
           }`}
         >
           <span className="text-sm font-bold tracking-wide">{userName}</span>
-          <FaUserCircle className="text-4xl opacity-90" />
+          <div className="h-10 w-10 overflow-hidden rounded-full bg-black/20">
+            {avatar ? (
+              <img src={`file://${avatar}`} alt="Avatar" className="h-full w-full object-cover" />
+            ) : (
+              <FaUserCircle className="text-4xl opacity-90" />
+            )}
+          </div>
         </div>
 
         {/* Divider */}

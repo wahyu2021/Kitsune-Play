@@ -27,6 +27,8 @@ export interface AppSettings {
   isMuted: boolean
   /** Optional custom background music file path. */
   customBgMusicPath?: string
+  /** Optional user avatar image path. */
+  avatar?: string
   /** Optional weather widget configuration. */
   weather?: WeatherSettings
 }

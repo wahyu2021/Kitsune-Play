@@ -26,6 +26,8 @@ export interface PreloadAPI {
   loadData: () => Promise<string | null>
   /** Saves application data to disk. */
   saveData: (data: string) => Promise<boolean>
+  /** Saves user avatar image to app data directory. */
+  saveAvatar: (path: string) => Promise<string | null>
   /** Returns the current application version string. */
   getAppVersion: () => Promise<string>
   /** Initiates system shutdown. */

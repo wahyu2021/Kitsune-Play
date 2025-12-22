@@ -30,4 +30,44 @@ export function registerStorageHandlers(): void {
       return false
     }
   })
+
+  /**
+   * Saves a user avatar image.
+   * Copies the selected file to the app's userData directory and returns the new path.
+   * Automatically cleans up old avatar files.
+   */
+  ipcMain.handle('save-avatar', async (_, sourcePath: string) => {
+    try {
+      if (!sourcePath) {
+        console.error('[Main] save-avatar: No source path provided')
+        return null
+      }
+
+      const avatarsDir = join(app.getPath('userData'), 'avatars')
+      await fs.mkdir(avatarsDir, { recursive: true })
+
+      const ext = sourcePath.split('.').pop() || 'png'
+      const fileName = `avatar-${Date.now()}.${ext}`
+      const targetPath = join(avatarsDir, fileName)
+
+      // Clean up old avatars
+      try {
+        const files = await fs.readdir(avatarsDir)
+        for (const file of files) {
+          if (file.startsWith('avatar-')) {
+            await fs.unlink(join(avatarsDir, file)).catch(() => {})
+          }
+        }
+      } catch {
+        // Ignore cleanup errors
+      }
+
+      await fs.copyFile(sourcePath, targetPath)
+      console.log('[Main] Avatar saved to:', targetPath)
+      return targetPath
+    } catch (error) {
+      console.error('[Main] Failed to save avatar:', error)
+      return null
+    }
+  })
 }

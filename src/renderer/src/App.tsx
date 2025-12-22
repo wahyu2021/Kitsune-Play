@@ -91,7 +91,10 @@ function App(): React.JSX.Element {
     message: null,
     type: 'info'
   })
-  const showToast = (message: string, type: ToastType): void => setToast({ message, type })
+  const showToast = useCallback(
+    (message: string, type: ToastType): void => setToast({ message, type }),
+    []
+  )
 
   const { playingGame, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
   const isPlaying = !!playingGame
@@ -131,7 +134,7 @@ function App(): React.JSX.Element {
       showToast(`${gameData.title} ${isEdit ? 'updated' : 'added'}!`, 'success')
       setGameToEdit(null)
     },
-    [addGame, activeTab, gameToEdit, setGameToEdit]
+    [addGame, activeTab, gameToEdit, setGameToEdit, showToast]
   )
 
   const handleDeleteAction = useCallback((): void => {
@@ -141,7 +144,7 @@ function App(): React.JSX.Element {
       deleteGame(selectedGameId, activeTab === 'media')
       showToast('Item deleted.', 'info')
     })
-  }, [selectedGame, selectedGameId, activeTab, deleteGame, showConfirm])
+  }, [selectedGame, selectedGameId, activeTab, deleteGame, showConfirm, showToast])
 
   const handleToggleFavoriteAction = useCallback((): void => {
     if (selectedGame) {
@@ -161,10 +164,38 @@ function App(): React.JSX.Element {
     }
   }, [selectedGame, openAddGameModal])
 
+  /**
+   * Handles the avatar upload process.
+   * Opens a file selection dialog, saves the selected image, and updates the settings.
+   */
+  const handleAvatarUpload = useCallback(async () => {
+    if (!window.api) return
+
+    try {
+      const filePath = await window.api.selectFile([
+        { name: 'Images', extensions: ['jpg', 'png', 'jpeg', 'webp'] }
+      ])
+      if (!filePath) {
+        // User cancelled the dialog - no action needed
+        return
+      }
+      const savedPath = await window.api.saveAvatar(filePath)
+      if (savedPath) {
+        setSettings({ ...settings, avatar: savedPath })
+        showToast('Avatar updated!', 'success')
+      } else {
+        showToast('Failed to save avatar. Please try again.', 'error')
+      }
+    } catch (error) {
+      logger.error('UI', `Avatar upload failed: ${error}`)
+      showToast('Failed to upload avatar. Please try again.', 'error')
+    }
+  }, [settings, setSettings, showToast])
+
   const handleResetLibraryAction = useCallback((): void => {
     resetLibrary()
     showToast('Library reset to defaults.', 'info')
-  }, [resetLibrary])
+  }, [resetLibrary, showToast])
 
   useEffect(() => {
     if (isLoaded && currentContent.length > 0 && !selectedGame) {
@@ -212,6 +243,7 @@ function App(): React.JSX.Element {
       >
         <TopBar
           userName={userName}
+          avatar={settings.avatar}
           activeTab={activeTab}
           onTabChange={handleTabChange}
           onOpenAddGame={() => openAddGameModal(null)}
@@ -281,6 +313,8 @@ function App(): React.JSX.Element {
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
         userName={userName}
+        avatar={settings.avatar}
+        onAvatarUpload={handleAvatarUpload}
         onSaveName={(name) => {
           logger.info('UI', `Updating username to: ${name}`)
           setUserName(name)

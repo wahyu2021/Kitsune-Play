@@ -63,7 +63,9 @@
     "display_name": "Display Name",
     "placeholder_name": "Enter your name",
     "coming_soon": "Avatar editing coming soon",
-    "btn_save": "Save Profile"
+    "btn_save": "Save Profile",
+    "change_avatar": "Change Avatar",
+    "upload_hint": "Click to upload avatar"
   },
   "power_menu": {
     "title": "Power Options",

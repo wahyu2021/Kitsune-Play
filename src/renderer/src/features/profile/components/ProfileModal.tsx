@@ -3,27 +3,43 @@
  * @module renderer/features/profile/components/ProfileModal
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes, FaUserCircle, FaSave } from 'react-icons/fa'
+import { FaTimes, FaUserCircle, FaSave, FaCamera } from 'react-icons/fa'
 import { logger } from '@/utils/logger'
 import { useTranslation } from 'react-i18next'
 
 interface ProfileModalProps {
+  /** Whether the modal is currently visible. */
   isOpen: boolean
+  /** Function to close the modal. */
   onClose: () => void
+  /** Current display name of the user. */
   userName: string
+  /** Optional path to the user's avatar image. */
+  avatar?: string
+  /** Callback to save the new user name. */
   onSaveName: (newName: string) => void
+  /** Callback to trigger the avatar upload process. */
+  onAvatarUpload: () => void
 }
 
 export default function ProfileModal({
   isOpen,
   onClose,
   userName,
-  onSaveName
+  avatar,
+  onSaveName,
+  onAvatarUpload
 }: ProfileModalProps): React.JSX.Element {
   const { t } = useTranslation()
   const [name, setName] = useState(userName)
+
+  useEffect(() => {
+    if (isOpen) {
+      setName(userName)
+    }
+  }, [isOpen, userName])
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault()
@@ -52,10 +68,31 @@ export default function ProfileModal({
             </div>
 
             <div className="mb-8 flex flex-col items-center justify-center gap-4">
-              <div className="rounded-full bg-white/5 p-4 ring-2 ring-white/20">
-                <FaUserCircle className="text-8xl text-white/80" />
+              <div
+                className="relative group cursor-pointer"
+                onClick={onAvatarUpload}
+                title={t('profile.change_avatar')}
+              >
+                <div className="h-32 w-32 overflow-hidden rounded-full bg-white/5 ring-4 ring-white/20">
+                  {avatar ? (
+                    <img
+                      src={`file://${avatar}`}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <FaUserCircle className="text-8xl text-white/80" />
+                    </div>
+                  )}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  <FaCamera className="text-3xl text-white" />
+                </div>
               </div>
-              <p className="text-sm text-white/50">{t('profile.coming_soon')}</p>
+              <p className="text-sm text-white/50">
+                {t('profile.upload_hint') || 'Click to upload avatar'}
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
