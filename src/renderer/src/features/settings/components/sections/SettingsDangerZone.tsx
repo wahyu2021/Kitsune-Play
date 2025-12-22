@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Danger zone settings with library reset option.
+ * @module renderer/features/settings/components/sections/SettingsDangerZone
+ */
+
 import { FaTrashRestore } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 

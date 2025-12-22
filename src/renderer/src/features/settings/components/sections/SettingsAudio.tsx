@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Audio settings section with volume controls.
+ * @module renderer/features/settings/components/sections/SettingsAudio
+ */
+
 import { FaVolumeUp, FaVolumeMute, FaMusic, FaFolderOpen, FaUndo } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 

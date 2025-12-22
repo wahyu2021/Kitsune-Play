@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Weather widget component with Open-Meteo integration.
+ * @module renderer/features/navigation/components/WeatherWidget
+ */
+
 import { useEffect, useState, useCallback } from 'react'
 import {
   WiDaySunny,
@@ -45,29 +50,18 @@ export default function WeatherWidget({
 
   if (!weather) return null
 
+  /**
+   * Maps WMO weather codes to appropriate icons.
+   * @see https://open-meteo.com/en/docs#weathervariables
+   */
   const getIcon = (code: number, isDay: boolean): React.ReactNode => {
-    // WMO Code map
-    // 0: Clear
     if (code === 0) return isDay ? <WiDaySunny /> : <WiNightClear />
-
-    // 1-3: Cloudy
     if (code <= 3) return isDay ? <WiDayCloudy /> : <WiNightAltCloudy />
-
-    // 45, 48: Fog
     if (code === 45 || code === 48) return <WiFog />
-
-    // 51-67: Drizzle/Rain
     if (code >= 51 && code <= 67) return <WiRain />
-
-    // 71-77: Snow
     if (code >= 71 && code <= 77) return <WiSnow />
-
-    // 80-82: Showers
     if (code >= 80 && code <= 82) return <WiShowers />
-
-    // 95-99: Thunder
     if (code >= 95) return <WiThunderstorm />
-
     return <WiCloud />
   }
 

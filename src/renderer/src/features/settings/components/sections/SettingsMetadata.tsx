@@ -1,3 +1,8 @@
+/**
+ * @fileoverview RAWG API key settings for game metadata.
+ * @module renderer/features/settings/components/sections/SettingsMetadata
+ */
+
 import { useState, useEffect } from 'react'
 import { FaKey, FaExternalLinkAlt, FaSave } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'

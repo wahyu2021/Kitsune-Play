@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Steam library import settings section.
+ * @module renderer/features/settings/components/sections/SettingsImport
+ */
+
 import { useState } from 'react'
 import { FaSteam } from 'react-icons/fa'
 import { Game, SteamGame } from '@/features/library/types'

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Main settings modal with multiple configuration sections.
+ * @module renderer/features/settings/components/SettingsModal
+ */
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaInfoCircle } from 'react-icons/fa'
 import { useEffect, useState } from 'react'

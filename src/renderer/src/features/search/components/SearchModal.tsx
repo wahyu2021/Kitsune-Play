@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Global search modal for games and media.
+ * @module renderer/features/search/components/SearchModal
+ */
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaSearch, FaGamepad } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'

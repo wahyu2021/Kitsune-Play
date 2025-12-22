@@ -48,7 +48,6 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer based on electron-vite cli
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -75,7 +74,6 @@ function createWindow(): void {
   )
 }
 
-// This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
   initDiscordRPC()
 

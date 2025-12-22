@@ -1,11 +1,13 @@
+/**
+ * @fileoverview General settings section with language selection.
+ * @module renderer/features/settings/components/sections/SettingsGeneral
+ */
+
 import { FaGlobe } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '@/components/ui'
 
-/**
- * General settings section component.
- * Handles language preference selection.
- */
+/** General settings section with language preference selection. */
 export default function SettingsGeneral(): React.JSX.Element {
   const { t, i18n } = useTranslation()
 

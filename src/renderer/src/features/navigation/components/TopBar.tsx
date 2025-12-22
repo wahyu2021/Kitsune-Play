@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Top navigation bar component.
+ * Displays system info, time, user profile, and main navigation tabs.
+ * @module renderer/features/navigation/components/TopBar
+ */
+
 import { useEffect, useState } from 'react'
 import {
   FaGamepad,

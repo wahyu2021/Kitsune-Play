@@ -98,10 +98,9 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
         return data
       }
 
-      // Fallback Mock Data (Jakarta default)
       const mockData = {
         temperature: 30,
-        weatherCode: 1, // Mainly Clear
+        weatherCode: 1,
         isDay: true
       }
       lastFetchData = mockData
@@ -132,7 +131,6 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
     return null
   } catch (error) {
     console.error('WeatherService: Weather fetch failed', error)
-    // Fallback to cache on error
     const cached = localStorage.getItem(CACHE_KEY)
     if (cached) {
       const data = JSON.parse(cached).data

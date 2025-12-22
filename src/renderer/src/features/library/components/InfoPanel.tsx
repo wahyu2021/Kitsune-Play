@@ -52,7 +52,6 @@ export default function InfoPanel({
   return (
     <>
       <div className="flex max-w-xl flex-col items-start gap-4">
-        {/* Logo Game or Title */}
         <motion.h1
           key={game.title + 'title'}
           initial={{ opacity: 0, y: 20 }}
@@ -63,7 +62,6 @@ export default function InfoPanel({
           {game.title}
         </motion.h1>
 
-        {/* Metadata Badge */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -81,7 +79,6 @@ export default function InfoPanel({
             ))}
           </div>
 
-          {/* Stats with Glass Background */}
           <div className="flex items-center gap-4 rounded-lg border border-white/5 bg-black/40 px-3 py-1 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <FaClock className="text-orange-400" />{' '}
@@ -99,7 +96,6 @@ export default function InfoPanel({
           </div>
         </motion.div>
 
-        {/* Description */}
         <motion.div
           key={game.description + 'desc'}
           initial={{ opacity: 0, y: 20 }}
@@ -110,7 +106,6 @@ export default function InfoPanel({
           <p className="line-clamp-3 text-lg text-white/90 drop-shadow-md">{game.description}</p>
         </motion.div>
 
-        {/* Action Buttons */}
         <div className="mt-4 flex items-center gap-4">
           <motion.button
             whileHover={{ scale: 1.05 }}

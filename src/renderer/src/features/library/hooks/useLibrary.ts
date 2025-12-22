@@ -36,18 +36,18 @@ const createSignature = (title: string, path: string): string => {
   return `${title.trim().toLowerCase()}|${path.trim().toLowerCase()}`
 }
 
-/** Sorts and filters games based on options. */
+/**
+ * Sorts and filters games based on user preferences.
+ * Favorites are always prioritized regardless of sort option.
+ */
 export const processGames = (list: Game[], sort: SortOption, showHidden: boolean): Game[] => {
   let processed = [...list]
 
-  // Filter hidden
   if (!showHidden) {
     processed = processed.filter((g) => !g.isHidden)
   }
 
-  // Sort
   return processed.sort((a, b) => {
-    // Always Favorites First
     if (a.isFavorite && !b.isFavorite) return -1
     if (!a.isFavorite && b.isFavorite) return 1
 

@@ -127,7 +127,6 @@ async function findGameExecutable(
       return null
     }
 
-    // Heuristics
     const sanitizedGameName = gameName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
     const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
 
@@ -198,11 +197,10 @@ export async function scanSteamLibrary(inputPath: string): Promise<SteamGame[]> 
     pathsToScan.add(path.join(inputPath, '../'))
   }
 
-  // Parse libraryfolders.vdf for additional library paths
   const vdfLocations = [
     path.join(inputPath, 'steamapps', 'libraryfolders.vdf'),
     path.join(inputPath, 'libraryfolders.vdf'),
-    path.join(inputPath, '../libraryfolders.vdf') // If user selected steamapps
+    path.join(inputPath, '../libraryfolders.vdf')
   ]
 
   for (const vdfPath of vdfLocations) {

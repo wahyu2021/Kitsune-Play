@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Library feature barrel exports.
+ * @module renderer/features/library
+ */
+
 export { default as GameList } from './components/GameList'
 export { default as GameCard } from './components/GameCard'
 export { default as InfoPanel } from './components/InfoPanel'

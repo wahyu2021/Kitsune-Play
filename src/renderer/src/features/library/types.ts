@@ -1,10 +1,13 @@
+/**
+ * @fileoverview Library feature type definitions.
+ * @module renderer/features/library/types
+ */
+
 import { AppSettings } from '@/features/settings/types'
 
-/**
- * Represents a game or media application within the launcher.
- */
+/** Represents a game or media application within the launcher. */
 export interface Game {
-  /** Unique identifier for the game (UUID or Timestamp based). */
+  /** Unique identifier for the game (UUID). */
   id: string
   /** Display title of the game. */
   title: string
@@ -12,41 +15,48 @@ export interface Game {
   description: string
   /** Genre of the game (e.g., "Action", "RPG"). Used for theming. */
   genre: string
-  /** Absolute file path or URL to the executable/web app. */
+  /** Absolute file path, URL, or Steam protocol URI to launch. */
   path_to_exe: string
   /** Path or URL to the cover art image (portrait). */
   cover_image: string
   /** Path or URL to the background wallpaper (landscape). */
   bg_image: string
-  /** Optional: Path or URL to a background video loop (mp4/webm). Overrides bg_image if present. */
+  /** Optional background video loop path (mp4/webm). */
   bg_video?: string
-  /** Optional: Custom command line arguments to pass to the executable. */
+  /** Optional command line arguments for the executable. */
   launchArgs?: string
-  /** Optional: The actual process name to track (e.g., 'dota2.exe') for launcher-based games (Steam/Epic) */
+  /** Process name for tracking (e.g., 'game.exe'). */
   executableName?: string
   /** Total playtime in minutes. */
   playtime?: number
-  /** ISO timestamp of the last time the game was played. */
+  /** ISO timestamp of last play session. */
   lastPlayed?: string
-  /** Whether the game is pinned/favorited by the user. */
+  /** Whether the game is favorited. */
   isFavorite?: boolean
-  /** Whether the game is hidden from the main view. */
+  /** Whether the game is hidden from view. */
   isHidden?: boolean
 }
 
+/** Persistent application data structure. */
 export interface AppData {
+  /** User's game library. */
   games: Game[]
+  /** User's media applications. */
   mediaApps: Game[]
+  /** Display name of the user. */
   userName: string
+  /** Application settings. */
   settings: AppSettings
 }
 
-/**
- * Raw data structure returned by the Steam Scanner (Main Process).
- */
+/** Steam game data returned by the scanner service. */
 export interface SteamGame {
+  /** Steam application ID. */
   appId: string
+  /** Display name of the game. */
   name: string
+  /** Installation directory name. */
   installDir: string
+  /** Full path to the detected executable. */
   executablePath?: string
 }

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Keyboard navigation and gamepad integration hook.
+ * @module renderer/features/navigation/hooks/useNavigation
+ */
+
 import { useEffect, useCallback, useState } from 'react'
 import { Game } from '@/features/library/types'
 import { useGamepad } from '@/hooks/useGamepad'
@@ -57,23 +62,26 @@ export function useNavigation({
   showHidden,
   setShowHidden
 }: UseNavigationProps): UseNavigationReturn {
-  // Row 0: TopBar [Games, Media, Add, Search, Settings, Profile, Power]
-  // Row 1: Toolbar [Sort, Hidden]
-  // Row 2: GameList
+  /**
+   * Navigation grid layout:
+   * - Row 0: TopBar (Games, Media, Add, Search, Settings, Profile, Power)
+   * - Row 1: Toolbar (Sort, Hidden)
+   * - Row 2: GameList
+   */
   const [navRow, setNavRow] = useState(2)
   const [navCol, setNavCol] = useState(0)
 
-  // Reset to GameList when content changes or tab switches
   useEffect(() => {
     if (currentContent.length > 0) {
       setNavRow(2)
     }
   }, [activeTab, currentContent.length])
+
   const handleNavUp = useCallback((): void => {
     if (navRow > 0) {
       playHover()
       setNavRow((prev) => prev - 1)
-      setNavCol(0) // Reset col when changing rows for simplicity, or keep memory if improved
+      setNavCol(0)
     }
   }, [navRow, playHover])
 

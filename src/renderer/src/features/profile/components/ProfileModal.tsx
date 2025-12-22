@@ -1,3 +1,8 @@
+/**
+ * @fileoverview User profile modal component.
+ * @module renderer/features/profile/components/ProfileModal
+ */
+
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaUserCircle, FaSave } from 'react-icons/fa'

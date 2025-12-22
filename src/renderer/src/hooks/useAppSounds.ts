@@ -38,8 +38,6 @@ export function useAppSounds(
 ): UseAppSoundsReturn {
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
   const welcomeAudioRef = useRef<HTMLAudioElement | null>(null)
-
-  // SFX Refs
   const hoverAudioRef = useRef<HTMLAudioElement | null>(null)
   const selectAudioRef = useRef<HTMLAudioElement | null>(null)
   const backAudioRef = useRef<HTMLAudioElement | null>(null)
@@ -140,7 +138,6 @@ export function useAppSounds(
     }
   }, [])
 
-  // Play BG Music after splash is gone
   useEffect(() => {
     if (!isSplashShowing && bgAudioRef.current && !hasPlayedBgMusicRef.current) {
       const playBgMusic = async (): Promise<void> => {

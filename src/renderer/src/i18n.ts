@@ -1,3 +1,9 @@
+/**
+ * @fileoverview i18n configuration with multi-language support.
+ * Supports English, Indonesian, and Japanese locales.
+ * @module renderer/i18n
+ */
+
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'

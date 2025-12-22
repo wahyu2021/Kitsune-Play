@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Library feature toolbar with sort and filter controls.
+ * @module renderer/features/library/components/LibraryToolbar
+ */
+
 import { FaSortAlphaDown, FaHistory, FaClock, FaTags, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { SortOption } from '../hooks/useLibrary'
@@ -11,6 +16,7 @@ interface LibraryToolbarProps {
   activeCol?: number
 }
 
+/** Toolbar component for sorting and filtering the game library. */
 export default function LibraryToolbar({
   sortOption,
   setSortOption,
@@ -33,7 +39,6 @@ export default function LibraryToolbar({
 
   return (
     <div className="flex w-full items-center justify-end gap-6 px-10 pb-2">
-      {/* Sort Options Group */}
       <div
         className={`flex items-center gap-2 rounded-full p-1 backdrop-blur-md transition-all duration-300 ${
           isSortFocused ? 'bg-white ring-4 ring-white/50 scale-105' : 'bg-black/30'
@@ -55,7 +60,6 @@ export default function LibraryToolbar({
             }`}
           >
             <span className="text-lg">{opt.icon}</span>
-            {/* Tooltip on hover */}
             <span className="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 rounded bg-black/80 px-2 py-1 text-xs text-white opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100 whitespace-nowrap">
               {opt.label}
             </span>
@@ -65,7 +69,6 @@ export default function LibraryToolbar({
 
       <div className="h-6 w-[1px] bg-white/10"></div>
 
-      {/* Show Hidden Toggle */}
       <button
         onClick={() => setShowHidden(!showHidden)}
         className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold tracking-wide transition-all backdrop-blur-md ${

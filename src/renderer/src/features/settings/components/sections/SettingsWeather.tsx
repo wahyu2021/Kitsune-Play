@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Weather location settings section.
+ * @module renderer/features/settings/components/sections/SettingsWeather
+ */
+
 import { useState, useEffect } from 'react'
 import { FaCloudSun, FaMapMarkerAlt } from 'react-icons/fa'
 import { getCoordinates } from '@/services/weather'
