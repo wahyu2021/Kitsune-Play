@@ -15,10 +15,10 @@ let activeProcessName: string | null = null
 export function registerGameLauncherHandlers(): void {
   ipcMain.handle('terminate-game', async () => {
     console.log('[Main] Terminate game requested')
-    
+
     if (activeChild && activeChild.pid) {
       console.log(`[Main] Killing active child process (PID: ${activeChild.pid})...`)
-      
+
       if (process.platform === 'win32') {
         exec(`taskkill /pid ${activeChild.pid} /T /F`, (err) => {
           if (err) {
@@ -31,21 +31,21 @@ export function registerGameLauncherHandlers(): void {
         activeChild.kill()
       }
       activeChild = null
-    } 
-    
+    }
+
     if (activeProcessName) {
       console.log(`[Main] Killing process by name: ${activeProcessName}`)
       const cmd =
         process.platform === 'win32'
           ? `taskkill /IM "${activeProcessName}" /F`
           : `pkill -f "${activeProcessName}"`
-      
+
       exec(cmd, (err) => {
         if (err) console.error('[Main] Failed to kill process:', err)
       })
       activeProcessName = null
     }
-    
+
     setDiscordActivity('Browsing Library', 'In Menu')
   })
 
@@ -139,7 +139,7 @@ export function registerGameLauncherHandlers(): void {
               console.warn('[Main] Game process exited with error/signal:', error)
             }
           })
-          
+
           // Track the child process
           activeChild = child
 
