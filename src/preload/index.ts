@@ -15,6 +15,7 @@ const api = {
     launchArgs?: string,
     executableName?: string
   ): Promise<number> => ipcRenderer.invoke('launch-game', path, name, launchArgs, executableName),
+  terminateGame: (): Promise<void> => ipcRenderer.invoke('terminate-game'),
   updateDiscordStatus: (status: string): Promise<void> =>
     ipcRenderer.invoke('discord-update-status', status),
   selectFile: (filters: Electron.FileFilter[]): Promise<string | null> =>

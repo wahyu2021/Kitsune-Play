@@ -8,6 +8,7 @@
   },
   "library": {
     "play": "Play Game",
+    "stop": "Stop Game",
     "played": "Played",
     "last_played": "Last",
     "never": "Never",

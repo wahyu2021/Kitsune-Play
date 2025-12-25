@@ -4,6 +4,7 @@ import { vi } from 'vitest'
 // Mock Electron API
 window.api = {
   launchGame: vi.fn(),
+  terminateGame: vi.fn(),
   updateDiscordStatus: vi.fn(),
   selectFile: vi.fn(),
   selectFolder: vi.fn(),

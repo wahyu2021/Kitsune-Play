@@ -5,11 +5,50 @@
  */
 
 import { ipcMain, shell } from 'electron'
-import { execFile, exec } from 'child_process'
+import { execFile, exec, ChildProcess } from 'child_process'
 import { setDiscordActivity } from '../discord'
+
+let activeChild: ChildProcess | null = null
+let activeProcessName: string | null = null
 
 /** Registers IPC handlers for game launching operations. */
 export function registerGameLauncherHandlers(): void {
+  ipcMain.handle('terminate-game', async () => {
+    console.log('[Main] Terminate game requested')
+    
+    if (activeChild && activeChild.pid) {
+      console.log(`[Main] Killing active child process (PID: ${activeChild.pid})...`)
+      
+      if (process.platform === 'win32') {
+        exec(`taskkill /pid ${activeChild.pid} /T /F`, (err) => {
+          if (err) {
+            console.error('[Main] Failed to kill process tree:', err)
+            // Fallback to standard kill if taskkill fails
+            activeChild?.kill()
+          }
+        })
+      } else {
+        activeChild.kill()
+      }
+      activeChild = null
+    } 
+    
+    if (activeProcessName) {
+      console.log(`[Main] Killing process by name: ${activeProcessName}`)
+      const cmd =
+        process.platform === 'win32'
+          ? `taskkill /IM "${activeProcessName}" /F`
+          : `pkill -f "${activeProcessName}"`
+      
+      exec(cmd, (err) => {
+        if (err) console.error('[Main] Failed to kill process:', err)
+      })
+      activeProcessName = null
+    }
+    
+    setDiscordActivity('Browsing Library', 'In Menu')
+  })
+
   ipcMain.handle(
     'launch-game',
     async (
@@ -21,6 +60,10 @@ export function registerGameLauncherHandlers(): void {
     ) => {
       return new Promise((resolve, reject) => {
         console.log(`[Main] Launching: ${gameName} | Exe: ${executableName || 'Standard'}`)
+
+        // Reset tracking variables
+        activeChild = null
+        activeProcessName = executableName || null
 
         setDiscordActivity('Playing Game', gameName, new Date())
         const startTime = Date.now()
@@ -45,6 +88,7 @@ export function registerGameLauncherHandlers(): void {
 
                 if (!isRunning) {
                   clearInterval(interval)
+                  activeProcessName = null // Clear tracker
                   const endTime = Date.now()
                   const durationMinutes = Math.floor((endTime - startTime) / 60000)
                   console.log(`[Main] Polling ended. Duration: ${durationMinutes} mins`)
@@ -95,11 +139,15 @@ export function registerGameLauncherHandlers(): void {
               console.warn('[Main] Game process exited with error/signal:', error)
             }
           })
+          
+          // Track the child process
+          activeChild = child
 
           if (executableName) {
             startPolling(executableName)
           } else {
             child.on('close', () => {
+              activeChild = null // Clear tracker
               const endTime = Date.now()
               const durationMinutes = Math.floor((endTime - startTime) / 60000)
 
@@ -110,6 +158,7 @@ export function registerGameLauncherHandlers(): void {
 
             child.on('error', (err) => {
               console.error('[Main] Failed to spawn game process:', err)
+              activeChild = null
               setDiscordActivity('Browsing Library', 'In Menu')
               reject(err.message)
             })

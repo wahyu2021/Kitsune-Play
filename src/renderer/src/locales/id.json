@@ -8,6 +8,7 @@
   },
   "library": {
     "play": "Mainkan",
+    "stop": "Berhenti Main",
     "played": "Dimainkan",
     "last_played": "Terakhir",
     "never": "Belum Pernah",

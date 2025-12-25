@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { Game } from '@/features/library/types'
 import {
   FaPlay,
+  FaStop,
   FaPen,
   FaTrash,
   FaClock,
@@ -23,6 +24,7 @@ import GameDetailModal from './GameDetailModal'
 
 interface InfoPanelProps {
   game: Game
+  isPlaying?: boolean
   onPlay: () => void
   onEdit: () => void
   onDelete: () => void
@@ -32,6 +34,7 @@ interface InfoPanelProps {
 
 export default function InfoPanel({
   game,
+  isPlaying,
   onPlay,
   onEdit,
   onDelete,
@@ -111,9 +114,12 @@ export default function InfoPanel({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onPlay}
-            className="flex items-center gap-3 rounded-full bg-white px-8 py-3 text-xl font-bold text-black transition-transform hover:scale-105"
+            className={`flex items-center gap-3 rounded-full px-8 py-3 text-xl font-bold transition-transform hover:scale-105 ${
+              isPlaying ? 'bg-red-600 text-white' : 'bg-white text-black'
+            }`}
           >
-            <FaPlay /> {t('library.play')}
+            {isPlaying ? <FaStop /> : <FaPlay />}{' '}
+            {isPlaying ? t('library.stop') : t('library.play')}
           </motion.button>
 
           <motion.button

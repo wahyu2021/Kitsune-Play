@@ -15,7 +15,7 @@ import {
   FaPowerOff,
   FaMinus
 } from 'react-icons/fa'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Game } from '@/features/library'
 
@@ -65,6 +65,7 @@ export default function TopBar({
   const { t, i18n } = useTranslation()
   const [time, setTime] = useState<string>('')
   const [dateStr, setDateStr] = useState<string>('')
+  const [showTooltip, setShowTooltip] = useState(false)
 
   useEffect(() => {
     const updateTime = (): void => {
@@ -105,23 +106,6 @@ export default function TopBar({
 
   return (
     <header className="relative flex w-full items-center justify-between drop-shadow-lg px-2">
-      {/* Playing Indicator */}
-      {playingGame && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute left-1/2 top-2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-orange-500/10 px-6 py-2 text-orange-400 border border-orange-500/20 backdrop-blur-md shadow-[0_0_15px_rgba(251,146,60,0.2)] z-50"
-        >
-          <div className="relative flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-orange-500"></span>
-          </div>
-          <span className="text-sm font-bold uppercase tracking-widest drop-shadow-sm">
-            {t('launcher.playing_indicator', { title: playingGame.title })}
-          </span>
-        </motion.div>
-      )}
-
       {/* Left: Tabs with Sliding Animation */}
       <div className="flex items-center gap-10">
         {/* Games Tab (Index 0) */}
@@ -157,6 +141,31 @@ export default function TopBar({
 
       {/* Right: System Info */}
       <div className="flex items-center gap-6 text-white">
+        {/* Playing Indicator (Minimalist) */}
+        {playingGame && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative flex h-10 w-10 cursor-help items-center justify-center rounded-full bg-green-500/10 border border-green-500/20 shadow-[0_0_10px_rgba(74,222,128,0.2)]"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            <FaGamepad className="text-lg text-green-400 animate-pulse" />
+            <AnimatePresence>
+              {showTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="absolute top-12 right-0 w-max rounded-lg border border-white/10 bg-black/90 px-3 py-1.5 text-xs font-bold text-white shadow-xl backdrop-blur-md z-50 pointer-events-none"
+                >
+                  {t('launcher.playing_indicator', { title: playingGame.title })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
         {/* Add Game Button (Index 2) */}
         <div
           onClick={onOpenAddGame}

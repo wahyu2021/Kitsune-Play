@@ -96,7 +96,7 @@ function App(): React.JSX.Element {
     []
   )
 
-  const { playingGame, launchGame } = useGameLauncher({ updateGamePlaytime, showToast })
+  const { playingGame, launchGame, stopGame } = useGameLauncher({ updateGamePlaytime, showToast })
   const isPlaying = !!playingGame
 
   const currentContent = activeTab === 'games' ? games : mediaApps
@@ -124,8 +124,12 @@ function App(): React.JSX.Element {
   }, [])
 
   const handlePlay = useCallback((): void => {
+    if (isPlaying && playingGame?.id === selectedGame?.id) {
+      stopGame()
+      return
+    }
     if (selectedGame) launchGame(selectedGame)
-  }, [selectedGame, launchGame])
+  }, [selectedGame, launchGame, stopGame, isPlaying, playingGame])
 
   const handleSaveGame = useCallback(
     (gameData: Game): void => {
@@ -271,6 +275,7 @@ function App(): React.JSX.Element {
           {selectedGame && (
             <InfoPanel
               game={selectedGame}
+              isPlaying={isPlaying && playingGame?.id === selectedGame.id}
               onPlay={handlePlay}
               onEdit={handleOpenEdit}
               onDelete={handleDeleteAction}

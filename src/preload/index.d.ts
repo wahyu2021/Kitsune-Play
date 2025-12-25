@@ -14,6 +14,8 @@ export interface PreloadAPI {
     launchArgs?: string,
     executableName?: string
   ) => Promise<number>
+  /** Terminates the currently running game process. */
+  terminateGame: () => Promise<void>
   /** Updates Discord Rich Presence status text. */
   updateDiscordStatus: (status: string) => Promise<void>
   /** Opens native file picker dialog with specified filters. */

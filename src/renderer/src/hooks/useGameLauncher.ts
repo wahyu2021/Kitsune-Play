@@ -28,9 +28,21 @@ interface UseGameLauncherProps {
 export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLauncherProps): {
   playingGame: Game | null
   launchGame: (game: Game) => Promise<void>
+  stopGame: () => Promise<void>
 } {
   const { t } = useTranslation()
   const [playingGame, setPlayingGame] = useState<Game | null>(null)
+
+  const stopGame = useCallback(async () => {
+    if (!playingGame) return
+    logger.info('Game', `Stopping: ${playingGame.title}`)
+    try {
+      await window.api.terminateGame()
+    } catch (err) {
+      logger.error('Game', 'Failed to stop game', err)
+      showToast('Failed to stop game', 'error')
+    }
+  }, [playingGame, showToast])
 
   const launchGame = useCallback(
     async (game: Game) => {
@@ -68,5 +80,5 @@ export function useGameLauncher({ updateGamePlaytime, showToast }: UseGameLaunch
     [playingGame, updateGamePlaytime, showToast, t]
   )
 
-  return { playingGame, launchGame }
+  return { playingGame, launchGame, stopGame }
 }
