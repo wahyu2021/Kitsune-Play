@@ -1,10 +1,12 @@
 # Kitsune Play 🦊🎮
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Electron](https://img.shields.io/badge/Electron-38.0-orange) ![React](https://img.shields.io/badge/React-19-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Electron](https://img.shields.io/badge/Electron-38.0-orange) ![React](https://img.shields.io/badge/React-19-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue) ![Version](https://img.shields.io/badge/release-v1.3.3-green)
 
 **Kitsune Play** is a modern, immersive game launcher built with Electron and React, designed to bring the premium **PlayStation 5 console experience** directly to your PC desktop.
 
 It organizes your local game library into a stunning, animated interface with live wallpapers, sound effects, and automated metadata.
+
+![Kitsune Play Preview](screenshots/preview.png)
 
 ---
 
@@ -15,18 +17,20 @@ It organizes your local game library into a stunning, animated interface with li
 - **PS5-Inspired Aesthetic:** Smooth animations, glassmorphism effects, and atmospheric gradients.
 - **Live Wallpapers:** Support for looping video backgrounds (.mp4/.webm) for each game.
 - **Dynamic Theming:** UI colors adapt based on the game's genre.
+- **Screensaver:** Auto-activates an aesthetic screensaver when idle.
 
 ### ⚡ Smart Functionality
 
+- **Steam Integration:** Automatically scan and import installed Steam games with one click.
 - **Auto-Metadata Scraping:** Integrated with **RAWG.io API** to automatically fetch game covers, backgrounds, and descriptions.
 - **Playtime Tracker:** Tracks your sessions and calculates total playtime automatically.
-- **Real-Time System Info:** Displays clock, date, and system status.
+- **System Dashboard:** Real-time display of Clock, Weather, and Battery status.
 
 ### 🔊 Advanced Audio System
 
 - **Background Ambience:** Soothing loop music that auto-mutes when the window loses focus.
 - **UI Sound Effects:** Satisfying navigation sounds (Hover, Select, Back) for a tactile feel.
-- **Volume Mixer:** Independent controls for Music and SFX levels.
+- **Audio Control:** Independent volume mixer for Music and SFX.
 
 ### 🎮 Input Support
 
@@ -40,8 +44,9 @@ It organizes your local game library into a stunning, animated interface with li
 - **Core:** [Electron](https://www.electronjs.org/), [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/)
 - **Build Tool:** [Electron-Vite](https://electron-vite.org/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) (Animations)
-- **State Management:** React Hooks (Custom `useLibrary`, `useGamepad`)
+- **State Management:** React Context & Hooks
 - **Data Persistence:** Local filesystem (JSON)
+- **Internationalization:** i18next (Support for English, Japanese, Indonesian)
 
 ---
 
@@ -49,7 +54,7 @@ It organizes your local game library into a stunning, animated interface with li
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v18 or higher recommended)
 - npm or yarn
 
 ### Installation
@@ -72,15 +77,22 @@ It organizes your local game library into a stunning, animated interface with li
    npm run dev
    ```
 
-### Building for Production (Windows)
+### Building for Production
 
-To create a standalone `.exe` installer:
+To create a standalone installer for your OS:
 
 ```bash
+# Windows
 npm run build:win
+
+# macOS
+npm run build:mac
+
+# Linux
+npm run build:linux
 ```
 
-The installer will be generated in the `dist/` folder.
+The installer will be generated in the `dist/` or `out/` folder.
 
 ---
 
@@ -88,8 +100,9 @@ The installer will be generated in the `dist/` folder.
 
 - [x] **Phase 1:** Core UI, Glassmorphism, Game Library Management.
 - [x] **Phase 2:** Audio System, Playtime Tracking, RAWG Integration.
-- [x] **Phase 3:** Controller Support, Video Backgrounds.
-- [ ] **Future:** Theme Store, Cloud Save Sync, Steam Import.
+- [x] **Phase 3:** Controller Support, Video Backgrounds, Settings.
+- [x] **Phase 4:** Steam Library Import, Internationalization (i18n).
+- [ ] **Future:** Theme Store, Cloud Save Sync, Epic Games Store Import.
 
 ---
 
