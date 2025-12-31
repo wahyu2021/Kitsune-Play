@@ -1,6 +1,6 @@
 {
   "name": "kitsune-play",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A modern PS5-style game launcher",
   "main": "./out/main/index.js",
   "author": "Kitsune Dev",
