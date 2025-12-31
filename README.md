@@ -50,6 +50,25 @@ It organizes your local game library into a stunning, animated interface with li
 
 ---
 
+## 📂 Project Structure
+
+```
+src/
+├── main/           # Electron main process (Node.js)
+│   ├── services/   # Backend services (Steam Scanner, etc.)
+│   └── ipc/        # IPC handlers
+├── preload/        # Context bridge & Preload scripts
+└── renderer/       # Frontend React application
+    └── src/
+        ├── assets/     # Static assets (images, fonts, sounds)
+        ├── components/ # Shared UI components
+        ├── features/   # Feature modules (Library, Settings, Profile)
+        ├── hooks/      # Custom React hooks
+        └── services/   # API clients (RAWG, Weather)
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
