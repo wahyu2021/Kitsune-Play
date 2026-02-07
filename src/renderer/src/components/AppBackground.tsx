@@ -12,6 +12,8 @@ import { DEFAULT_BANNER } from '@/config'
 interface AppBackgroundProps {
   selectedGame?: Game
   showVideoDelay?: number
+  activeTab?: 'games' | 'media'
+  mediaBg?: string
 }
 
 /**
@@ -20,7 +22,9 @@ interface AppBackgroundProps {
  */
 export default function AppBackground({
   selectedGame,
-  showVideoDelay = 5000
+  showVideoDelay = 5000,
+  activeTab = 'games',
+  mediaBg
 }: AppBackgroundProps): React.JSX.Element {
   const [showVideo, setShowVideo] = useState(false)
 
@@ -33,11 +37,15 @@ export default function AppBackground({
     return () => clearTimeout(timer)
   }, [selectedGame?.id, showVideoDelay])
 
+  // Determine background image based on tab
+  const backgroundImage =
+    activeTab === 'media' && mediaBg ? mediaBg : selectedGame?.bg_image || DEFAULT_BANNER
+
   return (
     <>
       <div className="fixed inset-0 z-0">
         <AnimatePresence mode="wait">
-          {selectedGame?.bg_video && showVideo ? (
+          {selectedGame?.bg_video && showVideo && activeTab === 'games' ? (
             <motion.video
               key={selectedGame.bg_video}
               src={selectedGame.bg_video}
@@ -53,8 +61,8 @@ export default function AppBackground({
             />
           ) : (
             <motion.img
-              key={selectedGame?.bg_image || 'default'}
-              src={selectedGame?.bg_image || DEFAULT_BANNER}
+              key={backgroundImage}
+              src={backgroundImage}
               alt="Background"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

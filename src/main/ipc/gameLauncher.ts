@@ -6,6 +6,7 @@
 
 import { ipcMain, shell } from 'electron'
 import { execFile, exec, ChildProcess } from 'child_process'
+import { dirname } from 'path'
 import { setDiscordActivity } from '../discord'
 
 let activeChild: ChildProcess | null = null
@@ -134,7 +135,7 @@ export function registerGameLauncherHandlers(): void {
           const args =
             launchArgs.match(/(?:[^\s"]+|"[^"]*")+/g)?.map((arg) => arg.replace(/^"|"$/g, '')) || []
 
-          const child = execFile(exePath, args, (error) => {
+          const child = execFile(exePath, args, { cwd: dirname(exePath) }, (error) => {
             if (error && error.signal !== null) {
               console.warn('[Main] Game process exited with error/signal:', error)
             }

@@ -8,7 +8,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import WeatherWidget from '@/features/navigation/components/WeatherWidget'
 
-import { GameList, InfoPanel, AddGameModal, LibraryToolbar } from '@/features/library'
+import {
+  GameList,
+  MediaList,
+  InfoPanel,
+  AddGameModal,
+  AddMediaModal,
+  LibraryToolbar
+} from '@/features/library'
 import { TopBar, BottomBar } from '@/features/navigation'
 import { ProfileModal } from '@/features/profile'
 import { SearchModal } from '@/features/search'
@@ -28,6 +35,7 @@ import { logger } from '@/utils/logger'
 import { useGameLauncher } from '@/hooks/useGameLauncher'
 import { useAppModals } from '@/hooks/useAppModals'
 import MainLayout from '@/layouts/MainLayout'
+import wpAnime from '@/assets/kali-neon.jpg'
 
 /** Main application component. */
 function App(): React.JSX.Element {
@@ -238,7 +246,7 @@ function App(): React.JSX.Element {
         {isIdle && !isPlaying && !showSplash && <Screensaver activeGame={selectedGame} />}
       </AnimatePresence>
 
-      <AppBackground selectedGame={selectedGame} />
+      <AppBackground selectedGame={selectedGame} activeTab={activeTab} mediaBg={wpAnime} />
 
       <motion.div
         className="relative z-20 flex h-full flex-col justify-between px-16 pt-8 pb-4"
@@ -272,47 +280,69 @@ function App(): React.JSX.Element {
         )}
 
         <main className="flex flex-grow flex-col justify-end gap-4">
-          {selectedGame && (
-            <InfoPanel
-              game={selectedGame}
-              isPlaying={isPlaying && playingGame?.id === selectedGame.id}
-              onPlay={handlePlay}
-              onEdit={handleOpenEdit}
-              onDelete={handleDeleteAction}
-              onToggleFavorite={handleToggleFavoriteAction}
-              onToggleHidden={handleToggleHiddenAction}
+          {activeTab === 'games' ? (
+            <>
+              {selectedGame && (
+                <InfoPanel
+                  game={selectedGame}
+                  isPlaying={isPlaying && playingGame?.id === selectedGame.id}
+                  onPlay={handlePlay}
+                  onEdit={handleOpenEdit}
+                  onDelete={handleDeleteAction}
+                  onToggleFavorite={handleToggleFavoriteAction}
+                  onToggleHidden={handleToggleHiddenAction}
+                />
+              )}
+
+              <LibraryToolbar
+                sortOption={sortOption}
+                setSortOption={setSortOption}
+                showHidden={showHidden}
+                setShowHidden={setShowHidden}
+                activeRow={navRow}
+                activeCol={navCol}
+              />
+
+              <GameList
+                games={currentContent}
+                selectedGameId={selectedGameId}
+                onSelectGame={setSelectedGameId}
+              />
+            </>
+          ) : (
+            <MediaList
+              apps={currentContent}
+              selectedAppId={selectedGameId}
+              onSelectApp={setSelectedGameId}
             />
           )}
-
-          <LibraryToolbar
-            sortOption={sortOption}
-            setSortOption={setSortOption}
-            showHidden={showHidden}
-            setShowHidden={setShowHidden}
-            activeRow={navRow}
-            activeCol={navCol}
-          />
-
-          <GameList
-            games={currentContent}
-            selectedGameId={selectedGameId}
-            onSelectGame={setSelectedGameId}
-          />
         </main>
 
         <BottomBar />
       </motion.div>
 
-      <AddGameModal
-        isOpen={isAddModalOpen}
-        onClose={() => {
-          setIsAddModalOpen(false)
-          setGameToEdit(null)
-        }}
-        onAddGame={handleSaveGame}
-        editGame={gameToEdit}
-        apiKey={settings.rawgApiKey}
-      />
+      {activeTab === 'games' ? (
+        <AddGameModal
+          isOpen={isAddModalOpen}
+          onClose={() => {
+            setIsAddModalOpen(false)
+            setGameToEdit(null)
+          }}
+          onAddGame={handleSaveGame}
+          editGame={gameToEdit}
+          apiKey={settings.rawgApiKey}
+        />
+      ) : (
+        <AddMediaModal
+          isOpen={isAddModalOpen}
+          onClose={() => {
+            setIsAddModalOpen(false)
+            setGameToEdit(null)
+          }}
+          onAddMedia={handleSaveGame}
+          editMedia={gameToEdit}
+        />
+      )}
 
       <ProfileModal
         isOpen={isProfileModalOpen}
