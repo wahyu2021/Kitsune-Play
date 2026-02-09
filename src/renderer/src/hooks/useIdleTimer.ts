@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef } from 'react'
 
 /**
- * Tracks user inactivity based on mouse, keyboard, and click events.
+ * Tracks user inactivity based on mouse, keyboard, click, and gamepad events.
  * @param timeoutMs - Idle timeout in milliseconds (default: 8000)
  * @returns Whether the user is currently idle
  */
@@ -24,6 +24,7 @@ export function useIdleTimer(timeoutMs: number = 8000): boolean {
     window.addEventListener('mousemove', resetIdleTimer)
     window.addEventListener('keydown', resetIdleTimer)
     window.addEventListener('click', resetIdleTimer)
+    window.addEventListener('gamepadactivity', resetIdleTimer)
 
     resetIdleTimer()
 
@@ -31,6 +32,7 @@ export function useIdleTimer(timeoutMs: number = 8000): boolean {
       window.removeEventListener('mousemove', resetIdleTimer)
       window.removeEventListener('keydown', resetIdleTimer)
       window.removeEventListener('click', resetIdleTimer)
+      window.removeEventListener('gamepadactivity', resetIdleTimer)
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
     }
   }, [timeoutMs])
