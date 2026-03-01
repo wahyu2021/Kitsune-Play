@@ -26,6 +26,10 @@ interface UseAppModalsReturn {
   setIsSettingsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   isPowerModalOpen: boolean
   setIsPowerModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isPickerModalOpen: boolean
+  setIsPickerModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isStatsModalOpen: boolean
+  setIsStatsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   gameToEdit: Game | null
   setGameToEdit: React.Dispatch<React.SetStateAction<Game | null>>
   modalConfig: ModalConfig
@@ -43,6 +47,8 @@ export function useAppModals(): UseAppModalsReturn {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isPowerModalOpen, setIsPowerModalOpen] = useState(false)
+  const [isPickerModalOpen, setIsPickerModalOpen] = useState(false)
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
   const [gameToEdit, setGameToEdit] = useState<Game | null>(null)
 
   const [modalConfig, setModalConfig] = useState<ModalConfig>({
@@ -62,6 +68,8 @@ export function useAppModals(): UseAppModalsReturn {
     setIsAddModalOpen(false)
     setIsProfileModalOpen(false)
     setIsPowerModalOpen(false)
+    setIsPickerModalOpen(false)
+    setIsStatsModalOpen(false)
     setModalConfig((prev) => ({ ...prev, isOpen: false }))
     setGameToEdit(null)
   }, [])
@@ -77,6 +85,8 @@ export function useAppModals(): UseAppModalsReturn {
     isSearchModalOpen ||
     isSettingsModalOpen ||
     isPowerModalOpen ||
+    isPickerModalOpen ||
+    isStatsModalOpen ||
     modalConfig.isOpen
 
   return {
@@ -90,6 +100,10 @@ export function useAppModals(): UseAppModalsReturn {
     setIsSettingsModalOpen,
     isPowerModalOpen,
     setIsPowerModalOpen,
+    isPickerModalOpen,
+    setIsPickerModalOpen,
+    isStatsModalOpen,
+    setIsStatsModalOpen,
     gameToEdit,
     setGameToEdit,
     modalConfig,

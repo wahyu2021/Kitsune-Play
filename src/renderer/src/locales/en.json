@@ -215,5 +215,34 @@
     "thunderstorm": "Thunderstorm",
     "storm_hail": "Storm & Hail",
     "unknown": "Unknown"
+  },
+  "picker": {
+    "title": "Game Picker",
+    "spin": "Spin!",
+    "spin_again": "Spin Again",
+    "play_now": "Play Now",
+    "no_games": "No games in your library",
+    "filter_genre": "Filter by Genre",
+    "all_genres": "All Genres",
+    "spinning": "Picking...",
+    "press_spin": "Press Spin to pick a random game"
+  },
+  "stats": {
+    "title": "Statistics",
+    "total_games": "Total Games",
+    "total_hours": "Total Playtime",
+    "most_played": "Most Played",
+    "avg_session": "Avg. Session",
+    "favorites": "Favorites",
+    "unplayed": "Unplayed",
+    "genre_distribution": "Genre Distribution",
+    "top_games": "Top Games by Playtime",
+    "activity": "Play Activity",
+    "no_genre_data": "No genre data available",
+    "no_playtime_data": "No playtime data yet",
+    "no_activity": "No activity",
+    "active_days": "active days in the last year",
+    "less": "Less",
+    "more": "More"
   }
 }

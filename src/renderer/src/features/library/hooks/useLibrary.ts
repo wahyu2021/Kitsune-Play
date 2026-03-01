@@ -204,13 +204,19 @@ export function useLibrary(): UseLibraryReturn {
   }
 
   const updateGamePlaytime = (id: string, sessionMinutes: number): void => {
+    const today = new Date().toISOString().split('T')[0]
     setGames((prev) =>
       prev.map((game) => {
         if (game.id === id) {
+          const validMinutes = sessionMinutes > 0 ? sessionMinutes : 0
           return {
             ...game,
-            playtime: (game.playtime || 0) + (sessionMinutes > 0 ? sessionMinutes : 0),
-            lastPlayed: new Date().toISOString()
+            playtime: (game.playtime || 0) + validMinutes,
+            lastPlayed: new Date().toISOString(),
+            playHistory: {
+              ...(game.playHistory || {}),
+              [today]: ((game.playHistory || {})[today] || 0) + validMinutes
+            }
           }
         }
         return game

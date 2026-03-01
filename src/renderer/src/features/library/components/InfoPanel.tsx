@@ -20,6 +20,7 @@ import {
   FaEyeSlash
 } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
+import { formatPlaytime } from '@/utils/format'
 import GameDetailModal from './GameDetailModal'
 
 interface InfoPanelProps {
@@ -44,9 +45,7 @@ export default function InfoPanel({
   const { t } = useTranslation()
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
-  const hours = Math.floor((game.playtime || 0) / 60)
-  const mins = (game.playtime || 0) % 60
-  const timeString = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+  const timeString = formatPlaytime(game.playtime || 0)
 
   const lastPlayedStr = game.lastPlayed
     ? new Date(game.lastPlayed).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
@@ -60,7 +59,7 @@ export default function InfoPanel({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-5xl font-black uppercase tracking-tighter text-white drop-shadow-2xl line-clamp-2 overflow-hidden"
+          className="text-5xl font-black uppercase tracking-tighter text-white drop-shadow-2xl line-clamp-1 overflow-hidden"
         >
           {game.title}
         </motion.h1>

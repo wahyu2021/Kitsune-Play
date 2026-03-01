@@ -215,5 +215,34 @@
     "thunderstorm": "Badai Petir",
     "storm_hail": "Badai & Hujan Es",
     "unknown": "Tidak Diketahui"
+  },
+  "picker": {
+    "title": "Pilih Game Acak",
+    "spin": "Putar!",
+    "spin_again": "Putar Lagi",
+    "play_now": "Mainkan",
+    "no_games": "Belum ada game di perpustakaan",
+    "filter_genre": "Filter Genre",
+    "all_genres": "Semua Genre",
+    "spinning": "Memilih...",
+    "press_spin": "Tekan Putar untuk memilih game secara acak"
+  },
+  "stats": {
+    "title": "Statistik",
+    "total_games": "Total Game",
+    "total_hours": "Total Waktu Main",
+    "most_played": "Paling Sering",
+    "avg_session": "Rata-rata Sesi",
+    "favorites": "Favorit",
+    "unplayed": "Belum Dimainkan",
+    "genre_distribution": "Distribusi Genre",
+    "top_games": "Game Teratas berdasarkan Waktu Main",
+    "activity": "Aktivitas Bermain",
+    "no_genre_data": "Belum ada data genre",
+    "no_playtime_data": "Belum ada data waktu main",
+    "no_activity": "Tidak ada aktivitas",
+    "active_days": "hari aktif dalam setahun terakhir",
+    "less": "Sedikit",
+    "more": "Banyak"
   }
 }

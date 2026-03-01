@@ -35,6 +35,8 @@ export interface Game {
   isFavorite?: boolean
   /** Whether the game is hidden from view. */
   isHidden?: boolean
+  /** Daily play history: { "YYYY-MM-DD": minutes_played }. */
+  playHistory?: Record<string, number>
 }
 
 /** Persistent application data structure. */

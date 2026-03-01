@@ -214,5 +214,34 @@
     "thunderstorm": "雷雨",
     "storm_hail": "雷雨・雹",
     "unknown": "不明"
+  },
+  "picker": {
+    "title": "ゲームピッカー",
+    "spin": "回す！",
+    "spin_again": "もう一度",
+    "play_now": "プレイ",
+    "no_games": "ライブラリにゲームがありません",
+    "filter_genre": "ジャンルで絞り込み",
+    "all_genres": "すべてのジャンル",
+    "spinning": "選択中...",
+    "press_spin": "ボタンを押してランダムにゲームを選択"
+  },
+  "stats": {
+    "title": "統計",
+    "total_games": "ゲーム総数",
+    "total_hours": "総プレイ時間",
+    "most_played": "最もプレイ",
+    "avg_session": "平均セッション",
+    "favorites": "お気に入り",
+    "unplayed": "未プレイ",
+    "genre_distribution": "ジャンル分布",
+    "top_games": "プレイ時間トップ",
+    "activity": "プレイ活動",
+    "no_genre_data": "ジャンルデータなし",
+    "no_playtime_data": "プレイ時間データなし",
+    "no_activity": "活動なし",
+    "active_days": "過去1年間のアクティブ日数",
+    "less": "少",
+    "more": "多"
   }
 }

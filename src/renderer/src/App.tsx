@@ -14,12 +14,14 @@ import {
   InfoPanel,
   AddGameModal,
   AddMediaModal,
+  GamePickerModal,
   LibraryToolbar
 } from '@/features/library'
 import { TopBar, BottomBar } from '@/features/navigation'
 import { ProfileModal } from '@/features/profile'
 import { SearchModal } from '@/features/search'
 import { SettingsModal } from '@/features/settings'
+import { StatisticsModal } from '@/features/statistics'
 
 import { Toast, ToastType, Modal } from '@/components/ui'
 import SplashScreen from '@/components/SplashScreen'
@@ -74,6 +76,10 @@ function App(): React.JSX.Element {
     setIsSettingsModalOpen,
     isPowerModalOpen,
     setIsPowerModalOpen,
+    isPickerModalOpen,
+    setIsPickerModalOpen,
+    isStatsModalOpen,
+    setIsStatsModalOpen,
     gameToEdit,
     setGameToEdit,
     modalConfig,
@@ -263,6 +269,8 @@ function App(): React.JSX.Element {
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
           onOpenPower={() => setIsPowerModalOpen(true)}
+          onOpenPicker={() => setIsPickerModalOpen(true)}
+          onOpenStats={() => setIsStatsModalOpen(true)}
           playingGame={playingGame}
           activeRow={navRow}
           activeCol={navCol}
@@ -403,6 +411,19 @@ function App(): React.JSX.Element {
       />
 
       <PowerMenuModal isOpen={isPowerModalOpen} onClose={() => setIsPowerModalOpen(false)} />
+
+      <GamePickerModal
+        isOpen={isPickerModalOpen}
+        onClose={() => setIsPickerModalOpen(false)}
+        games={games}
+        onPlay={(game) => launchGame(game)}
+      />
+
+      <StatisticsModal
+        isOpen={isStatsModalOpen}
+        onClose={() => setIsStatsModalOpen(false)}
+        games={games}
+      />
 
       <Toast
         message={toast.message}

@@ -13,7 +13,9 @@ import {
   FaSearch,
   FaPlus,
   FaPowerOff,
-  FaMinus
+  FaMinus,
+  FaDice,
+  FaChartBar
 } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -38,6 +40,10 @@ interface TopBarProps {
   onOpenSearch: () => void
   /** Opens the power menu modal (shutdown/restart options). */
   onOpenPower: () => void
+  /** Opens the random game picker modal. */
+  onOpenPicker: () => void
+  /** Opens the statistics dashboard modal. */
+  onOpenStats: () => void
   /** The game object currently running, or null/undefined if idle. Used to display the "Playing" indicator. */
   playingGame?: Game | null
   activeRow?: number
@@ -58,6 +64,8 @@ export default function TopBar({
   onOpenSettings,
   onOpenSearch,
   onOpenPower,
+  onOpenPicker,
+  onOpenStats,
   playingGame,
   activeRow = 2,
   activeCol = 0
@@ -184,10 +192,28 @@ export default function TopBar({
           <FaSearch className="text-xl opacity-70 hover:opacity-100" />
         </div>
 
-        {/* Settings (Index 4) */}
+        {/* Game Picker (Index 4) */}
+        <div
+          onClick={onOpenPicker}
+          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all hover:bg-white/10 ${getFocusClass(4)}`}
+          title={t('picker.title')}
+        >
+          <FaDice className="text-xl opacity-70 hover:opacity-100" />
+        </div>
+
+        {/* Statistics (Index 5) */}
+        <div
+          onClick={onOpenStats}
+          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all hover:bg-white/10 ${getFocusClass(5)}`}
+          title={t('stats.title')}
+        >
+          <FaChartBar className="text-xl opacity-70 hover:opacity-100" />
+        </div>
+
+        {/* Settings (Index 6) */}
         <div
           onClick={onOpenSettings}
-          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all hover:bg-white/10 ${getFocusClass(4)}`}
+          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all hover:bg-white/10 ${getFocusClass(6)}`}
           title={t('navigation.settings')}
         >
           <FaCog className="text-xl opacity-70 hover:opacity-100" />
@@ -203,7 +229,7 @@ export default function TopBar({
         <div
           onClick={onOpenProfile}
           className={`flex cursor-pointer items-center gap-3 rounded-full bg-white/5 py-1 pl-4 pr-1 ring-1 ring-white/10 transition-all hover:bg-white/20 hover:ring-white/30 ${
-            activeRow === 0 && activeCol === 5 ? 'ring-2 ring-white bg-white/20' : ''
+            activeRow === 0 && activeCol === 7 ? 'ring-2 ring-white bg-white/20' : ''
           }`}
         >
           <span className="text-sm font-bold tracking-wide">{userName}</span>
@@ -231,7 +257,7 @@ export default function TopBar({
         <div
           onClick={onOpenPower}
           className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-red-400 hover:bg-red-500/20 hover:text-red-500 ${
-            activeRow === 0 && activeCol === 6
+            activeRow === 0 && activeCol === 8
               ? 'ring-2 ring-red-500 bg-red-500 text-white scale-110'
               : ''
           }`}
