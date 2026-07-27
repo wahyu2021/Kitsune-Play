@@ -17,6 +17,7 @@ import { registerMiscHandlers } from './ipc/misc'
 import { registerScannerHandlers } from './ipc/scanner'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+app.commandLine.appendSwitch('force-device-scale-factor', '1')
 
 /**
  * Creates and configures the main application window.
